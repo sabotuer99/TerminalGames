@@ -24,26 +24,54 @@ public class App
                 c = System.in.read();
                 
             	switch(c){
+            	case 0x1B:
+            		c = System.in.read();
+            		if(c == '['){
+            			c = System.in.read();
+            		}
+            		switch(c){
+            		case 'B':
+	            	case Keys.DOWN_ARROW_BYTE:
+	            		nav.cursorDown();
+	            		System.out.print(' ');
+	            		nav.cursorBack();
+	            		break;
+	            	case 'A':
+	            	case Keys.UP_ARROW_BYTE:
+	            		nav.cursorUp();
+	            		System.out.print(' ');
+	            		nav.cursorBack();
+	            		break;
+	            	case 'C':
+	            	case Keys.RIGHT_ARROW_BYTE:
+	            		nav.cursorForward();
+	            		System.out.print(' ');
+	            		nav.cursorBack();
+	            		break;
+	            	case 'D':
+	            	case Keys.LEFT_ARROW_BYTE:
+	            		nav.cursorBack();
+	            		System.out.print(' ');
+	            		nav.cursorBack();
+	            		break;
+            		}
+            		break;
             	case 'k':
-            	case Keys.DOWN_ARROW_BYTE:
             		nav.cursorDown();
             		System.out.print(' ');
             		nav.cursorBack();
             		break;
             	case 'i':
-            	case Keys.UP_ARROW_BYTE:
             		nav.cursorUp();
             		System.out.print(' ');
             		nav.cursorBack();
             		break;
             	case 'l':
-            	case Keys.RIGHT_ARROW_BYTE:
             		nav.cursorForward();
             		System.out.print(' ');
             		nav.cursorBack();
             		break;
             	case 'j':
-            	case Keys.LEFT_ARROW_BYTE:
             		nav.cursorBack();
             		System.out.print(' ');
             		nav.cursorBack();
