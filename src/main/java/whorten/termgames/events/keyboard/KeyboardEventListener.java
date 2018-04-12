@@ -2,10 +2,8 @@ package whorten.termgames.events.keyboard;
 
 import whorten.termgames.events.EventListener;
 
-public class KeyboardEventListener implements EventListener<KeyEvent> {
+public interface KeyboardEventListener extends EventListener<KeyEvent> {
 
 	@Override
-	public void handleEvent(KeyEvent event) {
-		
-	}
+	void handleEvent(KeyEvent event);
 }
