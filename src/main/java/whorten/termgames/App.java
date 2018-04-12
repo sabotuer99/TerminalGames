@@ -1,7 +1,6 @@
 package whorten.termgames;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.TerminalNavigator;
