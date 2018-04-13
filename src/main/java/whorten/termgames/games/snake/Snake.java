@@ -1,7 +1,6 @@
 package whorten.termgames.games.snake;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.LinkedList;
 
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
@@ -12,14 +11,14 @@ import whorten.termgames.utils.TerminalNavigator;
 public class Snake {
 
 	private TerminalNavigator nav = new TerminalNavigator(System.out);
-	private Deque<Coord> coords = new ArrayDeque<>();
+	private LinkedList<Coord> coords = new LinkedList<>();
 	private int length = 1;
 	
 	public Snake(){
 		coords.add(new Coord(1,1));
 	}
 	
-	private String bodyGlyph =  new Glyph.Builder("◆")
+	private String bodyGlyph =  new Glyph.Builder("X")
             .withForegroundColor(FgColor.LIGHT_YELLOW)
             .withBackgroundColor(BgColor.GREEN)
             .build()
@@ -57,7 +56,7 @@ public class Snake {
 		Coord last = coords.peekLast();
 		Coord next = new Coord(first.x + direction.getDx(),
 	                           first.y + direction.getDy());
-		coords.offer(next);
+		coords.addFirst(next);
 	
 		String head = "";
 		switch(direction){
@@ -81,7 +80,7 @@ public class Snake {
 		
 		if(length < coords.size()){			
 			drawAt(last.x, last.y, erase);
-			coords.poll();
+			coords.removeLast();
 		}
 		
 		drawAt(10,1,Integer.toString(coords.size()));
