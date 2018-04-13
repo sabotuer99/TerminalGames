@@ -25,6 +25,11 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	    listeners.add(listener);
 	}
 	
+	@Override
+	public void unsubscribe(KeyboardEventListener listener) {
+		listeners.remove(listener);
+	}
+	
 	public void listen() throws IOException{
 		
         String last = null;
@@ -63,12 +68,13 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
                 
                 KeyEvent k = new KeyDownEvent(last.toString().toUpperCase()); 
                 fire(k);
-                checkForKeyUp(last);
+                checkForKeyUp(last);              
             }
         }
 	}
 	
 	private Map<String,Long> lastSeen = new HashMap<>();
+
 	private void checkForKeyUp(String last) {
 		Long timeSeen = System.currentTimeMillis();
 		for(String key : new HashSet<String>(lastSeen.keySet())){			
@@ -128,4 +134,5 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 			return this;
 		}
 	}
+
 }

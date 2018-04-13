@@ -1,5 +1,5 @@
 package whorten.termgames.events;
 
-public interface EventListener<K> {
-	void handleEvent(K event);
+public interface EventListener<K extends Event>{
+	void handleEvent(K e);
 }
