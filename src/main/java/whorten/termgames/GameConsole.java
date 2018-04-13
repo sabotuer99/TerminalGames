@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyboardEventDriver;
 import whorten.termgames.games.snake.SnakeGame;
+import whorten.termgames.glyphs.BgColor;
+import whorten.termgames.glyphs.FgColor;
+import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.utils.TerminalNavigator;
 
 /**
@@ -27,18 +30,37 @@ public class GameConsole {
 				.withInputStream(System.in)
 				.withListener((KeyEvent ke) -> handleKeyEvent(ke))
 				.build();
-		runInThreadPool(() -> {
+		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
 			catch (IOException e) {}
 		});
 		
 		
 		new SnakeGame().plugIn(instance);
+		String bodyGlyph =  new Glyph.Builder("◆")
+	            .withForegroundColor(FgColor.LIGHT_YELLOW)
+	            .withBackgroundColor(BgColor.GREEN)
+	            .build()
+	            .toString();
 		
-		instance.ked.listen();		
+		for(int row = 0; row < 24; row++){
+			for(int col = 0; col < 80; col++){
+				drawAt(col,row,bodyGlyph);
+			}
+		}
+		
+		instance.ked.die();
+		pool.shutdown();
 		System.out.println("PEACE!");
 	}
 
+	
+	private static void drawAt(int x, int y, String payload){
+		nav.positionCursor(y, x);
+		System.out.print(payload);
+		nav.cursorBack();
+	}
+	
 //	public void setInputSource(InputStream in){
 //		inputSource = in;
 //	}
@@ -51,7 +73,7 @@ public class GameConsole {
 		return ked;
 	}
 	
-	public static void runInThreadPool(Runnable runnable){
+	public void runInThreadPool(Runnable runnable){
 		pool.execute(runnable);
 	}
 	

@@ -19,26 +19,26 @@ public class Glyph {
 	@Override
 	public String toString() {
 		String composite = "";
-		composite += bold ? Style.BOLD : "";
-		composite += underline ? Style.UNDERLINE : "";
+		composite += bold ? Style.BOLD.toAnsi() : "";
+		composite += underline ? Style.UNDERLINE.toAnsi() : "";
 		composite += fg;
 		composite += bg;
 		composite += base;
 		composite += postfg;
 		composite += postbg;
-		composite += resetbold ? Style.RESET_BOLD : "";
-		composite += resetunderline ? Style.RESET_UNDERLINE : "";
+		composite += resetbold ? Style.RESET_BOLD.toAnsi() : "";
+		composite += resetunderline ? Style.RESET_UNDERLINE.toAnsi() : "";
 		return composite;
 	}
 	
-	public class Builder{
+	public static class Builder{
 		private String base;
 		private boolean bold;
 		private boolean underline;
 		private String fg = "";
 		private String bg = "";
-		private String postbg = "";
-		private String postfg = "";
+		private String postbg = BgColor.RESET_BG.toAnsi();
+		private String postfg = FgColor.RESET_FG.toAnsi();
 		private boolean resetbold = true;
 		private boolean resetunderline = true;
 

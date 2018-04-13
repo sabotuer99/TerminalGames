@@ -33,7 +33,7 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	public void listen() throws IOException{
 		
         String last = null;
-        while(!stops.contains(last)){           	
+        while(!stops.contains(last) && !die){           	
         	if ( in.available() != 0 ) {
                 int c = in.read();
                 
@@ -74,6 +74,7 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	}
 	
 	private Map<String,Long> lastSeen = new HashMap<>();
+	private volatile boolean die;
 
 	private void checkForKeyUp(String last) {
 		Long timeSeen = System.currentTimeMillis();
@@ -133,6 +134,10 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 			this.threshold  = threshold;
 			return this;
 		}
+	}
+
+	public void die() {
+		die = true;	
 	}
 
 }

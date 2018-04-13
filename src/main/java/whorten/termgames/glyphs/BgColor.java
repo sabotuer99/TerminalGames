@@ -1,7 +1,7 @@
 package whorten.termgames.glyphs;
 
 public enum BgColor {
-	RESET_FG("\u001B[49m"),
+	RESET_BG("\u001B[49m"),
 	BLACK("\u001B[40m"),
 	RED("\u001B[41m"),
 	GREEN("\u001B[42m"),

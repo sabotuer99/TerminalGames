@@ -14,25 +14,30 @@ public class TerminalNavigator {
 	public void positionCursor(int x, int y){
 		String command = String.format("%s%d;%dH", CSI,x,y);
 		out.print(command);
+		out.flush();
 	}
 	
 	public void cursorUp(){
 		String command = String.format("%sA", CSI);
 		out.print(command);
+		out.flush();
 	}
 	
 	public void cursorDown(){
 		String command = String.format("%sB", CSI);
 		out.print(command);
+		out.flush();
 	}
 	
 	public void cursorForward(){
 		String command = String.format("%sC", CSI);
 		out.print(command);
+		out.flush();
 	}
 	
 	public void cursorBack(){
 		String command = String.format("%sD", CSI);
 		out.print(command);
+		out.flush();
 	}
 }
