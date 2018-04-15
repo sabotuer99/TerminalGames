@@ -5,7 +5,9 @@ import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyEventType;
 import whorten.termgames.events.keyboard.KeyboardEventListener;
 import whorten.termgames.games.Game;
+import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
+import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.utils.Keys;
@@ -31,7 +33,11 @@ public class SnakeGame extends Game {
 							.build();
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
-		
+		GlyphString title = new GlyphString.Builder(4, 67, "SNAKE!")
+									.withBgColor(BgColor.LIGHT_CYAN)
+									.withFgColor(FgColor.BLACK)
+									.build();
+		renderer.drawGlyphCollection(title.getGlyphCoords());
 		
 		maxrow = renderer.getCanvasHeight();
 		maxcol = renderer.getCanvasWidth() - 21;

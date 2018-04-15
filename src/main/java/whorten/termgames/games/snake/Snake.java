@@ -88,7 +88,7 @@ public class Snake {
 			coords.removeLast();
 		}
 		
-		drawAt(10,1,Integer.toString(coords.size()));
+		drawAt(70,6,Integer.toString(coords.size()));
 	}
 	
 	public class Coord {
