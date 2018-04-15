@@ -15,7 +15,7 @@ public class BoxDrawingGeneratorTests {
                          "  "};
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertNotNull(result);
@@ -30,7 +30,7 @@ public class BoxDrawingGeneratorTests {
         String[] expected = { "══" };
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected[0], result[0]);
@@ -45,7 +45,7 @@ public class BoxDrawingGeneratorTests {
         String expected = "║" ;
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[0]);
@@ -61,7 +61,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╔';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[0].charAt(0));
@@ -77,7 +77,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╗';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[0].charAt(1));
@@ -93,7 +93,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╝';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[1].charAt(1));
@@ -109,7 +109,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╚';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[1].charAt(0));
@@ -126,7 +126,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╠';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[1].charAt(0));
@@ -143,7 +143,7 @@ public class BoxDrawingGeneratorTests {
         char expected = '╣';
 
         //Act
-        String[] result = sut.Transform(test);
+        String[] result = sut.transform(test);
 
         //Assert
         assertEquals(expected, result[1].charAt(1));

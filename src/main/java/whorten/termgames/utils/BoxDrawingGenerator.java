@@ -2,7 +2,7 @@ package whorten.termgames.utils;
 
 public class BoxDrawingGenerator {
 
-    public String[] Transform(String[] input)
+    public String[] transform(String[] input)
     {
             //make array of arrays
         char[][] inputBuffer = new char[input.length][];

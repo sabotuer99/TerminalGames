@@ -33,44 +33,51 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	public void listen() throws IOException{
 		
         String last = null;
-        while(!stops.contains(last) && !die){           	
-        	if ( in.available() != 0 ) {
-                int c = in.read();
-                
-                if(c ==  0x1B){
-                	// escape character requires special handling              	
-                	c = in.read();
-            		if(c == '['){
-            			c = in.read();
-            		}
-            		switch(c){
-            		case 'B':
-	            	case Keys.DOWN_ARROW_BYTE:
-	            		last = Keys.DOWN_ARROW;
-	            		break;
-	            	case 'A':
-	            	case Keys.UP_ARROW_BYTE:
-	            		last = Keys.UP_ARROW;
-	            		break;
-	            	case 'C':
-	            	case Keys.RIGHT_ARROW_BYTE:
-	            		last = Keys.RIGHT_ARROW;
-	            		break;
-	            	case 'D':
-	            	case Keys.LEFT_ARROW_BYTE:
-	            		last = Keys.LEFT_ARROW;	
-	            		break;
-            		}            		           		
-                } else {
-                	// every other character, uppered
-                	last = Character.toString((char)c);          
-                } 
-                
-                KeyEvent k = new KeyDownEvent(last.toString().toUpperCase()); 
-                fire(k);
-                checkForKeyUp(last);              
-            }
-        }
+        try {
+	        while(!stops.contains(last) && !die){ 
+	        	
+					Thread.sleep(10);
+				
+	        	if ( in.available() != 0 ) {
+	                int c = in.read();
+	                
+	                if(c ==  0x1B){
+	                	// escape character requires special handling              	
+	                	c = in.read();
+	            		if(c == '['){
+	            			c = in.read();
+	            		}
+	            		switch(c){
+	            		case 'B':
+		            	case Keys.DOWN_ARROW_BYTE:
+		            		last = Keys.DOWN_ARROW;
+		            		break;
+		            	case 'A':
+		            	case Keys.UP_ARROW_BYTE:
+		            		last = Keys.UP_ARROW;
+		            		break;
+		            	case 'C':
+		            	case Keys.RIGHT_ARROW_BYTE:
+		            		last = Keys.RIGHT_ARROW;
+		            		break;
+		            	case 'D':
+		            	case Keys.LEFT_ARROW_BYTE:
+		            		last = Keys.LEFT_ARROW;	
+		            		break;
+	            		}            		           		
+	                } else {
+	                	// every other character, uppered
+	                	last = Character.toString((char)c);          
+	                } 
+	                
+	                KeyEvent k = new KeyDownEvent(last.toString().toUpperCase()); 
+	                fire(k);
+	                checkForKeyUp(last);              
+	            }
+	        }
+        } catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Map<String,Long> lastSeen = new HashMap<>();

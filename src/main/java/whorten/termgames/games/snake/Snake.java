@@ -13,9 +13,22 @@ public class Snake {
 	private TerminalNavigator nav = new TerminalNavigator(System.out);
 	private LinkedList<Coord> coords = new LinkedList<>();
 	private int length = 1;
+	private int maxrow;
+	private int maxcol;
 	
-	public Snake(){
-		coords.add(new Coord(1,1));
+	public Snake(int maxrow, int maxcol){
+		coords.add(new Coord(2,2));
+		this.maxrow = maxrow;
+		this.maxcol = maxcol;
+	}
+	
+	public boolean isLegalMove(Direction direction){
+		Coord first = coords.peekFirst();
+		Coord next = new Coord(first.col + direction.getDx(),
+	                           first.row + direction.getDy());
+		
+		return next.row > 1 && next.col > 1 && 
+			   next.row < maxrow && next.col < maxcol;
 	}
 	
 	private String bodyGlyph =  new Glyph.Builder("X")
@@ -24,25 +37,17 @@ public class Snake {
             .build()
             .toString();
 	
-	private String headUpGlyph = new Glyph.Builder("▲")
-			.withForegroundColor(FgColor.GREEN)
-			.build()
-			.toString();
+	private String headUpGlyph = headSegment("^"); //"▲")
+	private String headDownGlyph = headSegment("v"); //"▼")
+	private String headRightGlyph = headSegment(">"); //"▶")
+	private String headLeftGlyph = headSegment("<"); //"◀")
 	
-	private String headDownGlyph = new Glyph.Builder("▼")
-			.withForegroundColor(FgColor.GREEN)
-			.build()
-			.toString();
-	
-	private String headLeftGlyph = new Glyph.Builder("◀")
-			.withForegroundColor(FgColor.GREEN)
-			.build()
-			.toString();
-	
-	private String headRightGlyph = new Glyph.Builder("▶")
-			.withForegroundColor(FgColor.GREEN)
-			.build()
-			.toString();
+	private String headSegment(String base) {
+		return new Glyph.Builder(base)
+				.withForegroundColor(FgColor.GREEN)
+				.build()
+				.toString();
+	}
 	
 	private String erase = " ";
 	
@@ -54,8 +59,8 @@ public class Snake {
 
 		Coord first = coords.peekFirst();
 		Coord last = coords.peekLast();
-		Coord next = new Coord(first.x + direction.getDx(),
-	                           first.y + direction.getDy());
+		Coord next = new Coord(first.col + direction.getDx(),
+	                           first.row + direction.getDy());
 		coords.addFirst(next);
 	
 		String head = "";
@@ -75,11 +80,11 @@ public class Snake {
 		}
 		
 		
-		drawAt(next.x, next.y, head);
-		drawAt(first.x, first.y, bodyGlyph);
+		drawAt(next.col, next.row, head);
+		drawAt(first.col, first.row, bodyGlyph);
 		
 		if(length < coords.size()){			
-			drawAt(last.x, last.y, erase);
+			drawAt(last.col, last.row, erase);
 			coords.removeLast();
 		}
 		
@@ -88,13 +93,13 @@ public class Snake {
 	
 	public class Coord {
 		
-		Coord(int x, int y){
-			this.x = x;
-			this.y = y;
+		Coord(int col, int row){
+			this.col = col;
+			this.row = row;
 		}
 		
-		int x = 0; //col
-		int y = 0; //row
+		int col = 0; //col
+		int row = 0; //row
 	}
 	
 	private void drawAt(int x, int y, String payload){

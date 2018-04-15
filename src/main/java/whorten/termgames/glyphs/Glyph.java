@@ -10,10 +10,10 @@ public class Glyph {
 	private boolean underline;
 	private String fg = "";
 	private String bg = "";
-	public String postfg = "";
-	public String postbg = "";
-	public boolean resetbold;
-	public boolean resetunderline;
+	private String postfg = "";
+	private String postbg = "";
+	private boolean resetbold;
+	private boolean resetunderline;
 	
 
 	@Override
@@ -49,6 +49,18 @@ public class Glyph {
 			this.base = base;	
 		}
 		
+		public Builder(Glyph baseGlyph){
+			this.base = baseGlyph.base;
+			this.bold = baseGlyph.bold;
+			this.underline = baseGlyph.underline;
+			this.fg = baseGlyph.fg;
+			this.bg = baseGlyph.bg;
+			this.postbg = baseGlyph.postbg;
+			this.postfg = baseGlyph.postfg;
+			this.resetbold = baseGlyph.resetbold;
+		    this.resetunderline = baseGlyph.resetunderline;
+		}
+		
 		public Glyph build(){
 			Glyph glyph = new Glyph();
 			glyph.base = this.base;
@@ -61,6 +73,14 @@ public class Glyph {
 			glyph.resetbold = this.resetbold;
 			glyph.resetunderline = this.resetunderline;
 			return glyph;
+		}
+		
+		public Builder withBase(String base){
+			if(base.length() != 1){
+				throw new IllegalArgumentException("Glyph can represent only a single character");
+			}
+			this.base = base;
+			return this;
 		}
 		
 		public Builder isBold(boolean bold){

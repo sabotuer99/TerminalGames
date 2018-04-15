@@ -11,8 +11,8 @@ public class TerminalNavigator {
 		this.out = out;
 	}
 	
-	public void positionCursor(int x, int y){
-		String command = String.format("%s%d;%dH", CSI,x,y);
+	public void positionCursor(int row, int col){
+		String command = String.format("%s%d;%dH", CSI, row, col);
 		out.print(command);
 		out.flush();
 	}

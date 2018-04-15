@@ -5,19 +5,38 @@ import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyEventType;
 import whorten.termgames.events.keyboard.KeyboardEventListener;
 import whorten.termgames.games.Game;
+import whorten.termgames.glyphs.FgColor;
+import whorten.termgames.render.GameBorder;
+import whorten.termgames.render.Renderer;
 import whorten.termgames.utils.Keys;
 
 public class SnakeGame extends Game {
 
 	private volatile boolean running = true;
 	private Direction direction = Direction.DOWN;
-	private Snake snake = new Snake();
+	private Snake snake;
+	private Renderer renderer;
+	private int maxcol;
+	private int maxrow;
 
 	@Override
 	public void plugIn(GameConsole console) {
 		System.out.println("Starting snake...");
 		KeyboardEventListener listener = (KeyEvent k) -> {handleKeyEvent(k);};
-		console.getKeyboardEventDriver().subscribe(listener);		
+		console.getKeyboardEventDriver().subscribe(listener);
+		this.renderer = console.getRenderer();
+		GameBorder gb = new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
+							.withFgColor(FgColor.LIGHT_GREEN)
+							.withDefaultLayout()
+							.build();
+		renderer.drawGlyphCollection(gb.getGlyphCoords());
+		
+		
+		
+		maxrow = renderer.getCanvasHeight();
+		maxcol = renderer.getCanvasWidth() - 21;
+		snake = new Snake(maxrow, maxcol);
+		
 		run();
 		console.getKeyboardEventDriver().unsubscribe(listener);
 	}
@@ -58,11 +77,13 @@ public class SnakeGame extends Game {
 		try {
 			while (running) {
 				
-					Thread.sleep(200);
-					snake.move(direction);
-					count++;
-					if(count % 30 == 0){
-						snake.eat();
+					Thread.sleep(70);
+					if(snake.isLegalMove(direction)){					
+						snake.move(direction);
+						count++;
+						if(count % 30 == 0){
+							snake.eat();
+						}
 					}
 			}
 		} catch (InterruptedException e) {
