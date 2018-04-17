@@ -18,6 +18,7 @@ import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
+import whorten.termgames.utils.Colors;
 import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.SoundPlayer;
@@ -96,11 +97,12 @@ public class SnakeGame extends Game {
 		Coord goodFruit = getRandomCoord();
 		Coord badFruit = getRandomCoord();
 		Glyph gfGlyph = new Glyph.Builder("O")
-				              .withForegroundColor(FgColor.RED)
+				              .withForegroundColor(255, 0, 0)
+				              .isBold(true)
 				              .build();
-		Glyph badGlyph = new Glyph.Builder("X")
-	              .withForegroundColor(FgColor.BLACK)
-	              .withBackgroundColor(BgColor.LIGHT_CYAN)
+		Glyph badGlyph = new Glyph.Builder("#")
+	              .withForegroundColor(FgColor.WHITE)
+	              .withBackgroundColor(BgColor.CYAN)
 	              .build();
 		renderer.drawAt(goodFruit.getRow(), goodFruit.getCol(), gfGlyph );
 		renderer.drawAt(badFruit.getRow(), badFruit.getCol(), badGlyph );
