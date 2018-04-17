@@ -35,9 +35,15 @@ public class GameConsole {
 		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
 			catch (IOException e) {}
-		});		
+		});	
 		
-		new SnakeGame().plugIn(instance);
+		
+		
+		for(int i = 0; i < 5; i++){
+			instance.renderer.clearScreen();
+			new SnakeGame().plugIn(instance);
+		}
+		
 		Glyph bodyGlyph =  new Glyph.Builder("◆")
 	            .withForegroundColor(FgColor.LIGHT_YELLOW)
 	            .withBackgroundColor(BgColor.GREEN)
@@ -51,7 +57,6 @@ public class GameConsole {
 		
 		instance.ked.die();
 		pool.shutdown();
-		System.out.println("PEACE!");
 	}
 	
 	public KeyboardEventDriver getKeyboardEventDriver(){

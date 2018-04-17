@@ -1,5 +1,7 @@
 package whorten.termgames.render;
 
+import static whorten.termgames.utils.StringUtils.repeat;
+
 import java.io.PrintStream;
 import java.util.Collection;
 
@@ -42,6 +44,15 @@ public class OutputStreamRenderer implements Renderer {
 		for(GlyphCoord gc : glyphCoords){
 			drawAt(gc.getRow(), gc.getCol(), gc.getGlyph());
 		}
+	}
+
+	@Override
+	public void clearScreen() {
+		String line = repeat(" ", width);
+		for(int row = 1; row <= height; row++){
+			nav.positionCursor(row, 0);
+			out.print(line);
+		}	
 	}
 
 }

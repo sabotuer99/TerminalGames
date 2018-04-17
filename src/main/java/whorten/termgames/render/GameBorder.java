@@ -1,5 +1,7 @@
 package whorten.termgames.render;
 
+import static whorten.termgames.utils.StringUtils.repeat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +42,11 @@ public class GameBorder {
 				char[] rowChars = transformed[row].toCharArray();
 				for(int col = 0; col < cols; col++){
 					String baseChar = Character.toString(rowChars[col]);
-					Glyph glyph = baseGlyphBuilder.withBase(baseChar).build();
-					GlyphCoord glyphCoord = new GlyphCoord(row+1, col+1, glyph);
-					gb.border.add(glyphCoord);
+					if(!" ".equals(baseChar)){
+						Glyph glyph = baseGlyphBuilder.withBase(baseChar).build();
+						GlyphCoord glyphCoord = new GlyphCoord(row+1, col+1, glyph);
+						gb.border.add(glyphCoord);
+					}
 				}
 			}
 			
@@ -84,13 +88,10 @@ public class GameBorder {
 			baseGlyphBuilder.withBackgroundColor(color);
 			return this;
 		}
-		
-		private String repeat(String body, int iterations){
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < iterations; i++){
-				sb.append(body);
-			}
-			return sb.toString();
+
+		public Builder withBgColor(int r, int g, int b) {
+			baseGlyphBuilder.withBackgroundColor(r, g, b);
+			return this;
 		}
 	}
 }

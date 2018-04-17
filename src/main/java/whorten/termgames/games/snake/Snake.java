@@ -1,10 +1,13 @@
 package whorten.termgames.games.snake;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
+import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.TerminalNavigator;
 
 
@@ -12,23 +15,47 @@ public class Snake {
 
 	private TerminalNavigator nav = new TerminalNavigator(System.out);
 	private LinkedList<Coord> coords = new LinkedList<>();
+	private Set<Coord> coordSet = new HashSet<>();
 	private int length = 1;
 	private int maxrow;
 	private int maxcol;
+	private boolean alive = true;
 	
 	public Snake(int maxrow, int maxcol){
 		coords.add(new Coord(2,2));
 		this.maxrow = maxrow;
 		this.maxcol = maxcol;
+	}	
+
+	public void kill(){
+		this.alive = false;
+	}
+	
+	public boolean isAlive(){
+		return alive;
+	}
+	
+	public Coord getHead(){
+		return coords.peekFirst();
+	}
+	
+	public Set<Coord> getOccupiedSet(){
+		return coordSet;
 	}
 	
 	public boolean isLegalMove(Direction direction){
 		Coord first = coords.peekFirst();
-		Coord next = new Coord(first.col + direction.getDx(),
-	                           first.row + direction.getDy());
+		Coord next = new Coord(first.getCol() + direction.getDx(),
+	                           first.getRow() + direction.getDy());
 		
-		return next.row > 1 && next.col > 1 && 
-			   next.row < maxrow && next.col < maxcol;
+		// is the snake going out of bounds?
+		boolean oob = next.getRow() > 1 && next.getCol() > 1 && 
+			   next.getRow() < maxrow && next.getCol() < maxcol;
+		
+		// is the snake double back on itself?
+		boolean selfcollision = coordSet.contains(next);
+		
+		return oob && !selfcollision;
 	}
 	
 	private String bodyGlyph =  new Glyph.Builder("X")
@@ -59,9 +86,10 @@ public class Snake {
 
 		Coord first = coords.peekFirst();
 		Coord last = coords.peekLast();
-		Coord next = new Coord(first.col + direction.getDx(),
-	                           first.row + direction.getDy());
+		Coord next = new Coord(first.getCol() + direction.getDx(),
+	                           first.getRow() + direction.getDy());
 		coords.addFirst(next);
+		coordSet.add(next);
 	
 		String head = "";
 		switch(direction){
@@ -80,26 +108,16 @@ public class Snake {
 		}
 		
 		
-		drawAt(next.col, next.row, head);
-		drawAt(first.col, first.row, bodyGlyph);
+		drawAt(next.getCol(), next.getRow(), head);
+		drawAt(first.getCol(), first.getRow(), bodyGlyph);
 		
 		if(length < coords.size()){			
-			drawAt(last.col, last.row, erase);
+			drawAt(last.getCol(), last.getRow(), erase);
 			coords.removeLast();
+			coordSet.remove(last);
 		}
 		
 		drawAt(70,6,Integer.toString(coords.size()));
-	}
-	
-	public class Coord {
-		
-		Coord(int col, int row){
-			this.col = col;
-			this.row = row;
-		}
-		
-		int col = 0; //col
-		int row = 0; //row
 	}
 	
 	private void drawAt(int x, int y, String payload){

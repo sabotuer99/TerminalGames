@@ -9,4 +9,5 @@ public interface Renderer {
 	int getCanvasWidth();
 	int getCanvasHeight();
 	void drawGlyphCollection(Collection<GlyphCoord> glyphCoords);
+	void clearScreen();
 }
