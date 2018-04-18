@@ -43,21 +43,6 @@ public class Snake {
 		return coordSet;
 	}
 	
-	public boolean isLegalMove(Direction direction){
-		Coord first = coords.peekFirst();
-		Coord next = new Coord(first.getCol() + direction.getDx(),
-	                           first.getRow() + direction.getDy());
-		
-		// is the snake going out of bounds?
-		boolean oob = next.getRow() > 1 && next.getCol() > 1 && 
-			   next.getRow() < maxrow && next.getCol() < maxcol;
-		
-		// is the snake double back on itself?
-		boolean selfcollision = coordSet.contains(next);
-		
-		return oob && !selfcollision;
-	}
-	
 	private String bodyGlyph =  new Glyph.Builder("X")
             .withForegroundColor(FgColor.LIGHT_YELLOW)
             .withBackgroundColor(BgColor.GREEN)

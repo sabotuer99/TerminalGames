@@ -15,6 +15,9 @@ public class Glyph {
 	private boolean resetbold;
 	private boolean resetunderline;
 	
+	public String getBase(){
+		return this.base;
+	}
 
 	@Override
 	public String toString() {

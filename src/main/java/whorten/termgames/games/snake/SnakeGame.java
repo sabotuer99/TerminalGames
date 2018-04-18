@@ -18,7 +18,6 @@ import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
-import whorten.termgames.utils.Colors;
 import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.SoundPlayer;
@@ -46,11 +45,11 @@ public class SnakeGame extends Game {
 							.build();
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
-		GlyphString title = new GlyphString.Builder(4, 67, "SNAKE!")
+		GlyphString title = new GlyphString.Builder("SNAKE!")
 									.withBgColor(BgColor.LIGHT_CYAN)
 									.withFgColor(FgColor.BLACK)
 									.build();
-		renderer.drawGlyphCollection(title.getGlyphCoords());
+		renderer.drawAt(4, 67, title);
 		
 		maxrow = renderer.getCanvasHeight();
 		maxcol = renderer.getCanvasWidth() - 21;
@@ -91,7 +90,6 @@ public class SnakeGame extends Game {
 		}
 	}
 
-	
 	private void run() {
 		
 		Coord goodFruit = getRandomCoord();
@@ -114,7 +112,7 @@ public class SnakeGame extends Game {
 			while (running && snake.isAlive()) {
 				
 					Thread.sleep(70);
-					if(snake.isLegalMove(direction)){	
+					if(isLegalMove(direction, snake)){	
 						playSlither();
 						snake.move(direction);
 
@@ -152,6 +150,22 @@ public class SnakeGame extends Game {
 
 	}
 
+	public boolean isLegalMove(Direction direction, Snake snake){
+		Coord head = snake.getHead();
+		Coord next = new Coord(head.getCol() + direction.getDx(),
+	                           head.getRow() + direction.getDy());
+		
+		// is the snake going out of bounds?
+		boolean oob = next.getRow() > 1 && next.getCol() > 1 && 
+			   next.getRow() < maxrow && next.getCol() < maxcol;
+		
+		// is the snake double back on itself?
+		boolean selfcollision = snake.getOccupiedSet().contains(next);
+		
+		return oob && !selfcollision;
+	}
+	
+	
 	private Coord getRandomCoord() {
 		return new Coord(new Random().nextInt(renderer.getCanvasWidth() - 23) + 2,
                          new Random().nextInt(renderer.getCanvasHeight() - 2) + 2);

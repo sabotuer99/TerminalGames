@@ -22,7 +22,6 @@ import whorten.termgames.utils.TerminalNavigator;
 public class GameConsole {
 	private static GameConsole instance = new GameConsole();
 	private KeyboardEventDriver ked;
-	private InputStream inputSource = System.in;
 	private static ExecutorService pool = Executors.newCachedThreadPool();
 	private Renderer renderer = new OutputStreamRenderer(System.out, 80, 24);
 	
@@ -36,9 +35,7 @@ public class GameConsole {
 			try { instance.ked.listen();} 	
 			catch (IOException e) {}
 		});	
-		
-		
-		
+				
 		for(int i = 0; i < 5; i++){
 			instance.renderer.clearScreen();
 			new SnakeGame().plugIn(instance);
@@ -49,8 +46,8 @@ public class GameConsole {
 	            .withBackgroundColor(BgColor.GREEN)
 	            .build();
 		
-		for(int row = 0; row < 24; row++){
-			for(int col = 0; col < 80; col++){
+		for(int row = 1; row <= 24; row++){
+			for(int col = 1; col <= 80; col++){
 				instance.renderer.drawAt(row,col,bodyGlyph);
 			}
 		}

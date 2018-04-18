@@ -3,30 +3,40 @@ package whorten.termgames.glyphs;
 import java.util.ArrayList;
 import java.util.List;
 
-import whorten.termgames.render.GlyphCoord;
-import whorten.termgames.render.GameBorder.Builder;
-
 public class GlyphString {
 	
+	private List<Glyph> glyphs = new ArrayList<>();
+	public String stringRep;
+
 	private GlyphString(){};
+
+	public List<Glyph> getGlyphs(){
+		return new ArrayList<>(glyphs);
+	}
 	
-	List<GlyphCoord> string = new ArrayList<>();
+	@Override
+	public String toString(){
+		return stringRep;
+	}
 	
-	public List<GlyphCoord> getGlyphCoords(){
-		return new ArrayList<>(string);
+	public GlyphString append(GlyphString next){
+		glyphs.addAll(next.getGlyphs());
+		stringRep += next.toString();
+		return this;
 	}
 	
 	public static class Builder{
 		
-		private int row;
-		private int col;
 		private String base;
-		private Glyph.Builder baseGlyphBuilder = new Glyph.Builder(" ");		
+		private Glyph.Builder baseGlyphBuilder = new Glyph.Builder(" ");	
 		
-		public Builder(int row, int col, String base){
-			this.row = row;
-			this.col = col;
+		public Builder(String base){
 			this.base = base;
+		}
+		
+		public Builder(Glyph baseGlyph){
+			this.base = baseGlyph.getBase();
+			this.baseGlyphBuilder = new Glyph.Builder(baseGlyph);
 		}
 		
 		public GlyphString build(){
@@ -37,11 +47,22 @@ public class GlyphString {
 			for(int i = 0; i < base.length(); i++){
 				String baseChar = Character.toString(rowChars[i]);
 				Glyph glyph = baseGlyphBuilder.withBase(baseChar).build();
-				GlyphCoord glyphCoord = new GlyphCoord(row, col + i, glyph);
-				gs.string.add(glyphCoord);
+				gs.glyphs.add(glyph);
 			}
 			
+			
+			StringBuilder sb = new StringBuilder();
+			for(Glyph g : gs.glyphs){
+				sb.append(g.toString());
+			}
+			gs.stringRep = sb.toString();
+			
 			return gs;
+		}
+		
+		public Builder withBaseString(String base){
+			this.base = base;
+			return this;
 		}
 		
 		public Builder withFgColor(FgColor color){
