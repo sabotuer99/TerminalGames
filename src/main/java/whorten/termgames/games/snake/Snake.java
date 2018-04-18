@@ -17,14 +17,10 @@ public class Snake {
 	private LinkedList<Coord> coords = new LinkedList<>();
 	private Set<Coord> coordSet = new HashSet<>();
 	private int length = 1;
-	private int maxrow;
-	private int maxcol;
 	private boolean alive = true;
 	
-	public Snake(int maxrow, int maxcol){
+	public Snake(){
 		coords.add(new Coord(2,2));
-		this.maxrow = maxrow;
-		this.maxcol = maxcol;
 	}	
 
 	public void kill(){

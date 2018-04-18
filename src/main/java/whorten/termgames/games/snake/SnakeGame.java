@@ -30,7 +30,14 @@ public class SnakeGame extends Game {
 	private Renderer renderer;
 	private int maxcol;
 	private int maxrow;
-
+	private Glyph gfGlyph = new Glyph.Builder("O")
+            .withForegroundColor(255, 0, 0)
+            .isBold(true)
+            .build();
+	private Glyph badGlyph = new Glyph.Builder("#")
+			.withForegroundColor(FgColor.WHITE)
+			.withBackgroundColor(BgColor.CYAN)
+			.build();
 
 	@Override
 	public void plugIn(GameConsole console) {
@@ -53,7 +60,7 @@ public class SnakeGame extends Game {
 		
 		maxrow = renderer.getCanvasHeight();
 		maxcol = renderer.getCanvasWidth() - 21;
-		snake = new Snake(maxrow, maxcol);
+		snake = new Snake();
 		
 		run();
 		console.getKeyboardEventDriver().unsubscribe(listener);
@@ -94,16 +101,8 @@ public class SnakeGame extends Game {
 		
 		Coord goodFruit = getRandomCoord();
 		Coord badFruit = getRandomCoord();
-		Glyph gfGlyph = new Glyph.Builder("O")
-				              .withForegroundColor(255, 0, 0)
-				              .isBold(true)
-				              .build();
-		Glyph badGlyph = new Glyph.Builder("#")
-	              .withForegroundColor(FgColor.WHITE)
-	              .withBackgroundColor(BgColor.CYAN)
-	              .build();
-		renderer.drawAt(goodFruit.getRow(), goodFruit.getCol(), gfGlyph );
-		renderer.drawAt(badFruit.getRow(), badFruit.getCol(), badGlyph );
+		drawGoodFruit(goodFruit);
+		drawBadFruit(badFruit);
 		
 		Set<Coord> badApples = new HashSet<>();
 		badApples.add(badFruit);
@@ -121,25 +120,31 @@ public class SnakeGame extends Game {
 							snake.eat();
 							playNom();
 							goodFruit = getRandomCoord();
-							while(snake.getOccupiedSet().contains(goodFruit)){
+							while(snake.getOccupiedSet().contains(goodFruit) ||
+									badApples.contains(goodFruit)){
 								goodFruit = getRandomCoord();
 							}
 							
 							badFruit = getRandomCoord();
-							while(snake.getOccupiedSet().contains(badFruit)){
+							while(snake.getOccupiedSet().contains(badFruit) || 
+									badFruit.equals(goodFruit)){
 								badFruit = getRandomCoord();
 							}
 							badApples.add(badFruit);
-							renderer.drawAt(goodFruit.getRow(), goodFruit.getCol(), gfGlyph );
-							renderer.drawAt(badFruit.getRow(), badFruit.getCol(), badGlyph );
+							drawGoodFruit(goodFruit);
+							drawBadFruit(badFruit);
 						}
 						
 						//if snake eats a bad apple, he dies
 						if(badApples.contains(snake.getHead())){
+							playBleh();
+							Thread.sleep(700);
 							snake.kill();
 						}
 						
-					} else {
+					} else { // not legal move i.e. hit a wall
+						playOof();
+						Thread.sleep(700);
 						snake.kill();
 					}
 			}
@@ -148,6 +153,16 @@ public class SnakeGame extends Game {
 			throw new RuntimeException();
 		}			
 
+	}
+
+
+
+	private void drawBadFruit(Coord badFruit) {
+		renderer.drawAt(badFruit.getRow(), badFruit.getCol(), badGlyph );
+	}
+
+	private void drawGoodFruit(Coord goodFruit) {
+		renderer.drawAt(goodFruit.getRow(), goodFruit.getCol(), gfGlyph );
 	}
 
 	public boolean isLegalMove(Direction direction, Snake snake){
@@ -171,7 +186,9 @@ public class SnakeGame extends Game {
                          new Random().nextInt(renderer.getCanvasHeight() - 2) + 2);
 	}
 
-	
+	// the "slither" effect gets played every tick, so it's
+	// worth the trouble of avoiding reloading it from disk
+	// every time
 	private byte[] cached = null;
 	private SoundPlayer sp = new SoundPlayer();
 	private void playSlither(){
@@ -196,6 +213,18 @@ public class SnakeGame extends Game {
 	private void playNom(){
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 		InputStream nom = classLoader.getResourceAsStream("sounds/nom.wav");
+		sp.play(nom);
+	}
+	
+	private void playBleh() {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		InputStream nom = classLoader.getResourceAsStream("sounds/bleh.wav");
+		sp.play(nom);
+	}
+	
+	private void playOof() {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		InputStream nom = classLoader.getResourceAsStream("sounds/oof.wav");
 		sp.play(nom);
 	}
 }

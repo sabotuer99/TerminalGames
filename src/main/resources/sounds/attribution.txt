@@ -1,0 +1,6 @@
+List of where I obtained the sound effects files
+
+bleh.wav    : https://freesound.org/people/Reitanna/sounds/241479/
+slither.wav : https://freesound.org/people/kwahmah_02/sounds/269311/
+nom.wav     : https://freesound.org/people/PaulMorek/sounds/172033/
+oof.wav     : https://freesound.org/people/fotoshop/sounds/47356/
