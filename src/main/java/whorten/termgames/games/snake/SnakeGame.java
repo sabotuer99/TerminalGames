@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequencer;
+
 import whorten.termgames.GameConsole;
 import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyEventType;
@@ -30,6 +33,7 @@ public class SnakeGame extends Game {
 	private Renderer renderer;
 	private int maxcol;
 	private int maxrow;
+	private SoundPlayer soundPlayer = getSoundPlayer();
 	private Glyph gfGlyph = new Glyph.Builder("O")
             .withForegroundColor(255, 0, 0)
             .isBold(true)
@@ -64,6 +68,7 @@ public class SnakeGame extends Game {
 		
 		run();
 		console.getKeyboardEventDriver().unsubscribe(listener);
+	    soundPlayer.close();
 	}
 
 	private void handleKeyEvent(KeyEvent ke) {
@@ -99,6 +104,7 @@ public class SnakeGame extends Game {
 
 	private void run() {
 		
+		playMusic();
 		Coord goodFruit = getRandomCoord();
 		Coord badFruit = getRandomCoord();
 		drawGoodFruit(goodFruit);
@@ -151,7 +157,8 @@ public class SnakeGame extends Game {
 		} catch (InterruptedException e) {
 			
 			throw new RuntimeException();
-		}			
+		}	
+		soundPlayer.stopMidi();
 
 	}
 
@@ -190,12 +197,11 @@ public class SnakeGame extends Game {
 	// worth the trouble of avoiding reloading it from disk
 	// every time
 	private byte[] cached = null;
-	private SoundPlayer sp = new SoundPlayer();
 	private void playSlither(){
 		try{
 			if(cached == null){
 				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-				InputStream slitherSound = classLoader.getResourceAsStream("sounds/slither.wav");
+				InputStream slitherSound = classLoader.getResourceAsStream("sounds/slither2.wav");
 				
 				ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
 				int nextByte = slitherSound.read(); 
@@ -206,25 +212,42 @@ public class SnakeGame extends Game {
 				cached = buffer.toByteArray();
 			}
 			
-			sp.play(new ByteArrayInputStream(cached));
+			soundPlayer.play(new ByteArrayInputStream(cached));
 		} catch (Exception ex){}
 	}
 	
+	private SoundPlayer getSoundPlayer() {
+		Sequencer sequencer = null;
+		try{
+			sequencer = MidiSystem.getSequencer();
+		} catch(Exception ex){
+			// gulp
+		}
+
+		return new SoundPlayer.Builder().withSequencer(sequencer).build();
+	}
+
 	private void playNom(){
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 		InputStream nom = classLoader.getResourceAsStream("sounds/nom.wav");
-		sp.play(nom);
+		soundPlayer.play(nom);
 	}
 	
 	private void playBleh() {
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream nom = classLoader.getResourceAsStream("sounds/bleh.wav");
-		sp.play(nom);
+		InputStream bleh = classLoader.getResourceAsStream("sounds/bleh.wav");
+		soundPlayer.play(bleh);
 	}
 	
 	private void playOof() {
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream nom = classLoader.getResourceAsStream("sounds/oof.wav");
-		sp.play(nom);
+		InputStream oof = classLoader.getResourceAsStream("sounds/oof.wav");
+		soundPlayer.play(oof);
+	}
+	
+	private void playMusic(){
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		InputStream midiFile = classLoader.getResourceAsStream("midi/Undertale_-_Sans.mid");
+		soundPlayer.playMidi(midiFile, true);
 	}
 }
