@@ -46,12 +46,44 @@ public class SnakeGame extends Game {
 	private Glyph headDownGlyph = headSegment("v"); //"▼")
 	private Glyph headRightGlyph = headSegment(">"); //"▶")
 	private Glyph headLeftGlyph = headSegment("<"); //"◀")
+	EventListener<KeyDownEvent> keyListener;
+	EventListener<HeadMoveEvent> headListener;
+	EventListener<TailMoveEvent> tailListener;
+	EventListener<EatFruitEvent> fruitListener;
 	
 	@Override
 	public void plugIn(GameConsole console) {
 		eventBus = console.getEventBus();
 		renderer = console.getRenderer();
 		renderer.turnOffCursor();
+		maxrow = renderer.getCanvasHeight();
+		maxcol = renderer.getCanvasWidth() - 21;		
+		renderBoard();				
+		snake = new Snake(eventBus);
+		initializeListeners();
+		run();
+		removeListeners();
+	}
+
+	private void removeListeners() {
+		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
+		eventBus.unsubscribe(HeadMoveEvent.class, headListener);
+		eventBus.unsubscribe(TailMoveEvent.class, tailListener);
+		eventBus.unsubscribe(EatFruitEvent.class, fruitListener);
+	}
+
+	private void initializeListeners() {
+		keyListener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
+		headListener = (HeadMoveEvent h) -> {handleHeadMoveEvent(h);};
+		tailListener = (TailMoveEvent t) -> {handleTailMoveEvent(t);};
+		fruitListener = (EatFruitEvent h) -> {handleEatFruitEvent(h);};	
+		eventBus.subscribe(KeyDownEvent.class, keyListener);
+		eventBus.subscribe(HeadMoveEvent.class, headListener);
+		eventBus.subscribe(TailMoveEvent.class, tailListener);
+		eventBus.subscribe(EatFruitEvent.class, fruitListener);
+	}
+
+	private void renderBoard() {
 		gb = defaultGameBorder(renderer);
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
@@ -60,29 +92,31 @@ public class SnakeGame extends Game {
 									.withFgColor(FgColor.BLACK)
 									.build();
 		renderer.drawAt(4, 67, title);
-		
-		maxrow = renderer.getCanvasHeight();
-		maxcol = renderer.getCanvasWidth() - 21;
-		snake = new Snake(eventBus);
+		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
+		updateScore(1);
+		//                                               ###################
+		GlyphString instr1 = menuBuilder.withBaseString("Use the arrow keys ").build();
+		GlyphString instr2 = menuBuilder.withBaseString("to change direction").build();
+		GlyphString instr3 = menuBuilder.withBaseString("   Eat red apples  ").build();
+		GlyphString instr4 = menuBuilder.withBaseString("to grow longer!    ").build();
+		GlyphString instr5 = menuBuilder.withBaseString("   But avoid the   ").build();
+		GlyphString instr6 = menuBuilder.withBaseString("cans of poison!    ").build();
+		renderer.drawAt(8, 61, instr1);
+		renderer.drawAt(9, 61, instr2);
+		renderer.drawAt(11, 61, instr3);
+		renderer.drawAt(11, 61, gfGlyph);
+		renderer.drawAt(12, 61, instr4);
+		renderer.drawAt(14, 61, instr5);
+		renderer.drawAt(14, 61, badGlyph);
+		renderer.drawAt(15, 61, instr6);
+	}
 
-		EventListener<KeyDownEvent> keyListener = 
-				(KeyDownEvent k) -> {handleKeyDownEvent(k);};
-		EventListener<HeadMoveEvent> headListener = 
-				(HeadMoveEvent h) -> {handleHeadMoveEvent(h);};
-		EventListener<TailMoveEvent> tailListener = 
-				(TailMoveEvent t) -> {handleTailMoveEvent(t);};
-		EventListener<EatFruitEvent> fruitListener = 
-				(EatFruitEvent h) -> {handleEatFruitEvent(h);};
-		
-		eventBus.subscribe(KeyDownEvent.class, keyListener);
-		eventBus.subscribe(HeadMoveEvent.class, headListener);
-		eventBus.subscribe(TailMoveEvent.class, tailListener);
-		eventBus.subscribe(EatFruitEvent.class, fruitListener);
-		run();
-		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
-		eventBus.unsubscribe(HeadMoveEvent.class, headListener);
-		eventBus.unsubscribe(TailMoveEvent.class, tailListener);
-		eventBus.unsubscribe(EatFruitEvent.class, fruitListener);
+	private void updateScore(int score) {
+		String scoreStr = Integer.toString(score);
+		GlyphString scoreGlyph = new GlyphString.Builder(scoreStr)
+				.withFgColor(FgColor.LIGHT_YELLOW)
+				.build();
+		renderer.drawAt(6, 70, scoreGlyph);
 	}
 
 	private void handleEatFruitEvent(EatFruitEvent h) {
@@ -93,9 +127,7 @@ public class SnakeGame extends Game {
 			playSound(NOM_SOUND);
 			spawnFruit(true);
 			spawnFruit(false);
-			String scoreStr = Integer.toString(h.getNewSize());
-			GlyphString score = new GlyphString.Builder(scoreStr).build();
-			renderer.drawAt(6, 70, score);
+			updateScore(h.getNewSize());
 		} else {
 			//if snake eats a bad apple, he dies
 			playSound(BLEH_SOUND);
@@ -113,7 +145,7 @@ public class SnakeGame extends Game {
 		renderer.clear(from.getRow(), from.getCol());
 	}
 
-	private void handleHeadMoveEvent(HeadMoveEvent h) {		
+	private void handleHeadMoveEvent(HeadMoveEvent h) {
 		Direction dir = h.getDirection();
 		Coord from = h.getFrom();
 		Coord to = h.getTo();

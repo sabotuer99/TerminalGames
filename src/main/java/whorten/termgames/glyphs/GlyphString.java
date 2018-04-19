@@ -48,8 +48,7 @@ public class GlyphString {
 				String baseChar = Character.toString(rowChars[i]);
 				Glyph glyph = baseGlyphBuilder.withBase(baseChar).build();
 				gs.glyphs.add(glyph);
-			}
-			
+			}		
 			
 			StringBuilder sb = new StringBuilder();
 			for(Glyph g : gs.glyphs){
