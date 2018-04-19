@@ -1,26 +1,31 @@
 package whorten.termgames.games.snake;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Random;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import whorten.termgames.GameConsole;
+import whorten.termgames.events.EventBus;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
+import whorten.termgames.games.snake.events.EatFruitEvent;
+import whorten.termgames.games.snake.events.HeadMoveEvent;
+import whorten.termgames.games.snake.events.TailMoveEvent;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
+import whorten.termgames.sounds.events.MidiStartEvent;
+import whorten.termgames.sounds.events.MidiStopEvent;
+import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
 
 public class SnakeGame extends Game {
 
+	private static final String SLITHER_SOUND = "sounds/slither2.wav";
 	private static final String NOM_SOUND = "sounds/nom.wav";
 	private static final String BLEH_SOUND = "sounds/bleh.wav";
 	private static final String OOF_SOUND = "sounds/oof.wav";
@@ -33,16 +38,21 @@ public class SnakeGame extends Game {
 	private int maxrow;
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
 	private Glyph badGlyph = defaultBadFruitGlyph();
-	private GameBorder gb = defaultGameBorder();
-	private Fruit goodFruit;
-	private Set<Fruit> badFruits;
-
+	private GameBorder gb;
+	private Map<Coord, Fruit> fruits = new HashMap<>();
+	private EventBus eventBus;
+	private Glyph bodyGlyph =  defaultBodyGlyph();
+	private Glyph headUpGlyph = headSegment("^"); //"▲")
+	private Glyph headDownGlyph = headSegment("v"); //"▼")
+	private Glyph headRightGlyph = headSegment(">"); //"▶")
+	private Glyph headLeftGlyph = headSegment("<"); //"◀")
+	
 	@Override
 	public void plugIn(GameConsole console) {
-
-		EventListener<KeyDownEvent> listener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
-		console.getEventBus().subscribe(KeyDownEvent.class, listener);
-		this.renderer = console.getRenderer();
+		eventBus = console.getEventBus();
+		renderer = console.getRenderer();
+		renderer.turnOffCursor();
+		gb = defaultGameBorder(renderer);
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
 		GlyphString title = new GlyphString.Builder("SNAKE!")
@@ -53,14 +63,80 @@ public class SnakeGame extends Game {
 		
 		maxrow = renderer.getCanvasHeight();
 		maxcol = renderer.getCanvasWidth() - 21;
-		snake = new Snake(console.getEventBus());
+		snake = new Snake(eventBus);
+
+		EventListener<KeyDownEvent> keyListener = 
+				(KeyDownEvent k) -> {handleKeyDownEvent(k);};
+		EventListener<HeadMoveEvent> headListener = 
+				(HeadMoveEvent h) -> {handleHeadMoveEvent(h);};
+		EventListener<TailMoveEvent> tailListener = 
+				(TailMoveEvent t) -> {handleTailMoveEvent(t);};
+		EventListener<EatFruitEvent> fruitListener = 
+				(EatFruitEvent h) -> {handleEatFruitEvent(h);};
 		
+		eventBus.subscribe(KeyDownEvent.class, keyListener);
+		eventBus.subscribe(HeadMoveEvent.class, headListener);
+		eventBus.subscribe(TailMoveEvent.class, tailListener);
+		eventBus.subscribe(EatFruitEvent.class, fruitListener);
 		run();
-		console.getEventBus().unsubscribe(KeyDownEvent.class, listener);
-	    soundPlayer.close();
+		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
+		eventBus.unsubscribe(HeadMoveEvent.class, headListener);
+		eventBus.unsubscribe(TailMoveEvent.class, tailListener);
+		eventBus.unsubscribe(EatFruitEvent.class, fruitListener);
 	}
 
+	private void handleEatFruitEvent(EatFruitEvent h) {
+		Fruit fruit = h.getFruit();
+		//check if snake ate an apple
+		if(fruit.isGood()){
+			fruits.remove(h.getFruit().getCoord());		
+			playSound(NOM_SOUND);
+			spawnFruit(true);
+			spawnFruit(false);
+			String scoreStr = Integer.toString(h.getNewSize());
+			GlyphString score = new GlyphString.Builder(scoreStr).build();
+			renderer.drawAt(6, 70, score);
+		} else {
+			//if snake eats a bad apple, he dies
+			playSound(BLEH_SOUND);
+			try{ 
+				Thread.sleep(700);
+			} catch (Exception ex) {
+				//gulp
+			}
+			snake.kill();
+		}		
+	}
 
+	private void handleTailMoveEvent(TailMoveEvent t) {
+		Coord from = t.getFrom();
+		renderer.clear(from.getRow(), from.getCol());
+	}
+
+	private void handleHeadMoveEvent(HeadMoveEvent h) {		
+		Direction dir = h.getDirection();
+		Coord from = h.getFrom();
+		Coord to = h.getTo();
+		
+		Glyph head = null;
+		switch(dir){
+		case DOWN:
+			head = headDownGlyph;
+			break;
+		case UP:
+			head = headUpGlyph;
+			break;
+		case LEFT:
+			head = headLeftGlyph;
+			break;
+		case RIGHT:
+			head = headRightGlyph;
+			break;
+		}
+		
+		renderer.drawAt(to.getRow(), to.getCol(), head);
+		renderer.drawAt(from.getRow(), from.getCol(), bodyGlyph);		
+	}
 
 	private void handleKeyDownEvent(KeyDownEvent ke) {
 		
@@ -93,79 +169,46 @@ public class SnakeGame extends Game {
 	private void run() {
 		
 		playMusic();
-		spawnGoodFruit();
-		spawnBadFruit();
+		spawnFruit(true);
+		spawnFruit(false);
 		
 		try {
 			while (running && snake.isAlive()) {
 				
 				Thread.sleep(70);
 				if(isLegalMove(direction, snake)){	
-					playSlither();
+					playSound(SLITHER_SOUND);
 					snake.move(direction);
 
 					//check if snake ate an apple
-					if(snake.getHead().equals(goodFruit)){
-						snake.eat();
-						playNom();
-						spawnGoodFruit();
-						spawnBadFruit();							
-					}
-					
-					//if snake eats a bad apple, he dies
-					if(isBadFruitLocation(snake.getHead())){
-						playBleh();
-						Thread.sleep(700);
-						snake.kill();
+					Fruit fruit = fruits.get(snake.getHead());
+					if(fruit != null){
+						snake.eat(fruit);
 					}
 					
 				} else { // not legal move i.e. hit a wall
-					playOof();
+					playSound(OOF_SOUND);
 					Thread.sleep(700);
 					snake.kill();
 				}
 			}
-		} catch (InterruptedException e) {
-			
+		} catch (InterruptedException e) {			
 			throw new RuntimeException();
 		}	
-		soundPlayer.stopMidi();
-
+		stopMusic();
 	}
 
-	private boolean isBadFruitLocation(Coord head) {
-		for(Fruit fruit : badFruits){
-			if(head.equals(fruit.getCoord())){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void spawnBadFruit() {
-		if(goodFruit == null){
-			spawnGoodFruit();
-		}
+	private void spawnFruit(boolean isGood){
+		Glyph glyph = isGood ? gfGlyph : badGlyph;
 		Coord nextCoord = getRandomCoord();
-		Coord goodFriutLoc = goodFruit.getCoord();
-		while(snake.getOccupiedSet().contains(nextCoord) || nextCoord.equals(goodFriutLoc)){
+		while(snake.getOccupiedSet().contains(nextCoord) ||
+				fruits.keySet().contains(nextCoord)){
 			nextCoord = getRandomCoord();
 		}
-		Fruit badFruit = new Fruit(nextCoord, badGlyph);
-		badFruits.add(badFruit);
-		drawFruit(badFruit);
+		Fruit fruit = new Fruit(nextCoord, glyph, isGood);
+		fruits.put(nextCoord, fruit);
+		drawFruit(fruit);
 	}
-
-	private void spawnGoodFruit() {
-		Coord nextCoord = getRandomCoord();
-		while(snake.getOccupiedSet().contains(nextCoord) || isBadFruitLocation(nextCoord)){
-			nextCoord = getRandomCoord();
-		}
-		goodFruit = new Fruit(nextCoord, gfGlyph);
-		drawFruit(goodFruit);
-	}
-
-
 
 	private void drawFruit(Fruit fruit) {
 		Coord loc = fruit.getCoord();
@@ -173,7 +216,7 @@ public class SnakeGame extends Game {
 		renderer.drawAt(loc.getRow(), loc.getCol(), glyph );
 	}
 
-	public boolean isLegalMove(Direction direction, Snake snake){
+	private boolean isLegalMove(Direction direction, Snake snake){
 		Coord head = snake.getHead();
 		Coord next = new Coord(head.getCol() + direction.getDx(),
 	                           head.getRow() + direction.getDy());
@@ -188,47 +231,20 @@ public class SnakeGame extends Game {
 		return oob && !selfcollision;
 	}
 	
-	
 	private Coord getRandomCoord() {
-		return new Coord(new Random().nextInt(renderer.getCanvasWidth() - 23) + 2,
-                         new Random().nextInt(renderer.getCanvasHeight() - 2) + 2);
+		return Coord.getRandomCoord(2, 2, maxcol, maxrow);
 	}
 
-	// the "slither" effect gets played every tick, so it's
-	// worth the trouble of avoiding reloading it from disk
-	// every time
-	private byte[] cached = null;
-	private void playSlither(){
-		try{
-			if(cached == null){
-				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-				InputStream slitherSound = classLoader.getResourceAsStream("sounds/slither2.wav");
-				
-				ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
-				int nextByte = slitherSound.read(); 
-				while(nextByte != -1){ 
-					buffer.write(nextByte); 
-					nextByte = slitherSound.read(); 
-				} 
-				cached = buffer.toByteArray();
-			}
-			
-			soundPlayer.play(new ByteArrayInputStream(cached));
-		} catch (Exception ex){}
-	}
-	
-
-
-	private void playNom(){
-	}
-	
-	private void playBleh() {	
-	}
-	
-	private void playOof() {
+	private void playSound(String sound){
+		eventBus.fire(new PlaySoundEvent(sound));
 	}
 	
 	private void playMusic(){
+		eventBus.fire(new MidiStartEvent(MUSIC_MIDI));
+	}
+	
+	private void stopMusic() {
+		eventBus.fire(new MidiStopEvent());
 	}
 	
 	private Glyph defaultBadFruitGlyph() {
@@ -245,11 +261,24 @@ public class SnakeGame extends Game {
 		        .build();
 	}
 	
-	private GameBorder defaultGameBorder() {
+	private GameBorder defaultGameBorder(Renderer renderer) {
 		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
 							.withFgColor(FgColor.LIGHT_GREEN)
 							.withBgColor(0, 0, 255)
 							.withDefaultLayout()
 							.build();
+	}
+
+	private Glyph headSegment(String base) {
+		return new Glyph.Builder(base)
+				.withForegroundColor(FgColor.GREEN)
+				.build();
+	}
+	
+	private Glyph defaultBodyGlyph() {
+		return new Glyph.Builder("X")
+		        .withForegroundColor(FgColor.LIGHT_YELLOW)
+		        .withBackgroundColor(BgColor.GREEN)
+		        .build();
 	}
 }

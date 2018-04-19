@@ -1,4 +1,4 @@
 stty -echo raw
-java -cp . whorten.termgames.GameConsole || true
+java -XX:+UseG1GC -Xms600m -cp . whorten.termgames.GameConsole || true
 stty echo cooked
 clear

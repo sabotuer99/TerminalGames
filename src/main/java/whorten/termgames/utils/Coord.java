@@ -1,5 +1,7 @@
 package whorten.termgames.utils;
 
+import java.util.Random;
+
 public class Coord {
 	
 	public Coord(int col, int row){
@@ -18,6 +20,10 @@ public class Coord {
 		return row;
 	}
 	
+	public static Coord getRandomCoord(int minx, int miny, int maxx, int maxy) {
+		return new Coord(new Random().nextInt(maxx - minx) + minx,
+                         new Random().nextInt(maxy - miny) + miny);
+	}
 	
 	@Override
 	public int hashCode() {

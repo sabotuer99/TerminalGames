@@ -39,9 +39,7 @@ public class SoundPlayer {
 			// gulp
 		}
 	}
-	
-	
-	
+		
 	public void play(InputStream soundFile){
 		if(soundFile == null){
 			return;

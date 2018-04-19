@@ -40,4 +40,16 @@ public class TerminalNavigator {
 		out.print(command);
 		out.flush();
 	}
+	
+	public void cursorHide(){
+		String command = String.format("%s?25l", CSI);
+		out.print(command);
+		out.flush();
+	}
+
+	public void cursorShow() {
+		String command = String.format("%s?25h", CSI);
+		out.print(command);
+		out.flush();
+	}
 }

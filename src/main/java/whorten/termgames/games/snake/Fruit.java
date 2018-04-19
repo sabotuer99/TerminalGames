@@ -7,10 +7,12 @@ public class Fruit {
 
 	private Coord coord;
 	private Glyph glyph;
+	private boolean isGood;
 
-	public Fruit(Coord coord, Glyph glyph){
+	public Fruit(Coord coord, Glyph glyph, boolean isGood){
 		this.coord = coord;
 		this.glyph = glyph;
+		this.isGood = isGood;
 	}
 	
 	public Coord getCoord(){
@@ -19,5 +21,9 @@ public class Fruit {
 	
 	public Glyph getGlyph(){
 		return glyph;
+	}
+	
+	public boolean isGood(){
+		return isGood;
 	}
 }

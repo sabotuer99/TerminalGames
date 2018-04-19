@@ -101,6 +101,16 @@ public class OutputStreamRenderer implements Renderer {
 		screenBuffer.clearAt(row, col);
 	}
 
+	@Override
+	public void turnOffCursor() {
+		nav.cursorHide();
+	}
+
+	@Override
+	public void turnOnCursor() {
+		nav.cursorShow();
+	}
+
 
 
 }

@@ -1,7 +1,11 @@
 package whorten.termgames;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,8 +25,9 @@ import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.render.OutputStreamRenderer;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.SoundPlayer;
+import whorten.termgames.sounds.events.MidiStartEvent;
+import whorten.termgames.sounds.events.MidiStopEvent;
 import whorten.termgames.sounds.events.PlaySoundEvent;
-import whorten.termgames.utils.TerminalNavigator;
 
 /**
  * Hello world!
@@ -36,6 +41,7 @@ public class GameConsole {
 	private final EventBus eventBus = new EventBus();
 	private final SoundPlayer soundPlayer = getSoundPlayer();
 	private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+	private Map<String, byte[]> cachedBytes = new HashMap<>();
 	
 	public static void main(String[] args) throws IOException {
 		
@@ -49,6 +55,7 @@ public class GameConsole {
 		for(int i = 0; i < 5; i++){
 			instance.renderer.clearScreen();
 			new SnakeGame().plugIn(instance);
+			instance.soundPlayer.close();
 		}
 		
 		Glyph bodyGlyph =  new Glyph.Builder("◆")
@@ -74,12 +81,50 @@ public class GameConsole {
 		
 		instance.eventBus.subscribe(PlaySoundEvent.class, 
 				(PlaySoundEvent pse) -> {instance.handlePlaySoundEvent(pse);});
+		
+		instance.eventBus.subscribe(MidiStartEvent.class, 
+				(MidiStartEvent mse) -> {instance.handleMidiStartEvent(mse);});
+		
+		instance.eventBus.subscribe(MidiStopEvent.class, 
+				(MidiStopEvent mse) -> {instance.handleMidiStopEvent(mse);});
 	}
 	
-	private void handlePlaySoundEvent(PlaySoundEvent pse) {
-		String path = pse.getPath();
-		InputStream soundFile = classLoader.getResourceAsStream(path);
-		instance.soundPlayer.play(soundFile);
+	private void handleMidiStopEvent(MidiStopEvent mse) {
+		instance.soundPlayer.stopMidi();
+	}
+
+	private void handleMidiStartEvent(MidiStartEvent mse) {
+		String path = mse.getPath();
+		byte[] cached = getFileBytes(path);					
+		instance.soundPlayer.playMidi(new ByteArrayInputStream(cached), true);
+	}
+
+	private void handlePlaySoundEvent(PlaySoundEvent pse) {		
+			String path = pse.getPath();
+			byte[] cached = getFileBytes(path);					
+			instance.soundPlayer.play(new ByteArrayInputStream(cached));
+	}
+
+	private byte[] getFileBytes(String path){
+		try{
+			byte[] cached = cachedBytes.get(path);
+			if(cached == null){
+				InputStream sound = classLoader.getResourceAsStream(path);
+				
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
+				int nextByte = sound.read(); 
+				while(nextByte != -1){ 
+					buffer.write(nextByte); 
+					nextByte = sound.read(); 
+				} 
+				cached = buffer.toByteArray();
+				cachedBytes.put(path, cached);
+			}
+			return cached;
+		} catch(Exception ex){
+			//gulp
+		}
+		return null;
 	}
 
 	public EventBus getEventBus(){

@@ -17,4 +17,6 @@ public interface Renderer {
 	int getCanvasHeight();
 	void drawGlyphCollection(Collection<GlyphCoord> glyphCoords);
 	void clearScreen();
+	void turnOffCursor();
+	void turnOnCursor();
 }
