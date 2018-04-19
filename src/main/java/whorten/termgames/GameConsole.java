@@ -5,7 +5,14 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequencer;
+
+import whorten.termgames.events.EventBus;
+import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.events.keyboard.KeyEvent;
+import whorten.termgames.events.keyboard.KeyEventType;
+import whorten.termgames.events.keyboard.KeyUpEvent;
 import whorten.termgames.events.keyboard.KeyboardEventDriver;
 import whorten.termgames.games.snake.SnakeGame;
 import whorten.termgames.glyphs.BgColor;
@@ -13,6 +20,8 @@ import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.render.OutputStreamRenderer;
 import whorten.termgames.render.Renderer;
+import whorten.termgames.sounds.SoundPlayer;
+import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.utils.TerminalNavigator;
 
 /**
@@ -24,13 +33,14 @@ public class GameConsole {
 	private KeyboardEventDriver ked;
 	private static ExecutorService pool = Executors.newCachedThreadPool();
 	private Renderer renderer = new OutputStreamRenderer(System.out, 80, 24);
+	private final EventBus eventBus = new EventBus();
+	private final SoundPlayer soundPlayer = getSoundPlayer();
+	private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 	
 	public static void main(String[] args) throws IOException {
 		
-		instance.ked = new KeyboardEventDriver.Builder()
-				.withInputStream(System.in)
-				.withListener((KeyEvent ke) -> handleKeyEvent(ke))
-				.build();
+		initEventSystem();
+		
 		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
 			catch (IOException e) {}
@@ -55,18 +65,53 @@ public class GameConsole {
 		instance.ked.die();
 		pool.shutdown();
 	}
+
+	private static void initEventSystem() {
+		instance.ked = new KeyboardEventDriver.Builder()
+				.withInputStream(System.in)
+				.withListener((KeyEvent ke) -> instance.handleKeyEvent(ke))
+				.build();
+		
+		instance.eventBus.subscribe(PlaySoundEvent.class, 
+				(PlaySoundEvent pse) -> {instance.handlePlaySoundEvent(pse);});
+	}
 	
-	public KeyboardEventDriver getKeyboardEventDriver(){
-		return ked;
+	private void handlePlaySoundEvent(PlaySoundEvent pse) {
+		String path = pse.getPath();
+		InputStream soundFile = classLoader.getResourceAsStream(path);
+		instance.soundPlayer.play(soundFile);
+	}
+
+	public EventBus getEventBus(){
+		return this.eventBus;
 	}
 	
 	public void runInThreadPool(Runnable runnable){
 		pool.execute(runnable);
 	}
 	
-	private static void handleKeyEvent(KeyEvent ke) {}
+	
+	private void handleKeyEvent(KeyEvent ke) {
+		if(ke.getKeyEventType() == KeyEventType.UP){
+			eventBus.fire((KeyUpEvent) ke);
+		}
+		if(ke.getKeyEventType() == KeyEventType.DOWN){
+			eventBus.fire((KeyDownEvent) ke);
+		}
+	}
 
 	public Renderer getRenderer() {
 		return renderer;
+	}
+	
+	private SoundPlayer getSoundPlayer() {
+		Sequencer sequencer = null;
+		try{
+			sequencer = MidiSystem.getSequencer();
+		} catch(Exception ex){
+			// gulp
+		}
+
+		return new SoundPlayer.Builder().withSequencer(sequencer).build();
 	}
 }

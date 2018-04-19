@@ -31,17 +31,28 @@ public class OutputStreamRenderer implements Renderer {
 		nav.positionCursor(row, col);
 		out.print(payload);
 		nav.cursorBack();
-		screenBuffer.bufferAt(row, col, payload);
+		
 	}
 	
 	@Override
 	public void drawAt(int row, int col, GlyphString payload) {
 		nav.positionCursor(row, col);
-		out.print(payload);
+		out.print(payload);		
+	}
+	
+	@Override
+	public void bufferedDrawAt(int row, int col, Glyph payload) {
+		screenBuffer.bufferAt(row, col, payload);
+		drawAt(row, col, payload);
+	}
+
+	@Override
+	public void bufferedDrawAt(int row, int col, GlyphString payload) {
 		List<Glyph> glyphs = payload.getGlyphs();
 		for(int i = 0; i < glyphs.size() && i + col <= width; i++){
 			screenBuffer.bufferAt(row, col + i, glyphs.get(i));
 		}
+		drawAt(row, col, payload);
 	}
 
 	@Override
@@ -80,9 +91,16 @@ public class OutputStreamRenderer implements Renderer {
 
 	@Override
 	public void clear(int row, int col) {
-		screenBuffer.clearAt(row, col);
+		clearBuffer(row, col);
 		nav.positionCursor(row, col);
 		out.print(" ");
 	}
+
+	@Override
+	public void clearBuffer(int row, int col) {
+		screenBuffer.clearAt(row, col);
+	}
+
+
 
 }

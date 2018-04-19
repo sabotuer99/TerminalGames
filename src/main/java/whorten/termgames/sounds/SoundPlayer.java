@@ -1,4 +1,4 @@
-package whorten.termgames.utils;
+package whorten.termgames.sounds;
 
 import java.io.IOException;
 import java.io.InputStream;

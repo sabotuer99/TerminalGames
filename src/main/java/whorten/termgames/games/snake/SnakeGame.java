@@ -3,17 +3,12 @@ package whorten.termgames.games.snake;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequencer;
-
 import whorten.termgames.GameConsole;
-import whorten.termgames.events.keyboard.KeyEvent;
-import whorten.termgames.events.keyboard.KeyEventType;
-import whorten.termgames.events.keyboard.KeyboardEventListener;
+import whorten.termgames.events.EventListener;
+import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
@@ -23,37 +18,31 @@ import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
-import whorten.termgames.utils.SoundPlayer;
 
 public class SnakeGame extends Game {
 
+	private static final String NOM_SOUND = "sounds/nom.wav";
+	private static final String BLEH_SOUND = "sounds/bleh.wav";
+	private static final String OOF_SOUND = "sounds/oof.wav";
+	private static final String MUSIC_MIDI = "midi/Undertale_-_Sans.mid";
 	private volatile boolean running = true;
 	private Direction direction = Direction.DOWN;
 	private Snake snake;
 	private Renderer renderer;
 	private int maxcol;
 	private int maxrow;
-	private SoundPlayer soundPlayer = getSoundPlayer();
-	private Glyph gfGlyph = new Glyph.Builder("O")
-            .withForegroundColor(255, 0, 0)
-            .isBold(true)
-            .build();
-	private Glyph badGlyph = new Glyph.Builder("#")
-			.withForegroundColor(FgColor.WHITE)
-			.withBackgroundColor(BgColor.CYAN)
-			.build();
+	private Glyph gfGlyph = defaultGoodFruitGlyph();
+	private Glyph badGlyph = defaultBadFruitGlyph();
+	private GameBorder gb = defaultGameBorder();
+	private Fruit goodFruit;
+	private Set<Fruit> badFruits;
 
 	@Override
 	public void plugIn(GameConsole console) {
 
-		KeyboardEventListener listener = (KeyEvent k) -> {handleKeyEvent(k);};
-		console.getKeyboardEventDriver().subscribe(listener);
+		EventListener<KeyDownEvent> listener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
+		console.getEventBus().subscribe(KeyDownEvent.class, listener);
 		this.renderer = console.getRenderer();
-		GameBorder gb = new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
-							.withFgColor(FgColor.LIGHT_GREEN)
-							.withBgColor(0, 0, 255)
-							.withDefaultLayout()
-							.build();
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
 		GlyphString title = new GlyphString.Builder("SNAKE!")
@@ -64,17 +53,16 @@ public class SnakeGame extends Game {
 		
 		maxrow = renderer.getCanvasHeight();
 		maxcol = renderer.getCanvasWidth() - 21;
-		snake = new Snake();
+		snake = new Snake(console.getEventBus());
 		
 		run();
-		console.getKeyboardEventDriver().unsubscribe(listener);
+		console.getEventBus().unsubscribe(KeyDownEvent.class, listener);
 	    soundPlayer.close();
 	}
 
-	private void handleKeyEvent(KeyEvent ke) {
-		if(ke.getKeyEventType() == KeyEventType.UP) return;
-		
-		//System.out.println("Key down event!");
+
+
+	private void handleKeyDownEvent(KeyDownEvent ke) {
 		
 		switch (ke.getKey()) {
 		case "Q":
@@ -105,54 +93,37 @@ public class SnakeGame extends Game {
 	private void run() {
 		
 		playMusic();
-		Coord goodFruit = getRandomCoord();
-		Coord badFruit = getRandomCoord();
-		drawGoodFruit(goodFruit);
-		drawBadFruit(badFruit);
-		
-		Set<Coord> badApples = new HashSet<>();
-		badApples.add(badFruit);
+		spawnGoodFruit();
+		spawnBadFruit();
 		
 		try {
 			while (running && snake.isAlive()) {
 				
-					Thread.sleep(70);
-					if(isLegalMove(direction, snake)){	
-						playSlither();
-						snake.move(direction);
+				Thread.sleep(70);
+				if(isLegalMove(direction, snake)){	
+					playSlither();
+					snake.move(direction);
 
-						//check if snake ate an apple
-						if(snake.getHead().equals(goodFruit)){
-							snake.eat();
-							playNom();
-							goodFruit = getRandomCoord();
-							while(snake.getOccupiedSet().contains(goodFruit) ||
-									badApples.contains(goodFruit)){
-								goodFruit = getRandomCoord();
-							}
-							
-							badFruit = getRandomCoord();
-							while(snake.getOccupiedSet().contains(badFruit) || 
-									badFruit.equals(goodFruit)){
-								badFruit = getRandomCoord();
-							}
-							badApples.add(badFruit);
-							drawGoodFruit(goodFruit);
-							drawBadFruit(badFruit);
-						}
-						
-						//if snake eats a bad apple, he dies
-						if(badApples.contains(snake.getHead())){
-							playBleh();
-							Thread.sleep(700);
-							snake.kill();
-						}
-						
-					} else { // not legal move i.e. hit a wall
-						playOof();
+					//check if snake ate an apple
+					if(snake.getHead().equals(goodFruit)){
+						snake.eat();
+						playNom();
+						spawnGoodFruit();
+						spawnBadFruit();							
+					}
+					
+					//if snake eats a bad apple, he dies
+					if(isBadFruitLocation(snake.getHead())){
+						playBleh();
 						Thread.sleep(700);
 						snake.kill();
 					}
+					
+				} else { // not legal move i.e. hit a wall
+					playOof();
+					Thread.sleep(700);
+					snake.kill();
+				}
 			}
 		} catch (InterruptedException e) {
 			
@@ -162,14 +133,44 @@ public class SnakeGame extends Game {
 
 	}
 
-
-
-	private void drawBadFruit(Coord badFruit) {
-		renderer.drawAt(badFruit.getRow(), badFruit.getCol(), badGlyph );
+	private boolean isBadFruitLocation(Coord head) {
+		for(Fruit fruit : badFruits){
+			if(head.equals(fruit.getCoord())){
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private void drawGoodFruit(Coord goodFruit) {
-		renderer.drawAt(goodFruit.getRow(), goodFruit.getCol(), gfGlyph );
+	private void spawnBadFruit() {
+		if(goodFruit == null){
+			spawnGoodFruit();
+		}
+		Coord nextCoord = getRandomCoord();
+		Coord goodFriutLoc = goodFruit.getCoord();
+		while(snake.getOccupiedSet().contains(nextCoord) || nextCoord.equals(goodFriutLoc)){
+			nextCoord = getRandomCoord();
+		}
+		Fruit badFruit = new Fruit(nextCoord, badGlyph);
+		badFruits.add(badFruit);
+		drawFruit(badFruit);
+	}
+
+	private void spawnGoodFruit() {
+		Coord nextCoord = getRandomCoord();
+		while(snake.getOccupiedSet().contains(nextCoord) || isBadFruitLocation(nextCoord)){
+			nextCoord = getRandomCoord();
+		}
+		goodFruit = new Fruit(nextCoord, gfGlyph);
+		drawFruit(goodFruit);
+	}
+
+
+
+	private void drawFruit(Fruit fruit) {
+		Coord loc = fruit.getCoord();
+		Glyph glyph = fruit.getGlyph();
+		renderer.drawAt(loc.getRow(), loc.getCol(), glyph );
 	}
 
 	public boolean isLegalMove(Direction direction, Snake snake){
@@ -216,38 +217,39 @@ public class SnakeGame extends Game {
 		} catch (Exception ex){}
 	}
 	
-	private SoundPlayer getSoundPlayer() {
-		Sequencer sequencer = null;
-		try{
-			sequencer = MidiSystem.getSequencer();
-		} catch(Exception ex){
-			// gulp
-		}
 
-		return new SoundPlayer.Builder().withSequencer(sequencer).build();
-	}
 
 	private void playNom(){
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream nom = classLoader.getResourceAsStream("sounds/nom.wav");
-		soundPlayer.play(nom);
 	}
 	
-	private void playBleh() {
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream bleh = classLoader.getResourceAsStream("sounds/bleh.wav");
-		soundPlayer.play(bleh);
+	private void playBleh() {	
 	}
 	
 	private void playOof() {
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream oof = classLoader.getResourceAsStream("sounds/oof.wav");
-		soundPlayer.play(oof);
 	}
 	
 	private void playMusic(){
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		InputStream midiFile = classLoader.getResourceAsStream("midi/Undertale_-_Sans.mid");
-		soundPlayer.playMidi(midiFile, true);
+	}
+	
+	private Glyph defaultBadFruitGlyph() {
+		return new Glyph.Builder("#")
+				.withForegroundColor(FgColor.WHITE)
+				.withBackgroundColor(BgColor.CYAN)
+				.build();
+	}
+
+	private Glyph defaultGoodFruitGlyph() {
+		return new Glyph.Builder("O")
+		        .withForegroundColor(255, 0, 0)
+		        .isBold(true)
+		        .build();
+	}
+	
+	private GameBorder defaultGameBorder() {
+		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
+							.withFgColor(FgColor.LIGHT_GREEN)
+							.withBgColor(0, 0, 255)
+							.withDefaultLayout()
+							.build();
 	}
 }
