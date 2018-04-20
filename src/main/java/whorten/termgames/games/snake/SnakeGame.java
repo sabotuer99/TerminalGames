@@ -64,6 +64,11 @@ public class SnakeGame extends Game {
 		run();
 		removeListeners();
 	}
+	
+	@Override
+	public String getDisplayName() {
+		return "SNAKE!!!";
+	}
 
 	private void removeListeners() {
 		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
@@ -87,11 +92,11 @@ public class SnakeGame extends Game {
 		gb = defaultGameBorder(renderer);
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
-		GlyphString title = new GlyphString.Builder("SNAKE!")
+		GlyphString title = new GlyphString.Builder("SNAKE!!!")
 									.withBgColor(BgColor.LIGHT_CYAN)
 									.withFgColor(FgColor.BLACK)
 									.build();
-		renderer.drawAt(4, 67, title);
+		renderer.drawAt(4, 66, title);
 		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
 		updateScore(1);
 		//                                               ###################
@@ -313,4 +318,5 @@ public class SnakeGame extends Game {
 		        .withBackgroundColor(BgColor.GREEN)
 		        .build();
 	}
+
 }

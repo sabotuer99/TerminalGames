@@ -5,4 +5,5 @@ import whorten.termgames.GameConsole;
 public abstract class Game {
 
 	public abstract void plugIn(GameConsole console);
+	public abstract String getDisplayName();
 }

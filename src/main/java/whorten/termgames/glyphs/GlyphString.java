@@ -3,6 +3,9 @@ package whorten.termgames.glyphs;
 import java.util.ArrayList;
 import java.util.List;
 
+import whorten.termgames.glyphs.Glyph.Builder;
+import whorten.termgames.utils.Colors;
+
 public class GlyphString {
 	
 	private List<Glyph> glyphs = new ArrayList<>();
@@ -71,6 +74,26 @@ public class GlyphString {
 		
 		public Builder withBgColor(BgColor color){
 			baseGlyphBuilder.withBackgroundColor(color);
+			return this;
+		}
+
+		public Builder withFgColor(int red, int green, int blue) {
+			baseGlyphBuilder.withForegroundColor(red, green, blue);
+			return this;
+		}
+		
+		public Builder withBgColor(int red, int green, int blue) {
+			baseGlyphBuilder.withBackgroundColor(red, green, blue);
+			return this;
+		}
+
+		public Builder isBold(boolean bold) {
+			baseGlyphBuilder.isBold(bold);
+			return this;
+		}
+
+		public Builder clearBgColor() {
+			baseGlyphBuilder.clearBgColor();
 			return this;
 		}
 

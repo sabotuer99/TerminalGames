@@ -8,6 +8,7 @@ import java.util.List;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
+import whorten.termgames.glyphs.Glyph.Builder;
 import whorten.termgames.utils.BoxDrawingGenerator;
 
 public class GameBorder {
@@ -91,6 +92,31 @@ public class GameBorder {
 
 		public Builder withBgColor(int r, int g, int b) {
 			baseGlyphBuilder.withBackgroundColor(r, g, b);
+			return this;
+		}
+
+		public Builder withNoSidebar() {
+			//first, last row
+			String ends = repeat("#", cols);
+			blueprint[0] = ends;
+			blueprint[rows - 1] = ends;
+			
+			//middle rows
+			StringBuilder sb = new StringBuilder();
+			String middle = sb.append("#")
+					          .append(repeat(" ", cols - 2))
+					          .append("#")
+					          .toString();
+			
+			for(int i = 1; i < rows - 1; i++){
+				blueprint[i] = middle;
+			}	
+			
+			return this;
+		}
+
+		public Builder withFgColor(int r, int g, int b) {
+			baseGlyphBuilder.withForegroundColor(r, g, b);
 			return this;
 		}
 	}

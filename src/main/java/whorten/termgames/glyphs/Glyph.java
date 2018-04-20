@@ -145,6 +145,11 @@ public class Glyph {
 			this.resetunderline = resetunderline;
 			return this;
 		}
+
+		public Builder clearBgColor() {
+			this.bg = "";
+			return this;
+		}
 		
 	}
 }
