@@ -17,4 +17,9 @@ public class KeyDownEvent implements KeyEvent {
 	public String getKey() {
 		return key;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("KeyDownEvent: key: [%s]", key);
+	}
 }

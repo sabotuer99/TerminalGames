@@ -54,9 +54,11 @@ public class SnakeGame extends Game {
 	EventListener<HeadMoveEvent> headListener;
 	EventListener<TailMoveEvent> tailListener;
 	EventListener<EatFruitEvent> fruitListener;
+	private long delayMillis = 140L;
 	
 	@Override
 	public void plugIn(GameConsole console) {
+		direction = Direction.DOWN;
 		eventBus = console.getEventBus();
 		renderer = console.getRenderer();
 		renderer.turnOffCursor();
@@ -65,6 +67,7 @@ public class SnakeGame extends Game {
 		renderBoard();				
 		snake = new Snake(eventBus);
 		initializeListeners();
+		logger.debug(String.format("Keyboard event driver listening? %b.", console.isKeyboardEventDriverListening()));
 		run();
 		removeListeners();
 	}
@@ -75,6 +78,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void removeListeners() {
+		logger.debug("Removing SnakeGame listeners.");
 		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
 		eventBus.unsubscribe(HeadMoveEvent.class, headListener);
 		eventBus.unsubscribe(TailMoveEvent.class, tailListener);
@@ -82,6 +86,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void initializeListeners() {
+		logger.debug("Initializing SnakeGame listeners.");
 		keyListener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
 		headListener = (HeadMoveEvent h) -> {handleHeadMoveEvent(h);};
 		tailListener = (TailMoveEvent t) -> {handleTailMoveEvent(t);};
@@ -93,6 +98,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void renderBoard() {
+		logger.debug("Rendering SnakeGame board.");
 		renderer.clearScreen();
 		gb = defaultGameBorder(renderer);
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
@@ -122,6 +128,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void updateScore(int score) {
+		logger.debug("Updating SnakeGame score: " + Integer.toString(score));
 		String scoreStr = Integer.toString(score);
 		GlyphString scoreGlyph = new GlyphString.Builder(scoreStr)
 				.withFgColor(FgColor.LIGHT_YELLOW)
@@ -130,6 +137,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void handleEatFruitEvent(EatFruitEvent h) {
+		logger.debug(String.format("Eat fruit event handler called: ", h));
 		Fruit fruit = h.getFruit();
 		//check if snake ate an apple
 		if(fruit.isGood()){
@@ -151,11 +159,13 @@ public class SnakeGame extends Game {
 	}
 
 	private void handleTailMoveEvent(TailMoveEvent t) {
+		logger.debug(String.format("Tale move handler called: %s", t));
 		Coord from = t.getFrom();
 		renderer.clear(from.getRow(), from.getCol());
 	}
 
 	private void handleHeadMoveEvent(HeadMoveEvent h) {
+		logger.debug(String.format("Head move handler called: %s", h));
 		Direction dir = h.getDirection();
 		Coord from = h.getFrom();
 		Coord to = h.getTo();
@@ -181,7 +191,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void handleKeyDownEvent(KeyDownEvent ke) {
-		
+		logger.debug(String.format("KeyDown handler called: %s", ke.getKey()));
 		switch (ke.getKey()) {
 		case "Q":
 		case "q":
@@ -217,7 +227,7 @@ public class SnakeGame extends Game {
 		try {
 			while (running && snake.isAlive()) {
 				
-				Thread.sleep(70);
+				Thread.sleep(delayMillis );
 				if(isLegalMove(direction, snake)){	
 					playSound(SLITHER_SOUND);
 					snake.move(direction);
@@ -241,6 +251,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void spawnFruit(boolean isGood){
+		logger.debug(String.format("Spawning %s fruit...", isGood ? "good" : "bad"));
 		Glyph glyph = isGood ? gfGlyph : badGlyph;
 		Coord nextCoord = getRandomCoord();
 		while(snake.getOccupiedSet().contains(nextCoord) ||
@@ -253,6 +264,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void drawFruit(Fruit fruit) {
+		logger.debug(String.format("Drawing fruit: %s", fruit));
 		Coord loc = fruit.getCoord();
 		Glyph glyph = fruit.getGlyph();
 		renderer.drawAt(loc.getRow(), loc.getCol(), glyph );
@@ -278,6 +290,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void playSound(String sound){
+		logger.debug(String.format("Playing sound: %s", sound));
 		eventBus.fire(new PlaySoundEvent(sound));
 	}
 	

@@ -20,5 +20,10 @@ public class TailMoveEvent implements Event{
 	public Coord getTo(){
 		return to;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("TailMoveEvent: from: [%s], to: [%s]", from, to);
+	}
 }
 

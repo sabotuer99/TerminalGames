@@ -17,4 +17,9 @@ public class KeyUpEvent implements KeyEvent {
 	public String getKey() {
 		return key;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("KeyUpEvent: key: [%s]", key);
+	}
 }

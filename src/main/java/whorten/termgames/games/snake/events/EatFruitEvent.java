@@ -20,5 +20,10 @@ public class EatFruitEvent implements Event{
 	public Fruit getFruit(){
 		return fruit;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("EatFruitEvent: fruit: [%s], newSize: [%d]", fruit, newSize);
+	}
 }
 

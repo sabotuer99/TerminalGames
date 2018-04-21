@@ -26,4 +26,9 @@ public class Fruit {
 	public boolean isGood(){
 		return isGood;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Fruit: coord: [%s], glyph: [%s], isGood: [%b]", coord, glyph, isGood);
+	}
 }

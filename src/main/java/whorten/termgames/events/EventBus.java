@@ -16,12 +16,14 @@ public class EventBus {
 	private final Map<String, HandlerGroup<?>> map = new HashMap<>();
 	
 	public <K extends Event> void subscribe(Class<K> c, EventListener<K> e){
+		logger.debug("Subscribing to events of type: " + c.getName());
 		HandlerGroup<K> hg = getHandlerGroup(c.getName());
 		hg.addListener(e);
 		map.put(c.getName(), hg);
 	}
 	
 	public <K extends Event> void unsubscribe(Class<K> c, EventListener<K> e){
+		logger.debug("Unsubscribing to events of type: " + c.getName());
 		HandlerGroup<K> hg = getHandlerGroup(e.getClass().getName());
 		hg.removeListener(e);
 		map.put(c.getName(), hg);
@@ -46,15 +48,13 @@ public class EventBus {
 		private final List<EventListener<K>> listeners = new ArrayList<>();
 		
 		void addListener(EventListener<K> el){
-			synchronized(listeners){
-				listeners.add(el);
-			}
+			logger.debug("Adding event listener for " + el.getClass());
+			listeners.add(el);
 		}
 		
 		void removeListener(EventListener<K> el){
-			synchronized(listeners){
-				listeners.remove(el);				
-			}
+			logger.debug("Removing event listener for " + el.getClass());
+			listeners.remove(el);		
 		}
 		
 		void fire(K e){

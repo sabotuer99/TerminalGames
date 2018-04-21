@@ -27,5 +27,10 @@ public class HeadMoveEvent implements Event{
 	public Direction getDirection(){
 		return direction;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("HeadMoveEvent: from: [%s], to: [%s], direction: [%s]", from, to, direction);
+	}
 }	
 

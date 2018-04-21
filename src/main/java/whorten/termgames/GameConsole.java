@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.events.EventBus;
+import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyEventType;
@@ -64,12 +65,17 @@ public class GameConsole {
 	private Game currentGame = null;
 	private int gameIndex = 0;
 	private final static Logger logger = LogManager.getLogger(GameConsole.class);
-
+	EventListener<PlaySoundEvent> pseEventListener = null;	
+	EventListener<MidiStartEvent> midiStartEventListener = null;	
+	EventListener<MidiStopEvent> midiStopEventListener = null;	
+	EventListener<KeyDownEvent> keyDownEventListener = null;
+	
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		logger.info("TEST");
 		setGlobalUncaughtExceptionHandler();		
-		initEventSystem(instance);
+		instance.initEventSystem();
 		
 		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
@@ -93,9 +99,17 @@ public class GameConsole {
 			
 		while(instance.stillPlaying){
 			Thread.sleep(100);
+			if(instance.gameIsRunning){
+				instance.eventBus.unsubscribe(KeyDownEvent.class, instance.keyDownEventListener);
+				instance.currentGame.plugIn(instance);
+				instance.renderMenu();
+				instance.renderGameSelector(instance.gameIndex);
+				instance.gameIsRunning = false;
+				instance.eventBus.subscribe(KeyDownEvent.class, instance.keyDownEventListener);
+			}
 		}
 		
-		fancyClose();		
+		//fancyClose();		
 		instance.ked.die();
 		pool.shutdown();
 	}
@@ -213,25 +227,18 @@ public class GameConsole {
 				.withBgColor(100, 0, 255).withNoSidebar().build();
 	}
 
-	private static void initEventSystem(GameConsole instance) {
-		instance.ked = new KeyboardEventDriver.Builder().withInputStream(System.in)
-				.withListener((KeyEvent ke) -> instance.handleKeyEvent(ke)).build();
-
-		instance.eventBus.subscribe(PlaySoundEvent.class, (PlaySoundEvent pse) -> {
-			instance.handlePlaySoundEvent(pse);
-		});
-
-		instance.eventBus.subscribe(MidiStartEvent.class, (MidiStartEvent mse) -> {
-			instance.handleMidiStartEvent(mse);
-		});
-
-		instance.eventBus.subscribe(MidiStopEvent.class, (MidiStopEvent mse) -> {
-			instance.handleMidiStopEvent(mse);
-		});
-
-		instance.eventBus.subscribe(KeyDownEvent.class, (KeyDownEvent kde) -> {
-			instance.handleKeyDownEvent(kde);
-		});
+	private void initEventSystem() {
+		ked = new KeyboardEventDriver.Builder().withInputStream(System.in)
+				.withListener((KeyEvent ke) -> handleKeyEvent(ke)).build();
+		
+		pseEventListener = (PlaySoundEvent pse) -> {handlePlaySoundEvent(pse);};		
+		midiStartEventListener = (MidiStartEvent mse) -> {handleMidiStartEvent(mse);};		
+		midiStopEventListener = (MidiStopEvent mse) -> {handleMidiStopEvent(mse);};		
+		keyDownEventListener = (KeyDownEvent kde) -> {handleKeyDownEvent(kde);};				
+		eventBus.subscribe(PlaySoundEvent.class, pseEventListener);
+		eventBus.subscribe(MidiStartEvent.class, midiStartEventListener);
+		eventBus.subscribe(MidiStopEvent.class, midiStopEventListener);
+		eventBus.subscribe(KeyDownEvent.class, keyDownEventListener);
 	}
 
 	private void handleKeyDownEvent(KeyDownEvent kde) {
@@ -250,10 +257,6 @@ public class GameConsole {
 				break;
 			case Keys.ENTER:
 				gameIsRunning = true;
-				currentGame.plugIn(this);
-				instance.renderMenu();
-				instance.renderGameSelector(instance.gameIndex);
-				gameIsRunning = false;
 				break;
 			case "Q":
 			case "q":
@@ -322,6 +325,10 @@ public class GameConsole {
 
 	public Renderer getRenderer() {
 		return renderer;
+	}
+	
+	public boolean isKeyboardEventDriverListening(){
+		return ked.isListening();
 	}
 
 	private SoundPlayer getSoundPlayer() {

@@ -24,6 +24,10 @@ public class Coord {
 		return new Coord(new Random().nextInt(maxx - minx) + minx,
                          new Random().nextInt(maxy - miny) + miny);
 	}
+	@Override
+	public String toString() {
+		return String.format("[Coord: col: [%d], row: [%d]]", col, row);
+	}
 	
 	@Override
 	public int hashCode() {

@@ -8,30 +8,42 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import whorten.termgames.events.EventDriver;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.utils.Keys;
 
 public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{	
+	
+	private final static Logger logger = LogManager.getLogger(KeyboardEventDriver.class);
 	private InputStream in;
 	private List<String> stops;
 	private List<KeyboardEventListener> listeners = new ArrayList<>();
 	private int repeatThreshold;	
+	private volatile boolean isListening = false;
 	
 	private KeyboardEventDriver(){}
 	
 	@Override
 	public void subscribe(KeyboardEventListener listener) {
+		logger.debug("Adding subscriber to Keyboard Events.");
 	    listeners.add(listener);
 	}
 	
 	@Override
 	public void unsubscribe(KeyboardEventListener listener) {
+		logger.debug("Removing subscriber to Keyboard Events.");
 		listeners.remove(listener);
 	}
 	
+	public boolean isListening(){
+		return isListening;
+	}
+	
 	public void listen() throws IOException{
-		
+		isListening = true;
         String last = null;
         try {
 	        while(!stops.contains(last) && !die){ 
@@ -39,6 +51,7 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 					Thread.sleep(10);
 				
 	        	if ( in.available() != 0 ) {
+	        		logger.debug("New input being processed...");
 	                int c = in.read();
 	                
 	                if(c ==  0x1B){
@@ -85,6 +98,8 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
         } catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+        
+        isListening = false;
 	}
 	
 	private Map<String,Long> lastSeen = new HashMap<>();
@@ -104,6 +119,7 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	}
 
 	private void fire(KeyEvent k){
+		logger.debug(String.format("Firing keyboard event: %s", k));
 		for(EventListener<KeyEvent> listener : listeners){
             listener.handleEvent(k);
 		}
