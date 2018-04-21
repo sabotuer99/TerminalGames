@@ -44,10 +44,11 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 	                if(c ==  0x1B){
 	                	// escape character requires special handling              	
 	                	c = in.read();
+	                	int d = 0;
 	            		if(c == '['){
-	            			c = in.read();
+	            			d = in.read();
 	            		}
-	            		switch(c){
+	            		switch(d){
 	            		case 'B':
 		            	case Keys.DOWN_ARROW_BYTE:
 		            		last = Keys.DOWN_ARROW;
@@ -64,10 +65,16 @@ public class KeyboardEventDriver implements EventDriver<KeyboardEventListener>{
 		            	case Keys.LEFT_ARROW_BYTE:
 		            		last = Keys.LEFT_ARROW;	
 		            		break;
+		            	case 13:
+		            		last = Keys.ENTER;
+		            		break;
+		            	default:
+		            		last = String.valueOf((char)c) + String.valueOf((char)d);
+		            		break;
 	            		}            		           		
 	                } else {
 	                	// every other character, uppered
-	                	last = Character.toString((char)c);          
+	                	last = Character.toString((char)c);
 	                } 
 	                
 	                KeyEvent k = new KeyDownEvent(last.toString().toUpperCase()); 

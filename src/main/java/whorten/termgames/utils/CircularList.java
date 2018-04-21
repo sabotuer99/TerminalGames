@@ -12,7 +12,7 @@ public class CircularList<E> implements List<E> {
 	
 	private int mod(int index){
 		if(index < 0){
-			return size() + (index % size());
+			return (size() + (index % size())) % size();
 		} else {
 			return index % size();
 		}

@@ -5,9 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import whorten.termgames.games.snake.SnakeGame;
+
 public class EventBus {
 	
-	Map<String, HandlerGroup<?>> map = new HashMap<>();
+	private final static Logger logger = LogManager.getLogger(SnakeGame.class);
+	private final Map<String, HandlerGroup<?>> map = new HashMap<>();
 	
 	public <K extends Event> void subscribe(Class<K> c, EventListener<K> e){
 		HandlerGroup<K> hg = getHandlerGroup(c.getName());
@@ -37,19 +43,26 @@ public class EventBus {
 	
 	private class HandlerGroup<K extends Event>{
 
-		List<EventListener<K>> listeners = new ArrayList<>();
+		private final List<EventListener<K>> listeners = new ArrayList<>();
 		
 		void addListener(EventListener<K> el){
-			listeners.add(el);
+			synchronized(listeners){
+				listeners.add(el);
+			}
 		}
 		
 		void removeListener(EventListener<K> el){
-			listeners.remove(el);
+			synchronized(listeners){
+				listeners.remove(el);				
+			}
 		}
 		
 		void fire(K e){
-			for(EventListener<K> handler : listeners){
-				handler.handleEvent(e);
+			logger.debug("Firing event: " + e.getClass().getName());
+			synchronized(listeners){
+				for(EventListener<K> handler : listeners){
+					handler.handleEvent(e);
+				}
 			}
 		}
 	}

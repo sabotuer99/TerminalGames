@@ -3,6 +3,9 @@ package whorten.termgames.games.snake;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import whorten.termgames.GameConsole;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.events.EventListener;
@@ -25,6 +28,7 @@ import whorten.termgames.utils.Keys;
 
 public class SnakeGame extends Game {
 
+	private final static Logger logger = LogManager.getLogger(SnakeGame.class);
 	private static final String SLITHER_SOUND = "sounds/slither2.wav";
 	private static final String NOM_SOUND = "sounds/nom.wav";
 	private static final String BLEH_SOUND = "sounds/bleh.wav";
@@ -89,6 +93,7 @@ public class SnakeGame extends Game {
 	}
 
 	private void renderBoard() {
+		renderer.clearScreen();
 		gb = defaultGameBorder(renderer);
 		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		

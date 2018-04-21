@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +17,9 @@ import java.util.concurrent.Executors;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequencer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.events.EventBus;
 import whorten.termgames.events.keyboard.KeyDownEvent;
@@ -43,31 +49,37 @@ import whorten.termgames.utils.StringUtils;
  *
  */
 public class GameConsole {
-	private static GameConsole instance = new GameConsole();
+	private static final GameConsole instance = new GameConsole();
 	private KeyboardEventDriver ked;
 	private static ExecutorService pool = Executors.newCachedThreadPool();
 	private volatile boolean stillPlaying = true;
-	private Renderer renderer = new OutputStreamRenderer(System.out, 80, 24);
+	private final Renderer renderer = new OutputStreamRenderer(System.out, 80, 24);
 	private final EventBus eventBus = new EventBus();
 	private final SoundPlayer soundPlayer = getSoundPlayer();
-	private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-	private Map<String, byte[]> cachedBytes = new HashMap<>();
-	private List<String> gameNames = new CircularList<>();
-	private Map<String, Game> games = new TreeMap<>();
+	private final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+	private final Map<String, byte[]> cachedBytes = new HashMap<>();
+	private final List<String> gameNames = new CircularList<>();
+	private final Map<String, Game> games = new TreeMap<>();
 	private volatile boolean gameIsRunning;
 	private Game currentGame = null;
 	private int gameIndex = 0;
+	private final static Logger logger = LogManager.getLogger(GameConsole.class);
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
+		logger.info("TEST");
+		setGlobalUncaughtExceptionHandler();		
 		initEventSystem(instance);
 		
 		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
-			catch (IOException e) {}
+			catch (IOException e) {
+				instance.stillPlaying = false;
+				throw new RuntimeException(e.getMessage());
+			}
 		});	
 
-		instance.loadGames();			
+		instance.loadGames();				
 		instance.renderMenu();
 		instance.renderGameSelector(instance.gameIndex);
 		
@@ -79,22 +91,27 @@ public class GameConsole {
 					instance.gameNames.get(instance.gameIndex));
 		}
 			
-		
-		
 		while(instance.stillPlaying){
 			Thread.sleep(100);
 		}
 		
-//     
-//		for(int i = 0; i < 5; i++){
-//			instance.renderer.clearScreen();
-//			new SnakeGame().plugIn(instance);
-//			instance.soundPlayer.close();
-//		}
-		
 		fancyClose();		
 		instance.ked.die();
 		pool.shutdown();
+	}
+
+	private static void setGlobalUncaughtExceptionHandler() {
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {		
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				logger.fatal(sw.toString());
+				logger.fatal("Uncaught Exception, exiting...");
+				System.exit(1);
+			}
+		});
 	}
 
 	private static void fancyClose() {
@@ -121,6 +138,10 @@ public class GameConsole {
 				// gulp
 			}
 		}
+		
+		for (String name : games.keySet()) {
+			gameNames.add(name);
+		}
 	}
 
 	private void renderGameSelector(int index) {
@@ -132,14 +153,9 @@ public class GameConsole {
 			return;
 		}
 				
-		gameNames = new CircularList<>();
-		for (String name : games.keySet()) {
-			gameNames.add(name);
-		}
-
 		String[] names = new String[7];
 		for (int i = 0; i < 7; i++) {
-			names[i] = gameNames.get(i - 3);
+			names[i] = gameNames.get(index + i - 3);
 		}
 
 		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
@@ -242,6 +258,8 @@ public class GameConsole {
 			case "Q":
 			case "q":
 				stillPlaying = false;
+				break;
+			default:
 				break;
 			}
 		}
