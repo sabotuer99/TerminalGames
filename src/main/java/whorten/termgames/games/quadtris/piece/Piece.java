@@ -1,6 +1,9 @@
 package whorten.termgames.games.quadtris.piece;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,42 +12,63 @@ import whorten.termgames.utils.Coord;
 
 public class Piece {
 
+	//TODO Write some unit tests...
 	protected Coord baseCoord;
 	protected Set<Coord> offSets = new HashSet<>();
 	protected Glyph defaultCellGlyph = null;
-	
-	public Set<Coord> rotateClockwise(){
-		offSets = offSets.stream()
-		       .map(this::rotateCW)
-		       .collect(Collectors.toSet());  
+	private static final List<Class<? extends Piece>> pieces = new ArrayList<>(7);
+	static {
+		pieces.add(O.class);
+		pieces.add(I.class);
+		pieces.add(S.class);
+		pieces.add(Z.class);
+		pieces.add(T.class);
+		pieces.add(J.class);
+		pieces.add(L.class);
+	}
+
+	public Set<Coord> rotateClockwise() {
+		offSets = offSets.stream().map(this::rotateCW).collect(Collectors.toSet());
 		return offSets;
 	};
-	public Set<Coord> rotateCounterClockwise(){
-		offSets = offSets.stream()
-			       .map(this::rotateCCW)
-			       .collect(Collectors.toSet());  
-			return offSets;
+
+	public Set<Coord> rotateCounterClockwise() {
+		offSets = offSets.stream().map(this::rotateCCW).collect(Collectors.toSet());
+		return offSets;
 	}
-	public void moveDown(int blocks){
+
+	public void moveDown(int blocks) {
 		baseCoord = new Coord(baseCoord.getCol(), baseCoord.getRow() + blocks);
 	}
-	public Set<Coord> getCoords(){
+
+	public Set<Coord> getCoords() {
 		return offSets.stream()
-				.map((Coord c) -> new Coord(baseCoord.getCol() + c.getCol(),
-						                    baseCoord.getRow() + c.getRow()))
+				.map((Coord c) -> new Coord(baseCoord.getCol() + c.getCol(), baseCoord.getRow() + c.getRow()))
 				.collect(Collectors.toSet());
 	};
-	
-	public Glyph getDefaultCell(){
+
+	public Glyph getDefaultCell() {
 		return defaultCellGlyph;
 	}
 
-	private Coord rotateCW(Coord coord){
+	private Coord rotateCW(Coord coord) {
 		return new Coord(-coord.getRow(), coord.getCol());
 	}
-	
-	private Coord rotateCCW(Coord coord){
+
+	private Coord rotateCCW(Coord coord) {
 		return new Coord(coord.getRow(), -coord.getCol());
+	}
+
+	public static Piece getRandomPiece() {
+		int index = new Random().nextInt(7);
+		Class<? extends Piece> c = pieces.get(index);
+		try {
+			return c.newInstance();
+		} catch (Exception e) {
+			// gulp
+		}
+
+		return null;
 	}
 
 }
