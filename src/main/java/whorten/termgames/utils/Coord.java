@@ -24,6 +24,19 @@ public class Coord {
 		return new Coord(new Random().nextInt(maxx - minx) + minx,
                          new Random().nextInt(maxy - miny) + miny);
 	}
+	
+	public static Coord rotateClockWise(Coord coord) {
+		return new Coord(-coord.getRow(), coord.getCol());
+	}
+
+	public static Coord rotateCounterClockWise(Coord coord) {
+		return new Coord(coord.getRow(), -coord.getCol());
+	}
+	
+	public static Coord add(Coord a, Coord b){
+		return new Coord(a.getCol() + b.getCol(), a.getRow() + b.getRow());
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("[Coord: col: [%d], row: [%d]]", col, row);

@@ -28,12 +28,12 @@ public class Piece {
 	}
 
 	public Set<Coord> rotateClockwise() {
-		offSets = offSets.stream().map(this::rotateCW).collect(Collectors.toSet());
+		offSets = offSets.stream().map(Coord::rotateClockWise).collect(Collectors.toSet());
 		return offSets;
 	};
 
 	public Set<Coord> rotateCounterClockwise() {
-		offSets = offSets.stream().map(this::rotateCCW).collect(Collectors.toSet());
+		offSets = offSets.stream().map(Coord::rotateCounterClockWise).collect(Collectors.toSet());
 		return offSets;
 	}
 
@@ -43,20 +43,12 @@ public class Piece {
 
 	public Set<Coord> getCoords() {
 		return offSets.stream()
-				.map((Coord c) -> new Coord(baseCoord.getCol() + c.getCol(), baseCoord.getRow() + c.getRow()))
+				.map((Coord c) -> Coord.add(baseCoord, c))
 				.collect(Collectors.toSet());
 	};
 
 	public Glyph getDefaultCell() {
 		return defaultCellGlyph;
-	}
-
-	private Coord rotateCW(Coord coord) {
-		return new Coord(-coord.getRow(), coord.getCol());
-	}
-
-	private Coord rotateCCW(Coord coord) {
-		return new Coord(coord.getRow(), -coord.getCol());
 	}
 
 	public static Piece getRandomPiece() {
