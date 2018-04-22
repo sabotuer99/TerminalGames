@@ -15,11 +15,26 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class SoundPlayer {
 
 	private Sequencer sequencer = null;
+	private boolean midiEnabled = true;
+	private boolean soundEnabled = true;
 	private SoundPlayer(){}
+	
+	public void resetMidi(){
+		if(sequencer != null && sequencer.isOpen()){
+			sequencer.close();
+		}
+	}
 	
 	public void stopMidi(){
 		if(sequencer != null && sequencer.isOpen() && sequencer.isRunning()){
 			sequencer.stop();
+		}
+	}
+	
+	public void restartMidi(){
+		if(sequencer != null && sequencer.isOpen() && !sequencer.isRunning()){
+			sequencer.setTickPosition(0);
+			sequencer.start();
 		}
 	}
 	
@@ -41,7 +56,7 @@ public class SoundPlayer {
 	}
 		
 	public void play(InputStream soundFile){
-		if(soundFile == null){
+		if(soundFile == null || !soundEnabled){
 			return;
 		}
 		
@@ -99,5 +114,36 @@ public class SoundPlayer {
 		if(sequencer != null && sequencer.isOpen()){
 			sequencer.close();
 		}
+	}
+
+	public void setMidiEnabled(boolean enabled){
+		midiEnabled = enabled;
+	}
+	
+	public void setSoundEnabled(boolean enabled){
+		soundEnabled = enabled;
+	}
+	
+	public boolean isMidiEnabled() {
+		return midiEnabled;
+	}
+
+	public boolean isSoundEnabled() {
+		return soundEnabled;
+	}
+	
+	public boolean toggleMidi(){
+		midiEnabled = !midiEnabled;
+		if(!midiEnabled){
+			stopMidi();
+		} else {
+			restartMidi();
+		}
+		return midiEnabled;
+	}
+	
+	public boolean toggleSound(){
+		soundEnabled = !soundEnabled;
+		return soundEnabled;
 	}
 }

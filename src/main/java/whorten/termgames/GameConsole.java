@@ -41,6 +41,8 @@ import whorten.termgames.sounds.SoundPlayer;
 import whorten.termgames.sounds.events.MidiStartEvent;
 import whorten.termgames.sounds.events.MidiStopEvent;
 import whorten.termgames.sounds.events.PlaySoundEvent;
+import whorten.termgames.sounds.events.ToggleMusicEvent;
+import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.CircularList;
 import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.StringUtils;
@@ -50,6 +52,8 @@ import whorten.termgames.utils.StringUtils;
  *
  */
 public class GameConsole {
+	private static final String BOOP_SOUND = "sounds/boop.wav";
+	private static final String SELECT_SOUND = "sounds/three_boop.wav";
 	private static final GameConsole instance = new GameConsole();
 	private KeyboardEventDriver ked;
 	private static ExecutorService pool = Executors.newCachedThreadPool();
@@ -65,10 +69,12 @@ public class GameConsole {
 	private Game currentGame = null;
 	private int gameIndex = 0;
 	private final static Logger logger = LogManager.getLogger(GameConsole.class);
-	EventListener<PlaySoundEvent> pseEventListener = null;	
-	EventListener<MidiStartEvent> midiStartEventListener = null;	
-	EventListener<MidiStopEvent> midiStopEventListener = null;	
-	EventListener<KeyDownEvent> keyDownEventListener = null;
+	private EventListener<PlaySoundEvent> pseEventListener = null;	
+	private EventListener<MidiStartEvent> midiStartEventListener = null;	
+	private EventListener<MidiStopEvent> midiStopEventListener = null;	
+	private EventListener<KeyDownEvent> keyDownEventListener = null;
+	private EventListener<ToggleSoundEvent> toggleSoundEventListener;
+	private EventListener<ToggleMusicEvent> toggleMusicEventListener;
 	
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -91,14 +97,14 @@ public class GameConsole {
 		
 		if(instance.games.size() == 0){
 			instance.stillPlaying = false;
-			Thread.sleep(5000);
+			pause(5000);
 		} else {
 			instance.currentGame = instance.games.get(
 					instance.gameNames.get(instance.gameIndex));
 		}
 			
 		while(instance.stillPlaying){
-			Thread.sleep(100);
+			pause(100);
 			if(instance.gameIsRunning){
 				instance.eventBus.unsubscribe(KeyDownEvent.class, instance.keyDownEventListener);
 				instance.currentGame.plugIn(instance);
@@ -106,12 +112,21 @@ public class GameConsole {
 				instance.renderGameSelector(instance.gameIndex);
 				instance.gameIsRunning = false;
 				instance.eventBus.subscribe(KeyDownEvent.class, instance.keyDownEventListener);
+				instance.soundPlayer.setMidiEnabled(true);
+				instance.soundPlayer.setSoundEnabled(true);
 			}
 		}
 		
-		//fancyClose();		
-		instance.ked.die();
-		pool.shutdown();
+		fancyClose();
+		System.exit(0);
+	}
+
+	private static void pause(long pauseMillis) {
+		try{
+			Thread.sleep(pauseMillis);
+		} catch (Exception ex){
+			// gulp
+		}
 	}
 
 	private static void setGlobalUncaughtExceptionHandler() {
@@ -234,28 +249,44 @@ public class GameConsole {
 		pseEventListener = (PlaySoundEvent pse) -> {handlePlaySoundEvent(pse);};		
 		midiStartEventListener = (MidiStartEvent mse) -> {handleMidiStartEvent(mse);};		
 		midiStopEventListener = (MidiStopEvent mse) -> {handleMidiStopEvent(mse);};		
-		keyDownEventListener = (KeyDownEvent kde) -> {handleKeyDownEvent(kde);};				
+		keyDownEventListener = (KeyDownEvent kde) -> {handleKeyDownEvent(kde);};	
+		toggleSoundEventListener = (ToggleSoundEvent tse) -> {handleToggleSoundEvent(tse);};
+		toggleMusicEventListener = (ToggleMusicEvent tme) -> {handleToggleMusicEvent(tme);};
 		eventBus.subscribe(PlaySoundEvent.class, pseEventListener);
 		eventBus.subscribe(MidiStartEvent.class, midiStartEventListener);
 		eventBus.subscribe(MidiStopEvent.class, midiStopEventListener);
 		eventBus.subscribe(KeyDownEvent.class, keyDownEventListener);
+		eventBus.subscribe(ToggleSoundEvent.class, toggleSoundEventListener);
+		eventBus.subscribe(ToggleMusicEvent.class, toggleMusicEventListener);
 	}
 
+	private void handleToggleSoundEvent(ToggleSoundEvent tse){
+		soundPlayer.toggleSound();
+	}
+	
+	private void handleToggleMusicEvent(ToggleMusicEvent tme){
+		soundPlayer.toggleMidi();
+	}
+	
 	private void handleKeyDownEvent(KeyDownEvent kde) {
 		String key = kde.getKey();
 		if (!gameIsRunning) {
 			switch (key) {
 			case Keys.UP_ARROW:
+				eventBus.fire(new PlaySoundEvent(BOOP_SOUND));
 				gameIndex--;
 				currentGame = games.get(gameNames.get(gameIndex));
 				renderGameSelector(gameIndex);				
 				break;
 			case Keys.DOWN_ARROW:
+				eventBus.fire(new PlaySoundEvent(BOOP_SOUND));
 				gameIndex++;
 				currentGame = games.get(gameNames.get(gameIndex));
 				renderGameSelector(gameIndex);
 				break;
 			case Keys.ENTER:
+				eventBus.fire(new PlaySoundEvent(SELECT_SOUND));
+				pause(792);
 				gameIsRunning = true;
 				break;
 			case "Q":
@@ -340,5 +371,13 @@ public class GameConsole {
 		}
 
 		return new SoundPlayer.Builder().withSequencer(sequencer).build();
+	}
+
+	public boolean isMusicOn() {
+		return soundPlayer.isMidiEnabled();
+	}
+
+	public boolean isSoundOn() {
+		return soundPlayer.isSoundEnabled();
 	}
 }

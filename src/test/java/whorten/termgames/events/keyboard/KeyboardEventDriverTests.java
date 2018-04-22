@@ -7,13 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
 import org.junit.Test;
 
-import whorten.termgames.events.EventListener;
 import whorten.termgames.utils.Keys;
 
 public class KeyboardEventDriverTests {

@@ -5,3 +5,4 @@ java -XX:+UseG1GC -Xms600m -jar ${runtime_directory}/GameConsole.jar || true
 log=
 stty echo cooked
 clear
+cd .

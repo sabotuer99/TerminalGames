@@ -1,3 +1,5 @@
 List of where I obtained the music files
 
-Undertale_-_Sans.mid : http://www.midiworld.com/search/6/?q=video%20game%20themes
+Snake_Theme.mid          : http://www.midiworld.com/download/4888 [Sans (Undertale)]
+Quadtris_ThemeA.mid      : https://freemidi.org/download2-8841-theme-a-variation-tetris
+Quadtris_ThemeB.mid      : https://freemidi.org/download2-8843-theme-b-variation-tetris

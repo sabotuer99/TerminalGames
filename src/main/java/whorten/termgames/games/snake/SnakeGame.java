@@ -23,6 +23,8 @@ import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.events.MidiStartEvent;
 import whorten.termgames.sounds.events.MidiStopEvent;
 import whorten.termgames.sounds.events.PlaySoundEvent;
+import whorten.termgames.sounds.events.ToggleMusicEvent;
+import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
 
@@ -33,9 +35,9 @@ public class SnakeGame extends Game {
 	private static final String NOM_SOUND = "sounds/nom.wav";
 	private static final String BLEH_SOUND = "sounds/bleh.wav";
 	private static final String OOF_SOUND = "sounds/oof.wav";
-	private static final String MUSIC_MIDI = "midi/Undertale_-_Sans.mid";
+	private static final String MUSIC_MIDI = "midi/Snake_Theme.mid";
 	private volatile boolean running = true;
-	private Direction direction = Direction.DOWN;
+	private Direction direction;
 	private Snake snake;
 	private Renderer renderer;
 	private int maxcol;
@@ -43,7 +45,7 @@ public class SnakeGame extends Game {
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
 	private Glyph badGlyph = defaultBadFruitGlyph();
 	private GameBorder gb;
-	private Map<Coord, Fruit> fruits = new HashMap<>();
+	private Map<Coord, Fruit> fruits;
 	private EventBus eventBus;
 	private Glyph bodyGlyph =  defaultBodyGlyph();
 	private Glyph headUpGlyph = headSegment("^"); //"▲")
@@ -54,22 +56,30 @@ public class SnakeGame extends Game {
 	EventListener<HeadMoveEvent> headListener;
 	EventListener<TailMoveEvent> tailListener;
 	EventListener<EatFruitEvent> fruitListener;
-	private long delayMillis = 140L;
+	private int speed = 5;
+	private GameConsole console;
 	
 	@Override
 	public void plugIn(GameConsole console) {
-		direction = Direction.DOWN;
-		eventBus = console.getEventBus();
-		renderer = console.getRenderer();
-		renderer.turnOffCursor();
-		maxrow = renderer.getCanvasHeight();
-		maxcol = renderer.getCanvasWidth() - 21;		
+		
+		resetGameState(console);	
 		renderBoard();				
 		snake = new Snake(eventBus);
 		initializeListeners();
 		logger.debug(String.format("Keyboard event driver listening? %b.", console.isKeyboardEventDriverListening()));
 		run();
 		removeListeners();
+	}
+
+	private void resetGameState(GameConsole console) {
+		this.console = console;
+		direction = Direction.DOWN;
+		fruits = new HashMap<>();
+		eventBus = console.getEventBus();
+		renderer = console.getRenderer();
+		renderer.turnOffCursor();
+		maxrow = renderer.getCanvasHeight();
+		maxcol = renderer.getCanvasWidth() - 21;	
 	}
 	
 	@Override
@@ -117,6 +127,9 @@ public class SnakeGame extends Game {
 		GlyphString instr4 = menuBuilder.withBaseString("to grow longer!    ").build();
 		GlyphString instr5 = menuBuilder.withBaseString("   But avoid the   ").build();
 		GlyphString instr6 = menuBuilder.withBaseString("cans of poison!    ").build();
+		GlyphString instr7 = menuBuilder.withBaseString("Speed  <   >       ").build();
+		GlyphString instr8 = menuBuilder.withBaseString("Music: [M]         ").build();
+		GlyphString instr9 = menuBuilder.withBaseString("Sound: [S]         ").build();
 		renderer.drawAt(8, 61, instr1);
 		renderer.drawAt(9, 61, instr2);
 		renderer.drawAt(11, 61, instr3);
@@ -125,6 +138,25 @@ public class SnakeGame extends Game {
 		renderer.drawAt(14, 61, instr5);
 		renderer.drawAt(14, 61, badGlyph);
 		renderer.drawAt(15, 61, instr6);
+		renderer.drawAt(17, 61, instr7);
+		renderer.drawAt(19, 61, instr8);
+		renderer.drawAt(20, 61, instr9);
+		updateSpeed();
+		updateSound();
+	}
+
+	private void updateSound() {
+		GlyphString sound_off = new GlyphString.Builder("<X ")
+				.withFgColor(255,0,0).build();
+		GlyphString sound_on = new GlyphString.Builder("<((") 
+				.withFgColor(0,255,0).build();
+		GlyphString music_off = new GlyphString.Builder("dXb")
+				.withFgColor(255,0,0).build();
+		GlyphString music_on = new GlyphString.Builder("d⎺b")
+				.withFgColor(0,255,0).build();
+		
+		renderer.drawAt(19, 74, console.isMusicOn() ? music_on : music_off);
+		renderer.drawAt(20, 74, console.isSoundOn() ? sound_on : sound_off);	
 	}
 
 	private void updateScore(int score) {
@@ -213,9 +245,38 @@ public class SnakeGame extends Game {
 		case Keys.LEFT_ARROW:
 			direction = Direction.LEFT;
 			break;
+		case ">":
+		case ".":
+			speed = Math.min(speed + 1, 9);
+			updateSpeed();
+			break;
+		case "<":
+		case ",":
+			speed = Math.max(speed - 1, 1);
+			updateSpeed();
+			break;
+		case "m":
+		case "M":
+			eventBus.fire(new ToggleMusicEvent());
+			updateSound();
+			break;
+		case "s":
+		case "S":
+			eventBus.fire(new ToggleSoundEvent());
+			updateSound();
+			break;
 		default:
 			break;
 		}
+	}
+
+	private void updateSpeed() {
+		logger.debug("Updating SnakeGame speed: " + Integer.toString(speed));
+		String speedStr = Integer.toString(speed);
+		GlyphString scoreGlyph = new GlyphString.Builder(speedStr)
+				.withFgColor(FgColor.WHITE)
+				.build();
+		renderer.drawAt(17, 70, scoreGlyph);
 	}
 
 	private void run() {
@@ -227,7 +288,7 @@ public class SnakeGame extends Game {
 		try {
 			while (running && snake.isAlive()) {
 				
-				Thread.sleep(delayMillis );
+				Thread.sleep(150 - 10*speed);
 				if(isLegalMove(direction, snake)){	
 					playSound(SLITHER_SOUND);
 					snake.move(direction);

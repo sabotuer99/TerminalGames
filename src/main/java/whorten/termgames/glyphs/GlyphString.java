@@ -3,9 +3,6 @@ package whorten.termgames.glyphs;
 import java.util.ArrayList;
 import java.util.List;
 
-import whorten.termgames.glyphs.Glyph.Builder;
-import whorten.termgames.utils.Colors;
-
 public class GlyphString {
 	
 	private List<Glyph> glyphs = new ArrayList<>();

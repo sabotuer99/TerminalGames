@@ -8,7 +8,6 @@ import java.util.List;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.glyphs.Glyph.Builder;
 import whorten.termgames.utils.BoxDrawingGenerator;
 
 public class GameBorder {
