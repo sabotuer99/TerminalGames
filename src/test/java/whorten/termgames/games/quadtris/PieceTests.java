@@ -1,6 +1,6 @@
 package whorten.termgames.games.quadtris;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +35,18 @@ public class PieceTests {
 		assertTrue(result.contains(new Coord(4,5)));
 		assertTrue(result.contains(new Coord(4,6)));
 		assertTrue(result.contains(new Coord(3,5)));
+	}
+	
+	@Test
+	public void rotateClockwise_returnsAppropriateCoords(){	
+		Piece sut = getSut();
+		
+		Set<Coord> result = sut.rotateClockwise().getCoords();
+		
+		assertTrue(result.contains(new Coord(0,1)));
+		assertTrue(result.contains(new Coord(0,0)));
+		assertTrue(result.contains(new Coord(-1,0)));
+		assertTrue(result.contains(new Coord(0,-1)));
 	}
 	
 	private Piece getSut(Coord baseCoord){
