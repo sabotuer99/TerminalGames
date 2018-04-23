@@ -26,18 +26,25 @@ public class Piece {
 		pieces.add(J.class);
 		pieces.add(L.class);
 	}
+	
+	public Piece(Coord baseCoord){
+		this.baseCoord = baseCoord;
+	}
 
 	public Set<Coord> rotateClockwise() {
+		//TODO refactor this to return a new Piece with coordinates rotated (think string.toUpperCase())
 		offSets = offSets.stream().map(Coord::rotateClockWise).collect(Collectors.toSet());
 		return offSets;
 	};
 
 	public Set<Coord> rotateCounterClockwise() {
+		//TODO refactor this to return a new Piece with coordinates rotated (think string.toUpperCase())
 		offSets = offSets.stream().map(Coord::rotateCounterClockWise).collect(Collectors.toSet());
 		return offSets;
 	}
 
 	public void moveDown(int blocks) {
+		//TODO refactor this to return a new Piece with baseCoord changed (think string.toUpperCase())
 		baseCoord = new Coord(baseCoord.getCol(), baseCoord.getRow() + blocks);
 	}
 

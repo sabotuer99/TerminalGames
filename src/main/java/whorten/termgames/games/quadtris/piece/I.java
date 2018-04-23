@@ -12,7 +12,8 @@ public class I extends Piece{
 	 *  #
 	 *  #
 	 */
-	public I(){
+	public I(Coord baseCoord){
+		super(baseCoord);
 		offSets.add(new Coord(0,1));
 		offSets.add(new Coord(0,0));
 		offSets.add(new Coord(0,-1));

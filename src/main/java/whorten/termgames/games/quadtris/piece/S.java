@@ -9,7 +9,8 @@ public class S extends Piece {
 	 *  ##
 	 * ##
 	 */
-	public S(){
+	public S(Coord baseCoord){
+		super(baseCoord);
 		offSets.add(new Coord(1,0));
 		offSets.add(new Coord(0,0));
 		offSets.add(new Coord(0,1));
