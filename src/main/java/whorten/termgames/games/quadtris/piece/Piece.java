@@ -63,38 +63,7 @@ public class Piece {
 	}
 	
 	public String toAsciiString(){
-		//determine the limits and offsets
-		int minrow = Integer.MAX_VALUE;
-		int mincol = Integer.MAX_VALUE;
-		int maxrow = Integer.MIN_VALUE;
-		int maxcol = Integer.MIN_VALUE;
-		for(Coord offset : offSets){
-			minrow = Math.min(minrow, offset.getRow());
-			mincol = Math.min(mincol, offset.getCol());
-			maxrow = Math.max(maxrow, offset.getRow());
-			maxcol = Math.max(maxcol, offset.getCol());
-		}
-		
-		int width = maxcol - mincol + 1;
-		int height = maxrow - minrow + 1;
-		int rowOffset = 0 - minrow;
-		int colOffset = 0 - mincol;
-		
-		boolean[][] grid = new boolean[height][width];
-		for(Coord offset : offSets){
-			grid[offset.getRow() + rowOffset][offset.getCol() + colOffset] = true;
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		for(boolean[] row : grid){
-			for(boolean cell : row){
-				sb.append(cell ? "#" : " ");
-			}
-			sb.append("\n");
-		}
-		//drop the last newline
-		sb.setLength(sb.length() - 1);
-		return sb.toString();
+		return Coord.toAsciiString(offSets);
 	}
 	
  	public static class Builder {

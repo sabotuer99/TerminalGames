@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
-import whorten.termgames.events.EventBus;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
@@ -20,12 +19,10 @@ import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
-import whorten.termgames.sounds.events.MidiStartEvent;
-import whorten.termgames.sounds.events.MidiStopEvent;
-import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Coord;
+import whorten.termgames.utils.Direction;
 import whorten.termgames.utils.Keys;
 
 public class SnakeGame extends Game {
@@ -36,17 +33,12 @@ public class SnakeGame extends Game {
 	private static final String BLEH_SOUND = "sounds/bleh.wav";
 	private static final String OOF_SOUND = "sounds/oof.wav";
 	private static final String MUSIC_MIDI = "midi/Snake_Theme.mid";
-	private volatile boolean running = true;
 	private Direction direction;
 	private Snake snake;
-	private Renderer renderer;
-	private int maxcol;
-	private int maxrow;
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
 	private Glyph badGlyph = defaultBadFruitGlyph();
 	private GameBorder gb;
 	private Map<Coord, Fruit> fruits;
-	private EventBus eventBus;
 	private Glyph bodyGlyph =  defaultBodyGlyph();
 	private Glyph headUpGlyph = headSegment("^"); //"▲")
 	private Glyph headDownGlyph = headSegment("v"); //"▼")
@@ -57,7 +49,7 @@ public class SnakeGame extends Game {
 	EventListener<TailMoveEvent> tailListener;
 	EventListener<EatFruitEvent> fruitListener;
 	private int speed = 5;
-	private GameConsole console;
+	
 	
 	@Override
 	public void plugIn(GameConsole console) {
@@ -71,15 +63,11 @@ public class SnakeGame extends Game {
 		removeListeners();
 	}
 
-	private void resetGameState(GameConsole console) {
-		this.console = console;
+	@Override
+	protected void resetGameState(GameConsole console) {
+		super.resetGameState(console);
 		direction = Direction.DOWN;
-		fruits = new HashMap<>();
-		eventBus = console.getEventBus();
-		renderer = console.getRenderer();
-		renderer.turnOffCursor();
-		maxrow = renderer.getCanvasHeight();
-		maxcol = renderer.getCanvasWidth() - 21;	
+		fruits = new HashMap<>();	
 	}
 	
 	@Override
@@ -281,7 +269,7 @@ public class SnakeGame extends Game {
 
 	private void run() {
 		
-		playMusic();
+		playMusic(MUSIC_MIDI);
 		spawnFruit(true);
 		spawnFruit(false);
 		
@@ -348,19 +336,6 @@ public class SnakeGame extends Game {
 	
 	private Coord getRandomCoord() {
 		return Coord.getRandomCoord(2, 2, maxcol, maxrow);
-	}
-
-	private void playSound(String sound){
-		logger.debug(String.format("Playing sound: %s", sound));
-		eventBus.fire(new PlaySoundEvent(sound));
-	}
-	
-	private void playMusic(){
-		eventBus.fire(new MidiStartEvent(MUSIC_MIDI));
-	}
-	
-	private void stopMusic() {
-		eventBus.fire(new MidiStopEvent());
 	}
 	
 	private Glyph defaultBadFruitGlyph() {
