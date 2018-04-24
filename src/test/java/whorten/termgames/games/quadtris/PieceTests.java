@@ -1,5 +1,6 @@
 package whorten.termgames.games.quadtris;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import whorten.termgames.games.quadtris.piece.Piece;
+import whorten.termgames.games.quadtris.piece.PieceFactory;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.utils.Coord;
 
@@ -47,6 +49,27 @@ public class PieceTests {
 		assertTrue(result.contains(new Coord(0,0)));
 		assertTrue(result.contains(new Coord(-1,0)));
 		assertTrue(result.contains(new Coord(0,-1)));
+	}
+	
+	@Test
+	public void toAsciiString_doesTheRightThing(){
+		Piece sut = getSut();
+		
+		String ascii = sut.toAsciiString();
+		System.out.println(ascii);
+		
+		assertEquals("###\n # ", ascii);
+	}
+	
+	@Test
+	public void random_pieces(){
+		
+		for(int i = 0; i < 10; i++){
+			System.out.println(PieceFactory.getRandomPiece(new Coord(0,0)).toAsciiString());
+			System.out.println("\n\n");
+		}
+
+		assertTrue(true);
 	}
 	
 	private Piece getSut(Coord baseCoord){
