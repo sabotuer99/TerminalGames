@@ -7,6 +7,7 @@ public class GlyphString {
 	
 	private List<Glyph> glyphs = new ArrayList<>();
 	public String stringRep;
+	private String baseString;
 
 	private GlyphString(){};
 
@@ -17,7 +18,13 @@ public class GlyphString {
 	public GlyphString append(GlyphString next){
 		glyphs.addAll(next.getGlyphs());
 		stringRep += next.toString();
+		baseString += next.baseString;
 		return this;
+	}
+	
+
+	public String getBaseString() {
+		return baseString;
 	}
 	
 	@Override
@@ -69,7 +76,7 @@ public class GlyphString {
 				sb.append(g.toString());
 			}
 			gs.stringRep = sb.toString();
-			
+			gs.baseString = this.base;
 			return gs;
 		}
 		
@@ -109,4 +116,5 @@ public class GlyphString {
 		}
 
 	}
+
 }

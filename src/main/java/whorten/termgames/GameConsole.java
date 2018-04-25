@@ -21,6 +21,11 @@ import javax.sound.midi.Sequencer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import whorten.termgames.animation.Animation;
+import whorten.termgames.animation.AnimationController;
+import whorten.termgames.animation.events.StartAnimationEvent;
+import whorten.termgames.animation.events.StopAllAnimationEvent;
+import whorten.termgames.animation.events.StopAnimationEvent;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
@@ -61,6 +66,7 @@ public class GameConsole {
 	private final Renderer renderer = new OutputStreamRenderer(System.out, 80, 24);
 	private final EventBus eventBus = new EventBus();
 	private final SoundPlayer soundPlayer = getSoundPlayer();
+	private final AnimationController animator = new AnimationController(this);
 	private final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 	private final Map<String, byte[]> cachedBytes = new HashMap<>();
 	private final List<String> gameNames = new CircularList<>();
@@ -75,6 +81,9 @@ public class GameConsole {
 	private EventListener<KeyDownEvent> keyDownEventListener = null;
 	private EventListener<ToggleSoundEvent> toggleSoundEventListener;
 	private EventListener<ToggleMusicEvent> toggleMusicEventListener;
+	private EventListener<StartAnimationEvent> startAnimationEventListener;
+	private EventListener<StopAnimationEvent> stopAnimationEventListener;
+	private EventListener<StopAllAnimationEvent> stopAllAnimationEventListener;
 	
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -252,12 +261,30 @@ public class GameConsole {
 		keyDownEventListener = (KeyDownEvent kde) -> {handleKeyDownEvent(kde);};	
 		toggleSoundEventListener = (ToggleSoundEvent tse) -> {handleToggleSoundEvent(tse);};
 		toggleMusicEventListener = (ToggleMusicEvent tme) -> {handleToggleMusicEvent(tme);};
+		startAnimationEventListener = (StartAnimationEvent sae) -> {handleStartAnimationEvent(sae);};
+		stopAnimationEventListener = (StopAnimationEvent sae) -> {handleStopAnimationEvent(sae);};
+		stopAllAnimationEventListener = (StopAllAnimationEvent saae) -> {handleStopAllAnimationEvent(saae);};
 		eventBus.subscribe(PlaySoundEvent.class, pseEventListener);
 		eventBus.subscribe(MidiStartEvent.class, midiStartEventListener);
 		eventBus.subscribe(MidiStopEvent.class, midiStopEventListener);
 		eventBus.subscribe(KeyDownEvent.class, keyDownEventListener);
 		eventBus.subscribe(ToggleSoundEvent.class, toggleSoundEventListener);
 		eventBus.subscribe(ToggleMusicEvent.class, toggleMusicEventListener);
+		eventBus.subscribe(StartAnimationEvent.class, startAnimationEventListener);
+		eventBus.subscribe(StopAnimationEvent.class, stopAnimationEventListener);
+		eventBus.subscribe(StopAllAnimationEvent.class, stopAllAnimationEventListener);
+	}
+
+	private void handleStopAllAnimationEvent(StopAllAnimationEvent saae) {
+		animator.stopAllAnimations();
+	}
+
+	private void handleStopAnimationEvent(StopAnimationEvent sae) {
+		animator.stopAnimation(sae.getAnimation());
+	}
+
+	private void handleStartAnimationEvent(StartAnimationEvent sae) {
+		animator.playAnimation(sae.getAnimation());
 	}
 
 	private void handleToggleSoundEvent(ToggleSoundEvent tse){
