@@ -27,7 +27,7 @@ public class OutputStreamRenderer implements Renderer {
 	}
 	
 	@Override
-	public void drawAt(int row, int col, Glyph payload) {
+	public synchronized void drawAt(int row, int col, Glyph payload) {
 		nav.positionCursor(row, col);
 		out.print(payload);
 		nav.cursorBack();
@@ -35,19 +35,19 @@ public class OutputStreamRenderer implements Renderer {
 	}
 	
 	@Override
-	public void drawAt(int row, int col, GlyphString payload) {
+	public synchronized void drawAt(int row, int col, GlyphString payload) {
 		nav.positionCursor(row, col);
 		out.print(payload);		
 	}
 	
 	@Override
-	public void bufferedDrawAt(int row, int col, Glyph payload) {
+	public synchronized void bufferedDrawAt(int row, int col, Glyph payload) {
 		screenBuffer.bufferAt(row, col, payload);
 		drawAt(row, col, payload);
 	}
 
 	@Override
-	public void bufferedDrawAt(int row, int col, GlyphString payload) {
+	public synchronized void bufferedDrawAt(int row, int col, GlyphString payload) {
 		List<Glyph> glyphs = payload.getGlyphs();
 		for(int i = 0; i < glyphs.size() && i + col <= width; i++){
 			screenBuffer.bufferAt(row, col + i, glyphs.get(i));
@@ -66,14 +66,14 @@ public class OutputStreamRenderer implements Renderer {
 	}
 
 	@Override
-	public void drawGlyphCollection(Collection<GlyphCoord> glyphCoords) {
+	public synchronized void drawGlyphCollection(Collection<GlyphCoord> glyphCoords) {
 		for(GlyphCoord gc : glyphCoords){
 			drawAt(gc.getRow(), gc.getCol(), gc.getGlyph());
 		}
 	}
 
 	@Override
-	public void clearScreen() {
+	public synchronized void clearScreen() {
 		String line = repeat(" ", width);
 		for(int row = 1; row <= height; row++){
 			nav.positionCursor(row, 0);
@@ -83,31 +83,31 @@ public class OutputStreamRenderer implements Renderer {
 	}
 
 	@Override
-	public void revert(int row, int col) {
+	public synchronized void revert(int row, int col) {
 		Glyph old = screenBuffer.revertAt(row, col);
 		nav.positionCursor(row, col);
 		out.print(old);
 	}
 
 	@Override
-	public void clear(int row, int col) {
+	public synchronized void clear(int row, int col) {
 		clearBuffer(row, col);
 		nav.positionCursor(row, col);
 		out.print(" ");
 	}
 
 	@Override
-	public void clearBuffer(int row, int col) {
+	public synchronized void clearBuffer(int row, int col) {
 		screenBuffer.clearAt(row, col);
 	}
 
 	@Override
-	public void turnOffCursor() {
+	public synchronized void turnOffCursor() {
 		nav.cursorHide();
 	}
 
 	@Override
-	public void turnOnCursor() {
+	public synchronized void turnOnCursor() {
 		nav.cursorShow();
 	}
 

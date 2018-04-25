@@ -21,7 +21,6 @@ import javax.sound.midi.Sequencer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import whorten.termgames.animation.Animation;
 import whorten.termgames.animation.AnimationController;
 import whorten.termgames.animation.events.StartAnimationEvent;
 import whorten.termgames.animation.events.StopAllAnimationEvent;

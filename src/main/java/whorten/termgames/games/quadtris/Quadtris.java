@@ -6,11 +6,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
+import whorten.termgames.animation.Animation;
+import whorten.termgames.animation.events.StartAnimationEvent;
+import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.quadtris.events.ToggleThemeEvent;
-import whorten.termgames.games.quadtris.piece.PieceRenderer;
 import whorten.termgames.games.quadtris.well.WellRenderer;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.GlyphString;
@@ -27,8 +29,8 @@ public class Quadtris extends Game {
 	private final static String THEME_B = "midi/Quadtris_ThemeB.mid";	
 	private String currentTheme = THEME_A;
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
-	EventListener<KeyDownEvent> keyListener;
-	EventListener<ToggleThemeEvent> themeListener;
+	private EventListener<KeyDownEvent> keyListener;
+	private EventListener<ToggleThemeEvent> themeListener;
 	private GameBorder gb;
 	private Coord wellOrigin;
 	private int level = 0;
@@ -71,27 +73,34 @@ public class Quadtris extends Game {
 //		pieces[5] = PieceFactory.getS(new Coord(7, 9));
 //		pieces[6] = PieceFactory.getI(new Coord(5, 14));
 		
-		try {
-			while (running) {			
-				Thread.sleep(150 - 10* Math.min(level , 10));
-				
-				for(int i = 0; i < 17; i++){
-					wellRenderer.drawFlashes(Arrays.asList(i, i+2));
-				}
-				
+
+		while (running) {			
+			
+			for(int i = 0; i < 18 && running; i++){
+				Animation flashes = wellRenderer.createLineFlashAnimation(Arrays.asList(i));
+				eventBus.fire(new StartAnimationEvent(flashes));
+				pause(150 - 10* Math.min(level , 10));
+			}
+			
 //				for(int i = 0; i < 7; i++){
 //					pieceRenderer.clearPiece(pieces[i]);
 //					pieces[i] = pieces[i].rotateClockwise();
 //					pieceRenderer.drawPiece(pieces[i]);
 //				}
-							
-			}
-		} catch (InterruptedException e) {			
-			throw new RuntimeException();
-		}	
+						
+		}
 		stopMusic();
+		eventBus.fire(new StopAllAnimationEvent());
 	}
 	
+	private void pause(long millis) {
+		try{
+			Thread.sleep(millis);
+		} catch(Exception ex){
+			//gulp
+		}
+	}
+
 	private void renderBoard() {
 		logger.debug("Rendering Quadtris board.");
 		renderer.clearScreen();
