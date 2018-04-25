@@ -34,6 +34,20 @@ public class Glyph {
 		return composite;
 	}
 	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Glyph){
+			Glyph o = (Glyph) obj;
+			return o.toString().equals(this.toString());
+		}
+		return false;
+	}
+	
 	public static class Builder{
 		private String base;
 		private boolean bold;

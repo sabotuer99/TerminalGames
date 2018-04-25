@@ -1,5 +1,7 @@
 package whorten.termgames.games.quadtris;
 
+import java.util.Arrays;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,17 +10,16 @@ import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.quadtris.events.ToggleThemeEvent;
-import whorten.termgames.glyphs.BgColor;
+import whorten.termgames.games.quadtris.piece.PieceRenderer;
+import whorten.termgames.games.quadtris.well.WellRenderer;
 import whorten.termgames.glyphs.FgColor;
-import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
-import whorten.termgames.utils.BoxDrawingGenerator;
+import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
-import whorten.termgames.utils.StringUtils;
 
 public class Quadtris extends Game {
 
@@ -29,16 +30,27 @@ public class Quadtris extends Game {
 	EventListener<KeyDownEvent> keyListener;
 	EventListener<ToggleThemeEvent> themeListener;
 	private GameBorder gb;
-	private int speed;
+	private Coord wellOrigin;
+	private int level = 0;
+	private WellRenderer wellRenderer;
 	
 	@Override
 	public void plugIn(GameConsole console) {
-		resetGameState(console);	
+		resetGameState(console);
 		renderBoard();				
 		initializeListeners();
 		logger.debug(String.format("Keyboard event driver listening? %b.", console.isKeyboardEventDriverListening()));
 		run();
 		removeListeners();
+	}
+	
+	@Override
+	protected void resetGameState(GameConsole console) {
+		super.resetGameState(console);
+		this.wellOrigin = new Coord(7,3);
+		this.wellRenderer = new WellRenderer.Builder(renderer)
+				.withOriginOffset(wellOrigin).build();
+				
 	}
 
 	@Override
@@ -46,19 +58,60 @@ public class Quadtris extends Game {
 		return "Quadtris";
 	}	
 
+	private void run() {
+		
+		playMusic(currentTheme);
+		
+//		Piece[] pieces = new Piece[7];
+//		pieces[0] = PieceFactory.getT(new Coord(3, 1));
+//		pieces[1] = PieceFactory.getJ(new Coord(7, 1));
+//		pieces[2] = PieceFactory.getL(new Coord(3, 5));
+//		pieces[3] = PieceFactory.getO(new Coord(7, 5));
+//		pieces[4] = PieceFactory.getZ(new Coord(3, 9));
+//		pieces[5] = PieceFactory.getS(new Coord(7, 9));
+//		pieces[6] = PieceFactory.getI(new Coord(5, 14));
+		
+		try {
+			while (running) {			
+				Thread.sleep(150 - 10* Math.min(level , 10));
+				
+				for(int i = 0; i < 17; i++){
+					wellRenderer.drawFlashes(Arrays.asList(i, i+2));
+				}
+				
+//				for(int i = 0; i < 7; i++){
+//					pieceRenderer.clearPiece(pieces[i]);
+//					pieces[i] = pieces[i].rotateClockwise();
+//					pieceRenderer.drawPiece(pieces[i]);
+//				}
+							
+			}
+		} catch (InterruptedException e) {			
+			throw new RuntimeException();
+		}	
+		stopMusic();
+	}
+	
 	private void renderBoard() {
 		logger.debug("Rendering Quadtris board.");
 		renderer.clearScreen();
 		gb = defaultGameBorder(renderer);
-		renderer.drawGlyphCollection(gb.getGlyphCoords());
-		
+		renderer.drawGlyphCollection(gb.getGlyphCoords());		
+		updateScore(0);
+		drawMenu();
+		updateSound();
+		updateTheme();		
+		wellRenderer.drawBlockWell();
+	}
+
+	private void drawMenu() {
 		GlyphString title = new GlyphString.Builder("-={ QuadTris }=-")
-									.withBgColor(BgColor.LIGHT_MAGENTA)
-									.withFgColor(FgColor.BLACK)
-									.build();
+				.isBold(true)
+				.withBgColor(100,0,200)
+				.withFgColor(255,255,200)
+				.build();
 		renderer.drawAt(4, 62, title);
 		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
-		updateScore(1);
 		//                                               ###################
 		GlyphString instr1 = menuBuilder.withBaseString("[← →]  move piece  ").build();
 		GlyphString instr2 = menuBuilder.withBaseString("[ ↓ ]  drop piece  ").build();
@@ -74,55 +127,8 @@ public class Quadtris extends Game {
 		renderer.drawAt(17, 61, instr5);
 		renderer.drawAt(19, 61, instr8);
 		renderer.drawAt(20, 61, instr9);
-		updateSound();
-		updateTheme();
-		
-		//Draw inner play area
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < 20; i++){
-			sb.append("##")
-			  .append(StringUtils.repeat(" ", 20))
-			  .append("##")
-			  .append("\n");
-		}
-		sb.append(StringUtils.repeat("#", 24)).append("\n");
-		//sb.append(StringUtils.repeat("#", 24));
-		//String[] lines = new BoxDrawingGenerator().transform(sb.toString().split("\n"));
-		String[] lines = sb.toString().split("\n");
-		for(int i = 0; i < lines.length; i++){
-			String line = lines[i];
-			for(int j = 0; j < lines[0].length(); j++){
-				String cell = Character.toString(line.charAt(j));
-				if(!" ".equals(cell)){
-					Glyph glyph = new Glyph.Builder("╳")
-							.isBold(true)
-							.withForegroundColor(0,125,255)
-							.withBackgroundColor(0,0,255)
-							.build();
-					renderer.drawAt(3+i, 5+j, glyph);
-				}
-			}
-		}
-	}
-	
-
-
-	private void run() {
-		
-		playMusic(currentTheme);
-		
-		try {
-			while (running) {
-				
-				Thread.sleep(150 - 10*speed);
-			}
-		} catch (InterruptedException e) {			
-			throw new RuntimeException();
-		}	
-		stopMusic();
 	}
 
-	
 	private void removeListeners() {
 		logger.debug("Removing SnakeGame listeners.");
 		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	
@@ -137,7 +143,6 @@ public class Quadtris extends Game {
 		eventBus.subscribe(ToggleThemeEvent.class, themeListener);
 	}
 	
-
 	private void handleKeyDownEvent(KeyDownEvent ke) {
 		logger.debug(String.format("KeyDown handler called: %s", ke.getKey()));
 		switch (ke.getKey()) {
@@ -247,6 +252,5 @@ public class Quadtris extends Game {
 							.withDefaultLayout()
 							.build();
 	}
-
 
 }

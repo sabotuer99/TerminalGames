@@ -14,15 +14,29 @@ public class GlyphString {
 		return new ArrayList<>(glyphs);
 	}
 	
+	public GlyphString append(GlyphString next){
+		glyphs.addAll(next.getGlyphs());
+		stringRep += next.toString();
+		return this;
+	}
+	
 	@Override
 	public String toString(){
 		return stringRep;
 	}
 	
-	public GlyphString append(GlyphString next){
-		glyphs.addAll(next.getGlyphs());
-		stringRep += next.toString();
-		return this;
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof GlyphString){
+			GlyphString o = (GlyphString) obj;
+			return o.toString().equals(this.toString());
+		}
+		return false;
 	}
 	
 	public static class Builder{
