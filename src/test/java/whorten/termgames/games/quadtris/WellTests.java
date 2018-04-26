@@ -83,6 +83,48 @@ public class WellTests {
 	}
 	
 	@Test
+	public void toString_wellWithMultiplePiece_piecesShown(){
+		Well sut = getSut();
+		Piece testPiece = new Piece.Builder(new Coord(4,2))
+				.addOffset(new Coord(0,0))
+				.addOffset(new Coord(-1,0))
+				.addOffset(new Coord(0,-1))
+				.addOffset(new Coord(1,0))
+				.build();
+		sut.addPiece(testPiece);
+		sut.addPiece(testPiece);
+		sut.addPiece(testPiece);
+		sut.addPiece(testPiece);
+		
+		String result = sut.toString();
+		String expected = 
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|          |\n" +
+				"|    X     |\n" +
+				"|   XXX    |\n" +
+				"|    X     |\n" +
+				"|   XXX    |\n" +
+				"|    X     |\n" +
+				"|   XXX    |\n" +
+				"|    X     |\n" +
+				"|   XXX    |\n" +
+				"+----------+";
+		System.out.println(expected);
+		System.out.println(result);
+		assertEquals(expected, result);
+	}
+	
+	@Test
 	public void addPiece_spaceBelowPiece_pieceDroppedToBottom(){
 		Well sut = getSut();
 		Piece testPiece = new Piece.Builder(new Coord(4,5))

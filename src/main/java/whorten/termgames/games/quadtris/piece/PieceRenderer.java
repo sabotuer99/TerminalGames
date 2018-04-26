@@ -17,6 +17,10 @@ public class PieceRenderer {
 		Set<Coord> transCoords = transformCoords(piece.getCoords());
 		Glyph.Builder baseBuilder = new Glyph.Builder(piece.getDefaultCell());
 		for(Coord c : transCoords){
+			if(c.getRow() <= 1){
+				continue; //don't overdraw the game border
+			}
+			
 			if(c.getCol() % 2 == originOffset.getCol() % 2){ // even column relative to originOffset
 				baseBuilder.withBase("⌊").withForegroundColor(64, 64, 64);
 			} else {
@@ -29,6 +33,9 @@ public class PieceRenderer {
 	public void clearPiece(Piece piece){
 		Set<Coord> transCoords = transformCoords(piece.getCoords());
 		for(Coord c : transCoords){
+			if(c.getRow() <= 1){
+				continue; //don't overdraw the game border
+			}
 			renderer.clear(c.getRow(), c.getCol());
 		}
 	}

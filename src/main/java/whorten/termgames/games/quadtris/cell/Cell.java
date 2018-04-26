@@ -1,4 +1,4 @@
-package whorten.termgames.games.quadtris.well;
+package whorten.termgames.games.quadtris.cell;
 
 import java.util.ArrayList;
 import java.util.List;

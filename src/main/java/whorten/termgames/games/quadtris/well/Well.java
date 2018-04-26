@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import whorten.termgames.events.EventBus;
+import whorten.termgames.games.quadtris.cell.Cell;
 import whorten.termgames.games.quadtris.events.FullRowsEvent;
 import whorten.termgames.games.quadtris.piece.Piece;
 import whorten.termgames.utils.Coord;
@@ -68,6 +69,10 @@ public class Well {
 	}
 
 	private void removeRows(List<Integer> rows) {
+		if(rows == null || rows.size() == 0){
+			return;
+		}
+		
 		Collections.sort(rows);
 		for(Integer index : rows){
 			Cell[] row = grid[index];
@@ -133,6 +138,27 @@ public class Well {
 			finalPiece = finalPiece.moveDown(1);
 		}
 		return finalPiece;
+	}
+
+
+	public boolean isInUprights(Piece piece) {
+		for(Coord coord : piece.getCoords()){
+			// check if in vertical bounds
+			if(coord.getCol() < 0 || coord.getCol() >= 10){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isTouchingBottom(Piece piece) {
+		for(Coord coord : piece.getCoords()){
+			// check if in vertical bounds
+			if(coord.getRow() >= 19){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

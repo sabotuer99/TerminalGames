@@ -1,14 +1,21 @@
 package whorten.termgames.games.quadtris;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
+import whorten.termgames.animation.events.StartAnimationEvent;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
+import whorten.termgames.games.quadtris.events.FullRowsEvent;
 import whorten.termgames.games.quadtris.events.ToggleThemeEvent;
+import whorten.termgames.games.quadtris.piece.Piece;
+import whorten.termgames.games.quadtris.piece.PieceFactory;
+import whorten.termgames.games.quadtris.well.Well;
 import whorten.termgames.games.quadtris.well.WellRenderer;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.GlyphString;
@@ -27,10 +34,16 @@ public class Quadtris extends Game {
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
 	private EventListener<KeyDownEvent> keyListener;
 	private EventListener<ToggleThemeEvent> themeListener;
+	private EventListener<FullRowsEvent> fullRowsListener;
 	private GameBorder gb;
 	private Coord wellOrigin;
 	private int level = 0;
 	private WellRenderer wellRenderer;
+	private Well well;
+	private Piece currentPiece;
+	private Piece nextPiece;
+	private Coord baseOrigin;
+
 	
 	@Override
 	public void plugIn(GameConsole console) {
@@ -45,6 +58,7 @@ public class Quadtris extends Game {
 	@Override
 	protected void resetGameState(GameConsole console) {
 		super.resetGameState(console);
+		this.well = new Well(eventBus);
 		this.wellOrigin = new Coord(7,3);
 		this.wellRenderer = new WellRenderer.Builder(renderer)
 				.withOriginOffset(wellOrigin).build();
@@ -59,12 +73,34 @@ public class Quadtris extends Game {
 	private void run() {
 		
 		playMusic(currentTheme);
+		baseOrigin = new Coord(5,-2);
+		currentPiece = PieceFactory.getRandomPiece(baseOrigin);
+		nextPiece = PieceFactory.getRandomPiece(baseOrigin);
+		wellRenderer.previewPiece(nextPiece);
+		
 		while (running) {			
-			pause(150 - 10* Math.min(level , 10));
-			
-			//each tick, move piece down one if it can. If it can't
-			//move down, it has hit
-
+			pause(150 - 10* Math.min(level , 10));	
+			//check that current piece is not blocked
+			if(!well.isOccupied(currentPiece)){
+				Piece down = currentPiece.moveDown(1);
+				if(!well.isOccupied(down) && !well.isTouchingBottom(currentPiece)){
+					wellRenderer.clearPiece(currentPiece);
+					currentPiece = down;
+					wellRenderer.drawPiece(currentPiece);
+				} else {
+				    if(well.isLegal(currentPiece)){
+				    	getNextPiece();
+				    } else {
+				    	//not legal, i.e. out the top
+				    	running = false;
+				    	pause(500);
+				    }
+				}
+			} else {
+				//piece overlaps, game over
+				running = false;
+		    	pause(500);
+			}
 						
 		}
 		stopMusic();
@@ -120,16 +156,27 @@ public class Quadtris extends Game {
 		logger.debug("Removing SnakeGame listeners.");
 		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	
 		eventBus.unsubscribe(ToggleThemeEvent.class, themeListener);
+		eventBus.unsubscribe(FullRowsEvent.class, fullRowsListener);
 	}
 
 	private void initializeListeners() {
 		logger.debug("Initializing SnakeGame listeners.");
 		keyListener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
 		themeListener = (ToggleThemeEvent tte) -> {handleToggleThemeEvent(tte);};
+		fullRowsListener = (FullRowsEvent fre) -> {handleFullRowsEvent(fre);};
 		eventBus.subscribe(KeyDownEvent.class, keyListener);
 		eventBus.subscribe(ToggleThemeEvent.class, themeListener);
+		eventBus.subscribe(FullRowsEvent.class, fullRowsListener);
 	}
 	
+	
+	private void handleFullRowsEvent(FullRowsEvent fre) {
+		List<Integer> rows = fre.getRows();
+		eventBus.fire(new StartAnimationEvent(wellRenderer.createLineFlashAnimation(rows)));
+		pause(150);
+		wellRenderer.drawWellCells(well);
+	}
+
 	private void handleKeyDownEvent(KeyDownEvent ke) {
 		logger.debug(String.format("KeyDown handler called: %s", ke.getKey()));
 		switch (ke.getKey()) {
@@ -172,18 +219,36 @@ public class Quadtris extends Game {
 	}
 	
 	private void moveLeft() {
-		// TODO Auto-generated method stub
-		
+		Piece left = currentPiece.moveLeft(1);
+		if(!well.isOccupied(left) && well.isInUprights(left)){
+				wellRenderer.clearPiece(currentPiece);
+				currentPiece = left;
+				wellRenderer.drawPiece(currentPiece);
+		}
 	}
 
 	private void moveRight() {
-		// TODO Auto-generated method stub
-		
+		Piece right = currentPiece.moveRight(1);
+		if(!well.isOccupied(right) && well.isInUprights(right)){
+				wellRenderer.clearPiece(currentPiece);
+				currentPiece = right;
+				wellRenderer.drawPiece(currentPiece);
+		}
 	}
 
 	private void drop() {
-		// TODO Auto-generated method stub
-		
+		if(well.isLegal(currentPiece)){
+			well.addPiece(currentPiece);
+			wellRenderer.drawWellCells(well);
+			getNextPiece();
+		}	
+	}
+
+	private void getNextPiece() {
+		currentPiece = nextPiece;
+		wellRenderer.drawPiece(currentPiece);
+		nextPiece = PieceFactory.getRandomPiece(baseOrigin);
+		wellRenderer.previewPiece(nextPiece);
 	}
 
 	private void handleToggleThemeEvent(ToggleThemeEvent tte){
