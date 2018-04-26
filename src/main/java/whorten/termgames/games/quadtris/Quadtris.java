@@ -1,13 +1,9 @@
 package whorten.termgames.games.quadtris;
 
-import java.util.Arrays;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
-import whorten.termgames.animation.Animation;
-import whorten.termgames.animation.events.StartAnimationEvent;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
@@ -63,30 +59,12 @@ public class Quadtris extends Game {
 	private void run() {
 		
 		playMusic(currentTheme);
-		
-//		Piece[] pieces = new Piece[7];
-//		pieces[0] = PieceFactory.getT(new Coord(3, 1));
-//		pieces[1] = PieceFactory.getJ(new Coord(7, 1));
-//		pieces[2] = PieceFactory.getL(new Coord(3, 5));
-//		pieces[3] = PieceFactory.getO(new Coord(7, 5));
-//		pieces[4] = PieceFactory.getZ(new Coord(3, 9));
-//		pieces[5] = PieceFactory.getS(new Coord(7, 9));
-//		pieces[6] = PieceFactory.getI(new Coord(5, 14));
-		
-
 		while (running) {			
+			pause(150 - 10* Math.min(level , 10));
 			
-			for(int i = 0; i < 18 && running; i++){
-				Animation flashes = wellRenderer.createLineFlashAnimation(Arrays.asList(i));
-				eventBus.fire(new StartAnimationEvent(flashes));
-				pause(150 - 10* Math.min(level , 10));
-			}
-			
-//				for(int i = 0; i < 7; i++){
-//					pieceRenderer.clearPiece(pieces[i]);
-//					pieces[i] = pieces[i].rotateClockwise();
-//					pieceRenderer.drawPiece(pieces[i]);
-//				}
+			//each tick, move piece down one if it can. If it can't
+			//move down, it has hit
+
 						
 		}
 		stopMusic();

@@ -74,6 +74,8 @@ public class Piece {
 
 		public Builder(Coord baseCoord) {
 			this.baseCoord = baseCoord;
+			this.offSets = new HashSet<>();
+			this.defaultGlyph = new Glyph.Builder("X").build();
 		}
 
 		public Builder(Piece basePiece) {
@@ -83,8 +85,8 @@ public class Piece {
 		}
 
 		public Piece build() {
-			if (baseCoord == null || offSets == null || offSets.size() != 4 || defaultGlyph == null) {
-				throw new IllegalStateException("Must set baseCoord, 4 Offset Coords, and a default Glyph!");
+			if (offSets.size() != 4) {
+				throw new IllegalStateException("Must set 4 Offset Coords, no more, no less...");
 			}
 
 			Piece p = new Piece(this.baseCoord, this.offSets);
@@ -93,18 +95,32 @@ public class Piece {
 		}
 
 		public Builder withDefaultGlyph(Glyph defaultGlyph) {
+			checkNull(defaultGlyph, "Default Glyph");
 			this.defaultGlyph = defaultGlyph;
 			return this;
 		}
 
 		public Builder withOffsets(Set<Coord> offSets) {
+			checkNull(offSets, "Offsets");
 			this.offSets = new HashSet<>(offSets);
+			return this;
+		}
+		
+		public Builder addOffset(Coord offSet) {
+			this.offSets.add(offSet);
 			return this;
 		}
 
 		public Builder withBaseCoord(Coord baseCoord) {
+			checkNull(baseCoord, "Base Coord");
 			this.baseCoord = baseCoord;
 			return this;
+		}
+
+		private void checkNull(Object thing, String var) {
+			if (thing == null) {
+				throw new IllegalStateException(String.format("%s cannot be null!", var));
+			}
 		}
 	}
 }

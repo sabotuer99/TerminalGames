@@ -75,7 +75,7 @@ public class Coord {
 	
 	@Override
 	public String toString() {
-		return String.format("[Coord: col: [%d], row: [%d]]", col, row);
+		return String.format("Coord: col: [%d], row: [%d]", col, row);
 	}
 	
 	@Override
