@@ -1,4 +1,4 @@
-package whorten.termgames.games.quadtris;
+package whorten.termgames.games.quadtris.piece;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

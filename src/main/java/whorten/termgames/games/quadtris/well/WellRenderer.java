@@ -27,6 +27,8 @@ public class WellRenderer {
 	private CellRenderer cellRenderer;
 	private Glyph boxBorder;
 	
+	private WellRenderer(){};
+	
 	public void previewPiece(Piece piece){
 		clearPreview();
 		Coord center = new Coord(offsetCol(8),offsetRow(1));
@@ -35,9 +37,8 @@ public class WellRenderer {
 	}
 	
 	public void clearPreview(){
-		GlyphString clearRow = new GlyphString.Builder(repeat(" ", 10)).build();
 		for(int i = 0; i < 5; i++){
-			renderer.drawAt(offsetRow(i+2),offsetCol(26),clearRow);
+			renderer.clearRowRange(offsetRow(i+2),offsetCol(26),10);		
 		}
 	}
 
@@ -146,9 +147,8 @@ public class WellRenderer {
 	}
 	
 	private void clearWellInterior() {
-		GlyphString clearRow = new GlyphString.Builder(repeat(" ", 20)).build();
 		for(int i = 0; i < 20; i++){
-			renderer.drawAt(offsetRow(i),offsetCol(0),clearRow);
+			renderer.clearRowRange(offsetRow(i),offsetCol(0),20);
 		}
 	}
 

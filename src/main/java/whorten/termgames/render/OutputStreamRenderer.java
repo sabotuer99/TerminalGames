@@ -85,8 +85,7 @@ public class OutputStreamRenderer implements Renderer {
 	@Override
 	public synchronized void revert(int row, int col) {
 		Glyph old = screenBuffer.revertAt(row, col);
-		nav.positionCursor(row, col);
-		out.print(old);
+		drawAt(row, col, old);
 	}
 
 	@Override
@@ -109,6 +108,17 @@ public class OutputStreamRenderer implements Renderer {
 	@Override
 	public synchronized void turnOnCursor() {
 		nav.cursorShow();
+	}
+
+	@Override
+	public synchronized void clearRowRange(int row, int col, int length) {
+		StringBuffer mask = new StringBuffer();
+		for(int i = 0; i < length; i++){
+			screenBuffer.clearAt(row, col + i);
+			mask.append(" ");
+		}		
+		nav.positionCursor(row, col);
+		out.print(mask.toString());
 	}
 
 

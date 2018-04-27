@@ -15,8 +15,8 @@ import whorten.termgames.utils.Coord;
 public class Well {
 
 	//can generalize this later if I ever want a nonstandard field
-	//2d array is for spacial relationship
-	//Coord and Cell serts are for membership checks and easy rendering
+	//2d array is for spatial relationship
+	//Coord and Cell sets are for membership checks and easy rendering
 	private Cell[][] grid = new Cell[20][10];
 	private Set<Coord> occupiedLocations = new HashSet<>();
 	private Set<Cell> cells = new HashSet<>();
@@ -24,8 +24,12 @@ public class Well {
 	
 	public Well(EventBus eventBus){
 		this.eventBus = eventBus;
-	}
-	
+		for(int row = 0; row < 20; row++){
+			for(int col = 0; col < 10; col++){
+				grid[row][col] = Cell.EMPTY;
+			}
+		}
+	}	
 	
 	public Set<Cell> getCells(){
 		return new HashSet<>(cells);
@@ -37,13 +41,22 @@ public class Well {
 		for(Cell[] row : grid){
 			sb.append("|");
 			for(Cell cell : row){
-				sb.append(cell == null ? " " : "X");
+				sb.append(cell == Cell.EMPTY ? " " : "X");
 			}
 			sb.append("|\n");
 		}
 		sb.append("+----------+");
 		return sb.toString();
 	}
+
+	public void addCell(Cell cell){
+		checkCellInvariants(cell);
+		Coord loc = cell.getCoord();
+		grid[loc.getRow()][loc.getCol()] = cell;
+		cells.add(cell);
+		occupiedLocations.add(loc);
+	}
+
 
 
 	public boolean isOccupied(Coord coord){
@@ -77,17 +90,13 @@ public class Well {
 		for(Integer index : rows){
 			Cell[] row = grid[index];
 			for(int i = index; i >= 0; i--){
-				for(int j = 0; j < row.length; j++){
-					
-					if(i == index){
-						cells.remove(grid[i][j]);
-						occupiedLocations.remove(grid[i][j].getCoord());
-					}
-
+				for(int j = 0; j < row.length; j++){					
+					forgetCell(grid[i][j]);	
 					if(i > 0){
-						grid[i][j] = grid[i-1][j];
+						grid[i][j] = grid[i-1][j].moveDown(1);
+						recordCell(grid[i][j]);						
 					} else { // i == 0
-						grid[i][j] = null;
+						grid[i][j] = Cell.EMPTY;
 					}
 				}
 
@@ -97,10 +106,24 @@ public class Well {
 		eventBus.fire(new FullRowsEvent(new ArrayList<>(rows)));
 	}
 
+	private void recordCell(Cell cell) {
+		if(cell != Cell.EMPTY){
+			cells.add(cell);
+			occupiedLocations.add(cell.getCoord());
+		}
+	}
+	
+	private void forgetCell(Cell cell) {
+		if(cell != Cell.EMPTY){
+			cells.remove(cell);
+			occupiedLocations.remove(cell.getCoord());
+		}
+	}
+
 	private boolean isFullRow(int index) {
 		Cell[] row = grid[index];
 		for(Cell cell : row){
-			if(cell == null){
+			if(cell == Cell.EMPTY){
 				return false;
 			}
 		}
@@ -132,7 +155,7 @@ public class Well {
 		return false;
 	}
 
-	private Piece applyGravity(Piece piece) {
+	public Piece applyGravity(Piece piece) {
 		Piece finalPiece = piece;
 		while(isLegal(finalPiece.moveDown(1))){
 			finalPiece = finalPiece.moveDown(1);
@@ -160,5 +183,19 @@ public class Well {
 		}
 		return false;
 	}
+	
+	private void checkCellInvariants(Cell cell) {
+		if(cell == null){
+			throw new IllegalArgumentException("Cell cannot be null");
+		}
+		Coord loc = cell.getCoord();
+		if(loc.getRow() < 0 || loc.getRow() >= 20){
+			throw new IllegalArgumentException("Cell row is out of bounds");
+		}
+		if(loc.getCol() < 0 || loc.getCol() >= 10){
+			throw new IllegalArgumentException("Cell col is out of bounds");
+		}
+	}
+
 	
 }
