@@ -2,11 +2,15 @@ package whorten.termgames.games.quadtris.well;
 
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import whorten.termgames.events.EventBus;
+import whorten.termgames.games.quadtris.events.FullRowsEvent;
 import whorten.termgames.games.quadtris.piece.Piece;
-import whorten.termgames.games.quadtris.well.Well;
+import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.utils.Coord;
 
 public class WellTests {
@@ -161,13 +165,41 @@ public class WellTests {
 					.withBaseCoord(new Coord(i,5))
 					.build();
 			sut.addPiece(p);
-			//System.out.println(sut.toString());
+			System.out.println(sut.toString());
 		}
 				
 		assertFalse(sut.isOccupied(new Coord(4,19))); //base Coordinate at bottom
 		assertFalse(sut.isOccupied(new Coord(3,19))); 
 		assertFalse(sut.isOccupied(new Coord(5,19))); 
 		assertFalse(sut.isOccupied(new Coord(4,18))); 
+	}
+	
+	@Test
+	public void addPiece_createsLine_firesEventWithRows(){
+		EventBus eb = new EventBus();
+		Well sut = new Well(eb);
+		FullRowsEvent[] events = new FullRowsEvent[1];
+		eb.subscribe(FullRowsEvent.class, (FullRowsEvent fre) -> events[0] = fre);
+		
+		Piece base = new Piece.Builder(new Coord(0,5)) //square
+				.addOffset(new Coord(0,0))
+				.addOffset(new Coord(0,-1))
+				.addOffset(new Coord(1,-1))
+				.addOffset(new Coord(1,0))
+				.build();
+		for(int i = 0; i < 10; i += 2){
+			Piece p = new Piece.Builder(base)
+					.withBaseCoord(new Coord(i,5))
+					.build();
+			sut.addPiece(p);
+		}
+				
+		FullRowsEvent event = events[0];
+		assertNotNull(event);
+		assertNotNull(event.getRows());
+		assertEquals(2, event.getRows().size());
+		assertTrue(event.getRows().contains(19));
+		assertTrue(event.getRows().contains(18));
 	}
 	
 	@Test
@@ -203,7 +235,7 @@ public class WellTests {
 	@Test
 	public void isOccupied_pieceAboveWell_returnsFalse(){
 		Well sut = getSut();
-		Piece base = new Piece.Builder(new Coord(-2,5)) //square
+		Piece base = new Piece.Builder(new Coord(5,-2)) //square
 				.addOffset(new Coord(0,0))
 				.addOffset(new Coord(0,-1))
 				.addOffset(new Coord(1,-1))
@@ -218,7 +250,7 @@ public class WellTests {
 	@Test
 	public void isLegal_pieceAboveWell_returnsFalse(){
 		Well sut = getSut();
-		Piece base = new Piece.Builder(new Coord(-2,5)) //square
+		Piece base = new Piece.Builder(new Coord(5,-2)) //square
 				.addOffset(new Coord(0,0))
 				.addOffset(new Coord(0,-1))
 				.addOffset(new Coord(1,-1))
@@ -230,8 +262,41 @@ public class WellTests {
 		assertFalse(isLegal);
 	}
 	
+	@Test
+	public void applyGravity_emptyWell_returnedPieceIsAtBottom(){
+		Well sut = getSut();
+		Piece base = new Piece.Builder(new Coord(-2,5)) //square
+				.addOffset(new Coord(0,0))
+				.addOffset(new Coord(0,-1))
+				.addOffset(new Coord(1,-1))
+				.addOffset(new Coord(1,0))
+				.build();	
+
+		Set<Coord> result = sut.applyGravity(getOPiece(new Coord(5,0)))
+								.getCoords();
+
+		assertTrue(result.contains(new Coord(6,18)));
+		assertTrue(result.contains(new Coord(5,18)));
+		assertTrue(result.contains(new Coord(5,19)));
+		assertTrue(result.contains(new Coord(4,18)));
+	}
+	
 
 	private Well getSut() {
 		return new Well(eventBus);
+	}
+	
+	private Piece getOPiece(Coord baseCoord){
+		Set<Coord> coords = new HashSet<>();
+		coords.add(new Coord(1,0));
+		coords.add(new Coord(0,0));
+		coords.add(new Coord(0,1));
+		coords.add(new Coord(-1,0));
+		Glyph glyph = new Glyph.Builder("X").build();
+		
+		return new Piece.Builder(baseCoord)
+				.withOffsets(coords)
+				.withDefaultGlyph(glyph)
+				.build();
 	}
 }

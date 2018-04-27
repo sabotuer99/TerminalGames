@@ -52,6 +52,18 @@ public class PieceTests {
 	}
 	
 	@Test
+	public void moveDown_returnsAppropriateCoords(){	
+		Piece sut = getSut();
+		
+		Set<Coord> result = sut.moveDown(1).getCoords();
+	
+		assertTrue(result.contains(new Coord( 1,1)));
+		assertTrue(result.contains(new Coord( 0,1)));
+		assertTrue(result.contains(new Coord( 0,2)));
+		assertTrue(result.contains(new Coord(-1,1)));
+	}
+	
+	@Test
 	public void toAsciiString_doesTheRightThing(){
 		Piece sut = getSut();
 		

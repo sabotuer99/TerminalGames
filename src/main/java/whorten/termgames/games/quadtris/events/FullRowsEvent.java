@@ -10,7 +10,7 @@ public class FullRowsEvent implements Event{
 	private List<Integer> rows;
 	
 	public FullRowsEvent(List<Integer> rows){
-		rows = new ArrayList<>(rows);
+		this.rows = new ArrayList<>(rows);
 	}
 	
 	public List<Integer> getRows(){

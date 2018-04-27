@@ -89,17 +89,17 @@ public class Quadtris extends Game {
 					wellRenderer.drawPiece(currentPiece);
 				} else {
 				    if(well.isLegal(currentPiece)){
-				    	getNextPiece();
+				    	drop();
 				    } else {
 				    	//not legal, i.e. out the top
 				    	running = false;
-				    	pause(500);
+				    	pause(3000);
 				    }
 				}
 			} else {
 				//piece overlaps, game over
 				running = false;
-		    	pause(500);
+		    	pause(3000);
 			}
 						
 		}
@@ -173,7 +173,7 @@ public class Quadtris extends Game {
 	private void handleFullRowsEvent(FullRowsEvent fre) {
 		List<Integer> rows = fre.getRows();
 		eventBus.fire(new StartAnimationEvent(wellRenderer.createLineFlashAnimation(rows)));
-		pause(150);
+		pause(250);
 		wellRenderer.drawWellCells(well);
 	}
 
@@ -184,20 +184,27 @@ public class Quadtris extends Game {
 		case "q":
 			running = false;
 			break;
-		case "K":
 		case Keys.DOWN_ARROW:
 			// DROP PIECE
 			drop();
 			break;
-		case "L":
 		case Keys.RIGHT_ARROW:
 			// MOVE PIECE RIGHT
 			moveRight();
 			break;
-		case "J":
 		case Keys.LEFT_ARROW:
 			// MOVE PIECE LEFT
 			moveLeft();
+			break;
+		case "z":
+		case "Z":
+			// ROTATE CCW
+			counterClockWise();
+			break;
+		case "x":
+		case "X":
+			// ROTATE CW
+			clockWise();
 			break;
 		case "m":
 		case "M":
@@ -218,6 +225,24 @@ public class Quadtris extends Game {
 		}
 	}
 	
+	private void clockWise() {
+		Piece cw = currentPiece.rotateClockwise();
+		if(!well.isOccupied(cw) && well.isInUprights(cw)){
+				wellRenderer.clearPiece(currentPiece);
+				currentPiece = cw;
+				wellRenderer.drawPiece(currentPiece);
+		}
+	}
+
+	private void counterClockWise() {
+		Piece ccw = currentPiece.rotateCounterClockwise();
+		if(!well.isOccupied(ccw) && well.isInUprights(ccw)){
+				wellRenderer.clearPiece(currentPiece);
+				currentPiece = ccw;
+				wellRenderer.drawPiece(currentPiece);
+		}
+	}
+
 	private void moveLeft() {
 		Piece left = currentPiece.moveLeft(1);
 		if(!well.isOccupied(left) && well.isInUprights(left)){
@@ -238,8 +263,9 @@ public class Quadtris extends Game {
 
 	private void drop() {
 		if(well.isLegal(currentPiece)){
+			wellRenderer.clearPiece(currentPiece);
+			wellRenderer.drawPiece(well.applyGravity(currentPiece));
 			well.addPiece(currentPiece);
-			wellRenderer.drawWellCells(well);
 			getNextPiece();
 		}	
 	}
@@ -249,6 +275,7 @@ public class Quadtris extends Game {
 		wellRenderer.drawPiece(currentPiece);
 		nextPiece = PieceFactory.getRandomPiece(baseOrigin);
 		wellRenderer.previewPiece(nextPiece);
+		wellRenderer.drawWellCells(well);
 	}
 
 	private void handleToggleThemeEvent(ToggleThemeEvent tte){
