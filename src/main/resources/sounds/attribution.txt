@@ -5,3 +5,5 @@ slither.wav : https://freesound.org/people/kwahmah_02/sounds/269311/
 nom.wav     : https://freesound.org/people/PaulMorek/sounds/172033/
 oof.wav     : https://freesound.org/people/fotoshop/sounds/47356/
 boop.wav    : https://freesound.org/people/fordps3/sounds/186669/
+beep.wav    : https://freesound.org/people/altemark/sounds/39747/
+thunk.wav   : https://freesound.org/people/moca/sounds/49041/

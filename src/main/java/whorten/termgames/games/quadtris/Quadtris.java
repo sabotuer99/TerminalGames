@@ -21,6 +21,7 @@ import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.Renderer;
+import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Coord;
@@ -30,6 +31,9 @@ public class Quadtris extends Game {
 
 	private final static String THEME_A = "midi/Quadtris_ThemeA.mid";
 	private final static String THEME_B = "midi/Quadtris_ThemeB.mid";	
+	private static final String BEEP_SOUND = "sounds/beep.wav";
+	private static final String BOOP_SOUND = "sounds/boop.wav";
+	private static final String THUNK_SOUND = "sounds/thunk.wav";
 	private String currentTheme = THEME_A;
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
 	private EventListener<KeyDownEvent> keyListener;
@@ -229,8 +233,11 @@ public class Quadtris extends Game {
 		Piece cw = currentPiece.rotateClockwise();
 		if(!well.isOccupied(cw) && well.isInUprights(cw)){
 				wellRenderer.clearPiece(currentPiece);
+				wellRenderer.clearPiece(currentPiece);
 				currentPiece = cw;
 				wellRenderer.drawPiece(currentPiece);
+				eventBus.fire(new PlaySoundEvent(BOOP_SOUND));
+
 		}
 	}
 
@@ -238,8 +245,11 @@ public class Quadtris extends Game {
 		Piece ccw = currentPiece.rotateCounterClockwise();
 		if(!well.isOccupied(ccw) && well.isInUprights(ccw)){
 				wellRenderer.clearPiece(currentPiece);
+				wellRenderer.clearPiece(currentPiece);
 				currentPiece = ccw;
 				wellRenderer.drawPiece(currentPiece);
+				eventBus.fire(new PlaySoundEvent(BOOP_SOUND));
+
 		}
 	}
 
@@ -247,8 +257,10 @@ public class Quadtris extends Game {
 		Piece left = currentPiece.moveLeft(1);
 		if(!well.isOccupied(left) && well.isInUprights(left)){
 				wellRenderer.clearPiece(currentPiece);
+				wellRenderer.clearPiece(currentPiece);
 				currentPiece = left;
 				wellRenderer.drawPiece(currentPiece);
+				eventBus.fire(new PlaySoundEvent(BEEP_SOUND));
 		}
 	}
 
@@ -256,17 +268,21 @@ public class Quadtris extends Game {
 		Piece right = currentPiece.moveRight(1);
 		if(!well.isOccupied(right) && well.isInUprights(right)){
 				wellRenderer.clearPiece(currentPiece);
+				wellRenderer.clearPiece(currentPiece);
 				currentPiece = right;
 				wellRenderer.drawPiece(currentPiece);
+				eventBus.fire(new PlaySoundEvent(BEEP_SOUND));
 		}
 	}
 
 	private void drop() {
 		if(well.isLegal(currentPiece)){
 			wellRenderer.clearPiece(currentPiece);
+			wellRenderer.clearPiece(currentPiece);
 			wellRenderer.drawPiece(well.applyGravity(currentPiece));
 			well.addPiece(currentPiece);
 			getNextPiece();
+			eventBus.fire(new PlaySoundEvent(THUNK_SOUND));
 		}	
 	}
 
