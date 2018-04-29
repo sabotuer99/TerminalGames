@@ -193,6 +193,8 @@ public class Quadtris extends Game {
 		case TRANSLATION:
 			sound = BEEP_SOUND;
 			break;
+		default:
+			break;
 		}
 		return sound;
 	}

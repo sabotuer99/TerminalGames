@@ -1,6 +1,9 @@
 package whorten.termgames.games.quadtris.well;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -264,13 +267,7 @@ public class WellTests {
 	
 	@Test
 	public void applyGravity_emptyWell_returnedPieceIsAtBottom(){
-		Well sut = getSut();
-		Piece base = new Piece.Builder(new Coord(-2,5)) //square
-				.addOffset(new Coord(0,0))
-				.addOffset(new Coord(0,-1))
-				.addOffset(new Coord(1,-1))
-				.addOffset(new Coord(1,0))
-				.build();	
+		Well sut = getSut();	
 
 		Set<Coord> result = sut.applyGravity(getOPiece(new Coord(5,0)))
 								.getCoords();
