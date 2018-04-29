@@ -105,14 +105,14 @@ public class GameConsole {
 		
 		if(instance.games.size() == 0){
 			instance.stillPlaying = false;
-			pause(5000);
+			instance.pause(5000);
 		} else {
 			instance.currentGame = instance.games.get(
 					instance.gameNames.get(instance.gameIndex));
 		}
 			
 		while(instance.stillPlaying){
-			pause(100);
+			instance.pause(100);
 			if(instance.gameIsRunning){
 				instance.eventBus.unsubscribe(KeyDownEvent.class, instance.keyDownEventListener);
 				instance.currentGame.plugIn(instance);
@@ -129,7 +129,7 @@ public class GameConsole {
 		System.exit(0);
 	}
 
-	private static void pause(long pauseMillis) {
+	public void pause(long pauseMillis) {
 		try{
 			Thread.sleep(pauseMillis);
 		} catch (Exception ex){
@@ -332,13 +332,18 @@ public class GameConsole {
 	private void handleMidiStartEvent(MidiStartEvent mse) {
 		String path = mse.getPath();
 		byte[] cached = getFileBytes(path);
-		instance.soundPlayer.playMidi(new ByteArrayInputStream(cached), true);
+		if(cached != null){
+			instance.soundPlayer.playMidi(new ByteArrayInputStream(cached), true);
+		}
 	}
 
 	private void handlePlaySoundEvent(PlaySoundEvent pse) {
 		String path = pse.getPath();
 		byte[] cached = getFileBytes(path);
-		instance.soundPlayer.play(new ByteArrayInputStream(cached));
+		if(cached != null){
+			instance.soundPlayer.play(new ByteArrayInputStream(cached));
+		}
+		
 	}
 
 	private byte[] getFileBytes(String path) {
@@ -406,4 +411,9 @@ public class GameConsole {
 	public boolean isSoundOn() {
 		return soundPlayer.isSoundEnabled();
 	}
+	
+	public long getTimeMillis(){
+		return System.currentTimeMillis();
+	}
+	
 }

@@ -173,7 +173,7 @@ public class Well {
 		for(Coord coord : piece.getCoords()){
 			// check bounds
 			if(coord.getCol() < 0 || coord.getCol() >= 10 ||
-			   coord.getRow() < 0 || coord.getRow() >= 20){
+			   coord.getRow() >= 20){
 				return false;
 			}
 			

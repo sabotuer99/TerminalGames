@@ -43,11 +43,15 @@ public class WellRenderer {
 	}
 
 	public void drawPiece(Piece piece){
-		pieceRenderer.drawPiece(piece);
+		synchronized(renderer){
+			pieceRenderer.drawPiece(piece);
+		}
 	}
 	
 	public void clearPiece(Piece piece){
-		pieceRenderer.clearPiece(piece);
+		synchronized(renderer){
+			pieceRenderer.clearPiece(piece);			
+		}
 	}
 	
 	public Animation createLineFlashAnimation(List<Integer> rows){
@@ -141,14 +145,18 @@ public class WellRenderer {
 	
 	public void drawWellCells(Well well){
 		clearWellInterior();
-		for(Cell cell : well.getCells()){
-			cellRenderer.drawCell(cell);
+		synchronized(renderer){
+			for(Cell cell : well.getCells()){
+				cellRenderer.drawCell(cell);
+			}
 		}
 	}
 	
 	private void clearWellInterior() {
-		for(int i = 0; i < 20; i++){
-			renderer.clearRowRange(offsetRow(i),offsetCol(0),20);
+		synchronized(renderer){
+			for(int i = 0; i < 22; i++){
+				renderer.clearRowRange(Math.max(offsetRow(i) - 2,2),offsetCol(0),20);
+			}
 		}
 	}
 

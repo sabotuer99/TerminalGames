@@ -22,6 +22,13 @@ public class GlyphString {
 		return this;
 	}
 	
+	public GlyphString prepend(Glyph first){
+		glyphs.add(0, first);
+		stringRep = first.toString() + stringRep;
+		baseString = first.getBase() + baseString;
+		return this;
+	}
+	
 
 	public String getBaseString() {
 		return baseString;

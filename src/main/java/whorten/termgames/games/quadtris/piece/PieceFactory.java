@@ -3,8 +3,10 @@ package whorten.termgames.games.quadtris.piece;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import whorten.termgames.games.quadtris.piece.Piece.Builder;
@@ -41,10 +43,15 @@ public class PieceFactory {
 				                    .withForegroundColor(0, 255, 255)
 				                    .withBackgroundColor(0, 255, 255)
 				                    .build();
+		Glyph miniGlyph = new Glyph.Builder("|")
+									.withForegroundColor(0, 255, 255)
+									.build();
 		
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("I")
 				.build();
 	}		
 	
@@ -64,9 +71,15 @@ public class PieceFactory {
 					                    .withBackgroundColor(0, 0, 255)
 					                    .build();
 		
+		Glyph miniGlyph = new Glyph.Builder("⅃")
+				.withForegroundColor(0, 0, 255)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("J")
 				.build();
 	}		
 	
@@ -86,9 +99,15 @@ public class PieceFactory {
 						                .withBackgroundColor(255, 127, 0)
 						                .build();
 		
+		Glyph miniGlyph = new Glyph.Builder("L")
+                .withForegroundColor(255, 127, 0)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("L")
 				.build();
 	}	
 	
@@ -107,9 +126,15 @@ public class PieceFactory {
 					                    .withBackgroundColor(255, 255, 0)
 					                    .build();	
 		
+		Glyph miniGlyph = new Glyph.Builder("▫")
+                .withForegroundColor(255, 255, 0)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("O")
 				.build();
 	}		
 	
@@ -128,9 +153,15 @@ public class PieceFactory {
 					                    .withBackgroundColor(0, 255, 0)
 					                    .build();
 		
+		Glyph miniGlyph = new Glyph.Builder("≶")
+                .withForegroundColor(0, 255, 0)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("S")
 				.build();
 	}
 	
@@ -149,9 +180,15 @@ public class PieceFactory {
 					                    .withBackgroundColor(255, 0, 255)
 					                    .build();
 		
+		Glyph miniGlyph = new Glyph.Builder("┬")
+                .withForegroundColor(255, 0, 255)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("T")
 				.build();
 	}
 	
@@ -170,14 +207,29 @@ public class PieceFactory {
 				                    .withBackgroundColor(255, 0, 0)
 				                    .build();
 		
+		Glyph miniGlyph = new Glyph.Builder("≷")
+                .withForegroundColor(255, 0, 0)
+				.build();
+
 		return new Builder(baseCoord)
 				.withDefaultGlyph(defaultCellGlyph)
 				.withOffsets(coords)
+				.withMiniGlyph(miniGlyph)
+				.withName("Z")
 				.build();
 	}
 	
 	public static Piece getRandomPiece(Coord baseCoord) {
-		int index = new Random().nextInt(7);
+		int index = new Random().nextInt(pieceMethods.size());
 		return pieceMethods.get(index).apply(baseCoord);
+	}
+	
+	public static Map<String, Glyph> getNameMiniMap(){
+		Map<String, Glyph> map = new TreeMap<>();
+		for(int i = 0; i < pieceMethods.size(); i++){
+			Piece p = pieceMethods.get(i).apply(new Coord(0, 0));
+			map.put(p.getName(), p.getMiniVersion());
+		}
+		return map;
 	}
 }

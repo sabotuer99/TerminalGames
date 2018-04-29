@@ -13,6 +13,8 @@ public class Piece {
 	private Coord baseCoord;
 	private Set<Coord> offSets = new HashSet<>();
 	private Glyph defaultCellGlyph = null;
+	private Glyph miniGlyph;
+	private String name;
 
 	private Piece(Coord baseCoord) {
 		this(baseCoord, new HashSet<>());
@@ -55,6 +57,14 @@ public class Piece {
 	public Glyph getDefaultCell() {
 		return defaultCellGlyph;
 	}
+	
+	public Glyph getMiniVersion(){
+		return miniGlyph;
+	}
+	
+	public String getName(){
+		return name;
+	}
 
 	@Override
 	public String toString() {
@@ -71,17 +81,23 @@ public class Piece {
 		private Coord baseCoord;
 		private Set<Coord> offSets;
 		private Glyph defaultGlyph;
+		private Glyph miniGlyph;
+		private String name;
 
 		public Builder(Coord baseCoord) {
 			this.baseCoord = baseCoord;
 			this.offSets = new HashSet<>();
 			this.defaultGlyph = new Glyph.Builder("X").build();
+			this.miniGlyph = new Glyph.Builder("?").build();
+			this.name = "?";
 		}
 
 		public Builder(Piece basePiece) {
 			this.baseCoord = basePiece.baseCoord;
 			this.offSets = new HashSet<>(basePiece.offSets);
 			this.defaultGlyph = basePiece.defaultCellGlyph;
+			this.miniGlyph = basePiece.miniGlyph;
+			this.name = basePiece.name;
 		}
 
 		public Piece build() {
@@ -90,7 +106,9 @@ public class Piece {
 			}
 
 			Piece p = new Piece(this.baseCoord, this.offSets);
-			p.defaultCellGlyph = defaultGlyph;
+			p.defaultCellGlyph = this.defaultGlyph;
+			p.miniGlyph = this.miniGlyph;
+			p.name = this.name;
 			return p;
 		}
 
@@ -108,6 +126,18 @@ public class Piece {
 		
 		public Builder addOffset(Coord offSet) {
 			this.offSets.add(offSet);
+			return this;
+		}
+		
+		public Builder withName(String name){
+			checkNull(name, "Name");
+			this.name = name;
+			return this;
+		}
+		
+		public Builder withMiniGlyph(Glyph miniGlyph){
+			checkNull(miniGlyph, "Mini glyph");
+			this.miniGlyph = miniGlyph;
 			return this;
 		}
 
