@@ -169,7 +169,7 @@ public class Quadtris extends Game {
 	
 	private void handleSpawnPieceEvent(SpawnPieceEvent spe) {
 		wellRenderer.previewPiece(quadtrisBoard.getNextPiece());
-		wellRenderer.drawWellCells(quadtrisBoard.getWell());
+		//wellRenderer.drawWellCells(quadtrisBoard.getWell());
 		wellRenderer.drawPiece(quadtrisBoard.getCurrentPiece());
 		updateStats();
 	}

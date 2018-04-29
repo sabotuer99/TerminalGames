@@ -25,7 +25,7 @@ public class QuadtrisBoard {
 	private Counter<String> stats = new Counter<>();
 	private volatile boolean isAlive;
 	
-	public void tick(){
+	public synchronized void tick(){
 		
 		if(well.isLegal(currentPiece)){
 			Piece down = currentPiece.moveDown(1);
@@ -42,7 +42,7 @@ public class QuadtrisBoard {
 		}
 	}
 	
-	public void movePieceLeft(){
+	public synchronized void movePieceLeft(){
 		Piece candidate = currentPiece.moveLeft(1);
 		if(well.isLegal(candidate)){
 			eventBus.fire(new RedrawPieceEvent(currentPiece, candidate, 
@@ -52,7 +52,7 @@ public class QuadtrisBoard {
 		}
 	}
 	
-	public void movePieceRight(){
+	public synchronized void movePieceRight(){
 		Piece candidate = currentPiece.moveRight(1);
 		if(well.isLegal(candidate)){
 			eventBus.fire(new RedrawPieceEvent(currentPiece, candidate, 
@@ -62,7 +62,7 @@ public class QuadtrisBoard {
 		}
 	}
 	
-	public void dropPiece(){
+	public synchronized void dropPiece(){
 		if(!well.isLegal(currentPiece)){ //player initiated drop just after an illegal spawn (endgame)
 			return;
 		}
@@ -74,7 +74,7 @@ public class QuadtrisBoard {
 	    spawnNextPiece();
 	}
 	
-	public void rotatePieceClockwise(){
+	public synchronized void rotatePieceClockwise(){
 		for(Piece candidate : fuzzPieceCol(currentPiece.rotateClockwise())){
 			if(well.isLegal(candidate)){
 				eventBus.fire(new RedrawPieceEvent(currentPiece, candidate, 
@@ -85,7 +85,7 @@ public class QuadtrisBoard {
 		}
 	}
 	
-	public void rotatePieceCounterClockwise(){
+	public synchronized void rotatePieceCounterClockwise(){
 		for(Piece candidate : fuzzPieceCol(currentPiece.rotateCounterClockwise())){
 			if(well.isLegal(candidate)){
 				eventBus.fire(new RedrawPieceEvent(currentPiece, candidate, PieceTransformType.ROTATION));
@@ -95,23 +95,23 @@ public class QuadtrisBoard {
 		}
 	}
 	
-	public boolean isAlive(){
+	public synchronized boolean isAlive(){
 		return isAlive;
 	}
 	
-	public Piece getCurrentPiece(){
+	public synchronized Piece getCurrentPiece(){
 		return currentPiece;
 	}
 	
-	public Piece getNextPiece(){
+	public synchronized Piece getNextPiece(){
 		return nextPiece;
 	}
 	
-	public Well getWell() {
+	public synchronized Well getWell() {
 		return well;
 	}
 	
-	public Integer getCount(String name){
+	public synchronized Integer getCount(String name){
 		return stats.getCount(name);
 	}
 	
