@@ -121,6 +121,10 @@ public class OutputStreamRenderer implements Renderer {
 		out.print(mask.toString());
 	}
 
-
-
+	@Override
+	public synchronized void drawGlyphStringCollection(Collection<GlyphStringCoord> gsCoords) {
+		for(GlyphStringCoord gc : gsCoords){
+			drawAt(gc.getRow(), gc.getCol(), gc.getGlyphString());
+		}
+	}
 }
