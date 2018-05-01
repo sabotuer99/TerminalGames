@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import whorten.termgames.GameConsole;
 import whorten.termgames.animation.events.StartAnimationEvent;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
-import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.quadtris.board.QuadtrisBoard;
@@ -41,11 +40,6 @@ public class Quadtris extends Game {
 	private static final String TRIBEEP_SOUND = "sounds/three_boop.wav";
 	private String currentTheme = THEME_A;
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
-	private EventListener<KeyDownEvent> keyListener;
-	private EventListener<ToggleThemeEvent> themeListener;
-	private EventListener<FullRowsEvent> fullRowsListener;
-	private EventListener<RedrawPieceEvent> redrawPieceListener;
-	private EventListener<SpawnPieceEvent> spawnPieceListener;
 	private WellRenderer wellRenderer;
 	private GameBorder gb;
 	private Coord wellOrigin;
@@ -145,25 +139,16 @@ public class Quadtris extends Game {
 
 	private void removeListeners() {
 		logger.debug("Removing SnakeGame listeners.");
-		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	
-		eventBus.unsubscribe(ToggleThemeEvent.class, themeListener);
-		eventBus.unsubscribe(FullRowsEvent.class, fullRowsListener);
-		eventBus.unsubscribe(RedrawPieceEvent.class, redrawPieceListener);
-		eventBus.unsubscribe(SpawnPieceEvent.class, spawnPieceListener);
+		removeLocalListeners();
 	}
 
 	private void initializeListeners() {
 		logger.debug("Initializing SnakeGame listeners.");
-		keyListener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
-		themeListener = (ToggleThemeEvent tte) -> {handleToggleThemeEvent(tte);};
-		fullRowsListener = (FullRowsEvent fre) -> {handleFullRowsEvent(fre);};
-		redrawPieceListener = (RedrawPieceEvent rpe) -> {handleRedrawPieceEvent(rpe);};
-		spawnPieceListener = (SpawnPieceEvent spe) -> {handleSpawnPieceEvent(spe);};
-		eventBus.subscribe(KeyDownEvent.class, keyListener);
-		eventBus.subscribe(ToggleThemeEvent.class, themeListener);
-		eventBus.subscribe(FullRowsEvent.class, fullRowsListener);
-		eventBus.subscribe(RedrawPieceEvent.class, redrawPieceListener);
-		eventBus.subscribe(SpawnPieceEvent.class, spawnPieceListener);
+		addListener(KeyDownEvent.class, (KeyDownEvent k) -> {handleKeyDownEvent(k);});
+		addListener(ToggleThemeEvent.class, (ToggleThemeEvent tte) -> {handleToggleThemeEvent(tte);});
+		addListener(FullRowsEvent.class, (FullRowsEvent fre) -> {handleFullRowsEvent(fre);});
+		addListener(RedrawPieceEvent.class, (RedrawPieceEvent rpe) -> {handleRedrawPieceEvent(rpe);});
+		addListener(SpawnPieceEvent.class, (SpawnPieceEvent spe) -> {handleSpawnPieceEvent(spe);});
 	}
 	
 	

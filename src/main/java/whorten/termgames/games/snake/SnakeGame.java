@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
-import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.snake.events.EatFruitEvent;
@@ -44,10 +43,6 @@ public class SnakeGame extends Game {
 	private Glyph headDownGlyph = headSegment("v"); //"▼")
 	private Glyph headRightGlyph = headSegment(">"); //"▶")
 	private Glyph headLeftGlyph = headSegment("<"); //"◀")
-	EventListener<KeyDownEvent> keyListener;
-	EventListener<HeadMoveEvent> headListener;
-	EventListener<TailMoveEvent> tailListener;
-	EventListener<EatFruitEvent> fruitListener;
 	private int speed = 5;
 	
 	
@@ -77,22 +72,15 @@ public class SnakeGame extends Game {
 
 	private void removeListeners() {
 		logger.debug("Removing SnakeGame listeners.");
-		eventBus.unsubscribe(KeyDownEvent.class, keyListener);	  
-		eventBus.unsubscribe(HeadMoveEvent.class, headListener);
-		eventBus.unsubscribe(TailMoveEvent.class, tailListener);
-		eventBus.unsubscribe(EatFruitEvent.class, fruitListener);
+		removeLocalListeners();
 	}
 
 	private void initializeListeners() {
 		logger.debug("Initializing SnakeGame listeners.");
-		keyListener = (KeyDownEvent k) -> {handleKeyDownEvent(k);};
-		headListener = (HeadMoveEvent h) -> {handleHeadMoveEvent(h);};
-		tailListener = (TailMoveEvent t) -> {handleTailMoveEvent(t);};
-		fruitListener = (EatFruitEvent h) -> {handleEatFruitEvent(h);};	
-		eventBus.subscribe(KeyDownEvent.class, keyListener);
-		eventBus.subscribe(HeadMoveEvent.class, headListener);
-		eventBus.subscribe(TailMoveEvent.class, tailListener);
-		eventBus.subscribe(EatFruitEvent.class, fruitListener);
+		addListener(KeyDownEvent.class, (KeyDownEvent k) -> {handleKeyDownEvent(k);});
+		addListener(HeadMoveEvent.class, (HeadMoveEvent h) -> {handleHeadMoveEvent(h);});
+		addListener(TailMoveEvent.class, (TailMoveEvent t) -> {handleTailMoveEvent(t);});
+		addListener(EatFruitEvent.class, (EatFruitEvent h) -> {handleEatFruitEvent(h);});	
 	}
 
 	private void renderBoard() {

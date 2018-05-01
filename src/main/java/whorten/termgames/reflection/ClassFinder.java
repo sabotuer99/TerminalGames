@@ -35,6 +35,8 @@ import java.util.zip.ZipFile;
  * @since carbon 1.0
  * @author Greg Hinkle, June 2001
  * @version $Revision: 1.10 $($Author: dvoet $ / $Date: 2003/05/05 21:21:23 $)
+ * 
+ * retrieved 4.18.2018 from http://www.java2s.com/Code/Java/Reflection/Searchoverclasspathretrievingclassesthatimplementacertaininterface.htm
  */
 public class ClassFinder {
 
