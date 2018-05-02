@@ -57,7 +57,7 @@ public class Quadtris extends Game {
 		logger.debug(String.format("Keyboard event driver listening? %b.", 
 				console.isKeyboardEventDriverListening()));
 		run();
-		removeListeners();
+		removeLocalListeners();
 	}
 	
 	@Override
@@ -135,11 +135,6 @@ public class Quadtris extends Game {
 		renderer.drawAt(17, 61, instr5);
 		renderer.drawAt(19, 61, instr8);
 		renderer.drawAt(20, 61, instr9);
-	}
-
-	private void removeListeners() {
-		logger.debug("Removing SnakeGame listeners.");
-		removeLocalListeners();
 	}
 
 	private void initializeListeners() {

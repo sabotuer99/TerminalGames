@@ -62,7 +62,7 @@ public abstract class Game {
 		eventBus.subscribe(event, listener);
 	}
 	
-	final public <K extends Event> void removeLocalListeners(){
+	final public void removeLocalListeners(){
 		for(Consumer<Void> lambda : listenerRemovers){
 			lambda.accept(null);
 		}
