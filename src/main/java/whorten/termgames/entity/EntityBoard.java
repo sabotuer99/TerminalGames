@@ -3,7 +3,6 @@ package whorten.termgames.entity;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -16,7 +15,6 @@ public class EntityBoard {
 	
 	private int width;
 	private int height;
-	private Set<Coord> occupied = new HashSet<>();
 	private Map<Coord, Entity> entities = new HashMap<>();
 	private int minCol;
 	private int minRow;
@@ -39,11 +37,8 @@ public class EntityBoard {
 		
 		for(Coord coord : test.getCoords()){
 			entities.put(coord, test);
-		}
-		occupied.addAll(test.getCoords());		
+		}		
 	}
-
-	
 
 	public synchronized Entity entityAt(Coord coord) {
 		return entities.get(coord);
@@ -63,6 +58,19 @@ public class EntityBoard {
 	
 	public synchronized Set<Entity> getLeftNeighbors(Entity subject) {
 		return getNeighborsWithLambda(subject, (Coord c) -> Coord.left(c,1));
+	}
+	
+	public void removeEntity(Entity entity) {
+		if(entity == null){ return; }
+		for(Coord coord : entity.getCoords()){
+			if(entities.get(coord) == entity){
+				entities.remove(coord);
+			}
+		}
+	}
+	
+	public boolean canAdd(Entity entity) {
+		return entity != null && !isOverlapping(entity) && !isOutOfBounds(entity);
 	}
 	
 	public static class Builder{
@@ -94,16 +102,24 @@ public class EntityBoard {
 	}
 
 	private void checkOverlapsOccupied(Entity test) {
-		if (Sets.intersection(test.getCoords(), occupied).size() > 0){
+		if (isOverlapping(test)){
 			throw new IllegalArgumentException("Entity location overlaps with existing entity!");
 		}
 	}
 	
+	private boolean isOverlapping(Entity test) {
+		return Sets.intersection(test.getCoords(), entities.keySet()).size() > 0;
+	}
+	
 	private void checkOutOfBounds(Entity test) {
-		if (test.getCoords().stream().anyMatch((Coord c) -> c.getCol() < minCol || c.getCol() > width || 
-						                                    c.getRow() < minRow || c.getRow() > height)){
+		if (isOutOfBounds(test)){
 			throw new IllegalArgumentException("Entity location is out of bounds!");
 		}
+	}
+
+	private boolean isOutOfBounds(Entity test) {
+		return test.getCoords().stream().anyMatch((Coord c) -> c.getCol() < minCol || c.getCol() > width || 
+						                                    c.getRow() < minRow || c.getRow() > height);
 	}
 		
 	private Set<Entity> getNeighborsWithLambda(Entity subject, Function<Coord, Coord> lambda) {

@@ -1,9 +1,11 @@
 package whorten.termgames.entity;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +36,7 @@ public class EntityBoardTests {
 	}
 	
 	@Test
-	public void canAddEntityToBoardAtLegalCoordinate(){
+	public void addEntityToBoardAtLegalCoordinate(){
 		EntityBoard sut = getSut();
 		Entity test = getEntity();
 		Coord coord = new Coord(40,13);
@@ -43,6 +45,34 @@ public class EntityBoardTests {
 		sut.addEntity(test);
 		
 		assertEquals(test, sut.entityAt(coord));
+	}
+	
+	@Test
+	public void canRemoveEntity(){
+		EntityBoard sut = getSut();
+		Entity test = getEntity();
+		Coord coord = new Coord(40,13);
+		when(test.getCoords()).thenReturn(Sets.newSet(coord));
+		
+		sut.addEntity(test);
+		sut.removeEntity(test);
+		
+		assertNull(sut.entityAt(coord));
+	}
+	
+	@Test
+	public void canNotRemoveEntityWithDifferentOverlapingEntity(){
+		EntityBoard sut = getSut();
+		Entity a = getEntity();
+		Entity b = getEntity();
+		Coord coord = new Coord(40,13);
+		when(a.getCoords()).thenReturn(Sets.newSet(coord));
+		when(b.getCoords()).thenReturn(Sets.newSet(coord));
+		
+		sut.addEntity(a);
+		sut.removeEntity(b);
+		
+		assertEquals(a, sut.entityAt(coord));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -81,6 +111,42 @@ public class EntityBoardTests {
 		
 		sut.addEntity(test);
 		sut.addEntity(test);
+	}
+	
+	@Test
+	public void canAddEntityToOccupiedSpace_ReturnsFalse(){
+		EntityBoard sut = getSut();
+		Entity test = getEntity();
+		when(test.getCoords()).thenReturn(Sets.newSet(new Coord(41,13)));
+		
+		sut.addEntity(test);
+		
+		assertFalse(sut.canAdd(test));
+	}
+	
+	@Test
+	public void canAddEntityOutOfBounds_ReturnsFalse(){
+		EntityBoard sut = getSut();
+		Entity test = getEntity();
+		when(test.getCoords()).thenReturn(Sets.newSet(new Coord(120,-13)));
+		
+		assertFalse(sut.canAdd(test));
+	}
+	
+	@Test
+	public void canAdd_NullEntity_ReturnsFalse(){
+		EntityBoard sut = getSut();
+		
+		assertFalse(sut.canAdd(null));
+	}
+	
+	@Test
+	public void canAddEntityToBoardAtLegalCoordinate_returnsTrue(){
+		EntityBoard sut = getSut();
+		Entity test = getEntity();
+		when(test.getCoords()).thenReturn(Sets.newSet(new Coord(40,13)));
+		
+		assertTrue(sut.canAdd(test));
 	}
 	
 	@Test
