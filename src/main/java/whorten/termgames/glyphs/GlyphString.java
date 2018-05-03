@@ -15,6 +15,7 @@ public class GlyphString {
 		return new ArrayList<>(glyphs);
 	}
 	
+	//TODO Make this immutable
 	public GlyphString append(GlyphString next){
 		glyphs.addAll(next.getGlyphs());
 		stringRep += next.toString();
@@ -22,6 +23,7 @@ public class GlyphString {
 		return this;
 	}
 	
+	//TODO Make this immutable
 	public GlyphString prepend(Glyph first){
 		glyphs.add(0, first);
 		stringRep = first.toString() + stringRep;
@@ -32,6 +34,10 @@ public class GlyphString {
 
 	public String getBaseString() {
 		return baseString;
+	}
+	
+	public int length(){
+		return baseString.length();
 	}
 	
 	@Override
@@ -121,7 +127,39 @@ public class GlyphString {
 			baseGlyphBuilder.clearBgColor();
 			return this;
 		}
+		
+		public int length(){
+			return base.length();
+		}
+	}
+	
+	public static class Appender{
+		
+		private List<Glyph> aglyphs = new ArrayList<>();
 
+		public Appender append(Glyph glyph){
+			aglyphs .add(glyph);
+			return this;
+		}
+		
+		public GlyphString build(){
+			GlyphString gs = new GlyphString();
+			gs.glyphs = new ArrayList<>(this.aglyphs);
+			
+			StringBuilder sb = new StringBuilder();
+			StringBuilder base = new StringBuilder();
+			for(Glyph g : gs.glyphs){
+				sb.append(g.toString());
+				base.append(g.getBase());
+			}
+			gs.stringRep = sb.toString();
+			gs.baseString = base.toString();
+			return gs;
+		}
+
+		public int length() {
+			return aglyphs.size();
+		}
 	}
 
 }
