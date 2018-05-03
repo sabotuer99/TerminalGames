@@ -3,7 +3,7 @@ package whorten.termgames.utils;
 import java.util.Collection;
 import java.util.Random;
 
-public class Coord {
+public final class Coord {
 	
 	public Coord(int col, int row){
 		this.col = col;
@@ -19,6 +19,22 @@ public class Coord {
 	
 	public int getRow(){
 		return row;
+	}
+	
+	public static Coord up(Coord coord, int up){
+		return new Coord(coord.getCol(), coord.getRow() - up);
+	}
+	
+	public static Coord down(Coord coord, int down){
+		return new Coord(coord.getCol(), coord.getRow() + down);
+	}
+	
+	public static Coord left(Coord coord, int left){
+		return new Coord(coord.getCol() - left, coord.getRow());
+	}
+	
+	public static Coord right(Coord coord, int right){
+		return new Coord(coord.getCol() + right, coord.getRow());
 	}
 	
 	public static Coord getRandomCoord(int minx, int miny, int maxx, int maxy) {
