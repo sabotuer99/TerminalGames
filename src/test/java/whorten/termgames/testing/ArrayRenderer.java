@@ -12,6 +12,7 @@ public class ArrayRenderer extends OutputStreamRenderer {
 	private String[][] screen;
 	private int width;
 	private int height;
+	private boolean preserveChars = false;
 	public ArrayRenderer(int width, int height){
 		super(new PrintStream(new ByteArrayOutputStream()), width, height);
 		//assume 1 based indexing
@@ -20,16 +21,19 @@ public class ArrayRenderer extends OutputStreamRenderer {
 		this.width = width;
 	}
 	
+	public void setPreserveChars(boolean preserveChars){
+		this.preserveChars = preserveChars;
+	}
 	
 	@Override
 	public void drawAt(int row, int col, Glyph payload) {
-		screen[row][col] = "X";
+		screen[row][col] = preserveChars ? payload.getBase() : "X";
 	}
 
 	@Override
 	public void drawAt(int row, int col, GlyphString payload) {
 		for(int i = 0; i < payload.getBaseString().length(); i++){
-			screen[row][col+i] = "X";
+			screen[row][col+i] = preserveChars ? Character.toString(payload.getBaseString().charAt(i)) : "X";
 		}
 	}
 	
