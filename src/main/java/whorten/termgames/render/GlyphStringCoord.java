@@ -40,4 +40,9 @@ public class GlyphStringCoord {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("GlyphStringCoord: row:[%d], col:[%d], GlyphString:[%s]", row, col, glyphString);
+	}
 }
