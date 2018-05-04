@@ -90,36 +90,31 @@ public class DrawCommandInterpreter {
 		
 		int run = end_x - origin_x;
 		int rise = end_y - origin_y;
-		//if run == 0, line is vertical
-		double slope = Double.POSITIVE_INFINITY;
-		if(run != 0){
-			slope = (rise * 1.0) / run;
-		}
-		
-	
 		GlyphString.Appender b = new GlyphString.Appender();
-		double x = origin_x;
-		double y = origin_y;
+		int x = origin_x;
+		int y = origin_y;
 		for(int i = 0; i < Math.max(run, rise); i++){
-			double next_x = x;
-			if(slope != Double.POSITIVE_INFINITY){
-				next_x = x + i * (1.0 / run); 
-			}
-			double next_y = y;
-			if(slope != 0){
-				next_y = y + slope * i;
+			int next_x = x;
+			int next_y = y;
+			
+			if(run > rise){
+				next_x += 1;
+				if(rise != 0){
+					next_y = origin_y + i/rise;
+				}			
+			} else {
+				if(run != 0){
+					next_x = origin_x + i/run;					
+				}
+				next_y += 1;				
 			}
 			
-			if(roundToSame(y, next_y)){
+			if(y == next_y){
 				b.append(base);	
 			} else {
 				//build current, reinit appender
 				if(b.length() > 0){
-					GlyphString gs = b.build();
-					int gscx = (int)Math.round(x) - b.length();
-					int gscy = (int)Math.round(y);
-					GlyphStringCoord gsc = new GlyphStringCoord(gscy, gscx, gs);
-					System.out.println(gsc);
+					GlyphStringCoord gsc = makeGlyphStringCoord(b, x, y);
 					glyphs.add(gsc);
 				}
 				b = new GlyphString.Appender();
@@ -131,18 +126,22 @@ public class DrawCommandInterpreter {
 		}
 		//flush last bits
 		if(b.length() > 0){
-			GlyphString gs = b.build();
-			glyphs.add(new GlyphStringCoord((int)y, (int)x - b.length(), gs));
+			GlyphStringCoord gsc = makeGlyphStringCoord(b, x, y);
+			glyphs.add(gsc);
 		}
 			
 		return glyphs;
 	}
 
 
-	private boolean roundToSame(double a, double b) {
-		return Math.round(a) == Math.round(b);
+	private GlyphStringCoord makeGlyphStringCoord(GlyphString.Appender b, int x, int y) {
+		GlyphString gs = b.build();
+		int gscx = x - b.length() + 1;
+		int gscy = y;
+		GlyphStringCoord gsc = new GlyphStringCoord(gscx, gscy, gs);
+		//System.out.println(gsc);
+		return gsc;
 	}
-
 
 	public void setDefaultGlyph(Glyph defaultGlyph) {
 		this.defaultGlyph  = defaultGlyph;
