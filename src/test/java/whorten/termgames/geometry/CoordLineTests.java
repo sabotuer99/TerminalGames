@@ -103,7 +103,7 @@ public class CoordLineTests {
 		
 		CoordLine sut = new CoordLine(new Coord(0,0), new Coord(-5, 0));
 		
-		System.out.println(Coord.toAsciiString(sut));
+		//System.out.println(Coord.toAsciiString(sut));
 		
 		assertThat(sut.size()).isEqualTo(6);
 		assertThat(sut).containsAllOf(
@@ -113,6 +113,24 @@ public class CoordLineTests {
 					new Coord(-3, 0),
 					new Coord(-4, 0),
 					new Coord(-5, 0)
+				);
+	}
+	
+	@Test
+	public void negativeBothDirections_StillWorks(){
+		
+		CoordLine sut = new CoordLine(new Coord(0,0), new Coord(-5, -2));
+		
+		//System.out.println(Coord.toAsciiString(sut));
+		
+		assertThat(sut.size()).isEqualTo(6);
+		assertThat(sut).containsAllOf(
+					new Coord(0, 0), 
+					new Coord(-1, 0),
+					new Coord(-2, -1),
+					new Coord(-3, -1),
+					new Coord(-4, -2),
+					new Coord(-5, -2)
 				);
 	}
 }

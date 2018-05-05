@@ -1,6 +1,8 @@
 package whorten.termgames.geometry;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class CoordLine extends HashSet<Coord> {
 	private static final long serialVersionUID = -6097179666156097748L;
@@ -14,43 +16,40 @@ public class CoordLine extends HashSet<Coord> {
 		int origin_y = origin.getRow();
 		int end_x = end.getCol();
 		int end_y = end.getRow();
+		int direction_x = origin_x < end_x ? 1 : -1;
+		int direction_y = origin_y < end_y ? 1 : -1;
 		
+		List<Integer> rows = new ArrayList<>();
+		List<Integer> cols = new ArrayList<>();
 		
-		int run = end_x - origin_x;
-		int rise = end_y - origin_y;
-		int arun = Math.abs(run);
-		int arise = Math.abs(rise);
-		int sign_run = run < 0 ? -1 : 1;
-		int sign_rise = rise < 0 ? -1 : 1;
-		int x = origin_x;
-		int y = origin_y;
-		for(int i = 0; i <= Math.max(arun, arise); i++){
-			int next_x = x;
-			int next_y = y;
-			
-			if(arun > arise){
-				next_x += 1 * sign_run;
-				if(rise != 0){
-					next_y = getFractionalOffset(origin_y, run, i + 1);
-				}			
-			} else if(arun < arise){
-				if(run != 0){
-					next_x = getFractionalOffset(origin_x, rise, i + 1);					
-				}
-				next_y += 1 * sign_rise;				
-			} else { //special case for 45 degrees
-				next_x += 1 * sign_run;
-				next_y += 1 * sign_rise;
-			}
-			
-			this.add(new Coord(x,y));
-			
-			x = next_x;
-			y = next_y;
+		for(int i = 0; i <= Math.abs(origin_x - end_x); i++){
+			int x = origin_x + i * direction_x;
+			cols.add(x);
 		}
+		
+		for(int i = 0; i <= Math.abs(origin_y - end_y); i++){
+			int y = origin_y + i * direction_y;
+			rows.add(y);
+		}
+		
+		if(rows.size() > cols.size()){
+			for(int i = 0; i < rows.size(); i++){
+				int y = rows.get(i);
+				int x = cols.get(interpolate(i, cols.size(), rows.size()));
+				this.add(new Coord(x, y));
+			}
+		} else {
+			for(int i = 0; i < cols.size(); i++){
+				int x = cols.get(i);
+				int y = rows.get(interpolate(i, rows.size(), cols.size()));
+				this.add(new Coord(x, y));
+			}
+		}
+		
 	}
 
-	private int getFractionalOffset(int origin, int range, int i) {
-		return (int) (origin + Math.round((i * 1.0)/range));
+	private int interpolate(int i, int small, int big) {
+		return (int) (((i * 1.0)/big) * small);
 	}
+
 }
