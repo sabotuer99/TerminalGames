@@ -1,7 +1,7 @@
 package whorten.termgames.games.snake;
 
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.utils.Coord;
 
 public class Fruit {
 

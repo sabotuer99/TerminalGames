@@ -10,13 +10,13 @@ import whorten.termgames.games.quadtris.cell.Cell;
 import whorten.termgames.games.quadtris.cell.CellRenderer;
 import whorten.termgames.games.quadtris.piece.Piece;
 import whorten.termgames.games.quadtris.piece.PieceRenderer;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.render.GlyphStringCoord;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.utils.BoxDrawingGenerator;
-import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.StringUtils;
 
 public class WellRenderer {

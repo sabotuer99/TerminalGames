@@ -10,9 +10,9 @@ import java.util.TreeMap;
 import java.util.function.Function;
 
 import whorten.termgames.games.quadtris.piece.Piece.Builder;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Block;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.utils.Coord;
 
 public class PieceFactory {
 	private static final List<Function<Coord, Piece>> pieceMethods = new ArrayList<>();

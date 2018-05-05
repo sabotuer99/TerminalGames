@@ -13,8 +13,8 @@ import org.junit.Test;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.games.quadtris.events.FullRowsEvent;
 import whorten.termgames.games.quadtris.piece.Piece;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.utils.Coord;
 
 public class WellTests {
 

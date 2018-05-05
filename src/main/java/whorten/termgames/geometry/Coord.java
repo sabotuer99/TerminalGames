@@ -1,9 +1,9 @@
-package whorten.termgames.utils;
+package whorten.termgames.geometry;
 
 import java.util.Collection;
 import java.util.Random;
 
-public final class Coord {
+public final class Coord implements Comparable<Coord>{
 	
 	public Coord(int col, int row){
 		this.col = col;
@@ -106,5 +106,13 @@ public final class Coord {
 			return o.col == this.col && o.row == this.row;
 		}
 		return false;
+	}
+
+	@Override
+	public int compareTo(Coord o) {
+		if(this.row == o.getRow()){
+			return this.col - o.getCol();
+		}
+		return this.row - o.getRow();
 	}
 }

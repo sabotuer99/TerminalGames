@@ -13,7 +13,7 @@ import whorten.termgames.events.EventBus;
 import whorten.termgames.games.quadtris.cell.Cell;
 import whorten.termgames.games.quadtris.events.FullRowsEvent;
 import whorten.termgames.games.quadtris.piece.Piece;
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 
 public class Well {
 

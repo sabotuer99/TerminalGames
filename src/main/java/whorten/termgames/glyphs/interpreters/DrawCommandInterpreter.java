@@ -88,9 +88,9 @@ public class DrawCommandInterpreter {
 			}
 		}
 		
+		GlyphString.Appender b = new GlyphString.Appender();
 		int run = end_x - origin_x;
 		int rise = end_y - origin_y;
-		GlyphString.Appender b = new GlyphString.Appender();
 		int x = origin_x;
 		int y = origin_y;
 		for(int i = 0; i < Math.max(run, rise); i++){

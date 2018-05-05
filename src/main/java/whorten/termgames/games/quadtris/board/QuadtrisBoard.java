@@ -11,7 +11,7 @@ import whorten.termgames.games.quadtris.events.SpawnPieceEvent;
 import whorten.termgames.games.quadtris.piece.Piece;
 import whorten.termgames.games.quadtris.piece.PieceFactory;
 import whorten.termgames.games.quadtris.well.Well;
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Counter;
 
 public class QuadtrisBoard {

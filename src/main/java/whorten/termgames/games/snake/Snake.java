@@ -8,7 +8,7 @@ import whorten.termgames.events.EventBus;
 import whorten.termgames.games.snake.events.EatFruitEvent;
 import whorten.termgames.games.snake.events.HeadMoveEvent;
 import whorten.termgames.games.snake.events.TailMoveEvent;
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Direction;
 
 

@@ -3,9 +3,9 @@ package whorten.termgames.games.quadtris.cell;
 import java.util.HashSet;
 import java.util.Set;
 
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.render.Renderer;
-import whorten.termgames.utils.Coord;
 
 public class CellRenderer {
 

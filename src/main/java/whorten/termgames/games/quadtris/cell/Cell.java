@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import whorten.termgames.games.quadtris.piece.Piece;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.utils.Coord;
 
 public class Cell {
 

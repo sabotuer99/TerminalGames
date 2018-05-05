@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.utils.Coord;
 
 public class Piece {
 

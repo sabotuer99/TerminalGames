@@ -3,7 +3,7 @@ package whorten.termgames.games.tableflipper.board;
 import java.util.Set;
 
 import whorten.termgames.entity.Entity;
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 
 public class Table implements Entity {
 

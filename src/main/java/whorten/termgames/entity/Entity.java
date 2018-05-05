@@ -2,7 +2,7 @@ package whorten.termgames.entity;
 
 import java.util.Set;
 
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 
 public interface Entity {
 

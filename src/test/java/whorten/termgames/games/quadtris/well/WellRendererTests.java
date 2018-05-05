@@ -7,9 +7,9 @@ import org.junit.Test;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.games.quadtris.cell.Cell;
 import whorten.termgames.games.quadtris.piece.PieceFactory;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.testing.ArrayRenderer;
-import whorten.termgames.utils.Coord;
 
 
 public class WellRendererTests {

@@ -14,7 +14,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 
 public class EntityBoardTests {
 

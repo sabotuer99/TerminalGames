@@ -19,6 +19,7 @@ import whorten.termgames.games.quadtris.events.SpawnPieceEvent;
 import whorten.termgames.games.quadtris.events.ToggleThemeEvent;
 import whorten.termgames.games.quadtris.piece.PieceFactory;
 import whorten.termgames.games.quadtris.well.WellRenderer;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
@@ -27,7 +28,6 @@ import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
-import whorten.termgames.utils.Coord;
 import whorten.termgames.utils.Keys;
 
 public class Quadtris extends Game {

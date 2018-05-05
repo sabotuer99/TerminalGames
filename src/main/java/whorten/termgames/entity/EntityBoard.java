@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 import com.google.common.collect.Sets;
 
-import whorten.termgames.utils.Coord;
+import whorten.termgames.geometry.Coord;
 
 public class EntityBoard {
 	
