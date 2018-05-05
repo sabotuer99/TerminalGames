@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import whorten.termgames.render.GlyphStringCoord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 
 public class GlyphLoaderTests {
 

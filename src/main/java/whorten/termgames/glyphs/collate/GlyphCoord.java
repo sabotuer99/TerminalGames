@@ -1,4 +1,4 @@
-package whorten.termgames.render;
+package whorten.termgames.glyphs.collate;
 
 import whorten.termgames.glyphs.Glyph;
 

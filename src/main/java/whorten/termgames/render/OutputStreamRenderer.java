@@ -8,6 +8,8 @@ import java.util.List;
 
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
+import whorten.termgames.glyphs.collate.GlyphCoord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.utils.TerminalNavigator;
 
 public class OutputStreamRenderer implements Renderer {

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
+import whorten.termgames.glyphs.collate.GlyphCoord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 
 public interface Renderer {
 	void drawAt(int row, int col, Glyph payload);

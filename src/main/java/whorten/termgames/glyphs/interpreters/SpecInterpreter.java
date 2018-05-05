@@ -7,6 +7,7 @@ import java.util.function.BiConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
@@ -48,6 +49,20 @@ public class SpecInterpreter {
 		return builder.build();
 	}
 
+
+	public Map<String, Coord> parseCoords(String rawCoords){
+		String[] params = rawCoords.split(" ");
+		Map<String, Coord> coords = new HashMap<>();
+		for(String param : params){
+			String[] p = param.split(":");
+			String key = p[0];
+			String[] xy = p[1].split(",");
+			int x = Integer.valueOf(xy[0]);
+			int y = Integer.valueOf(xy[1]);
+			coords.put(key, new Coord(x,y));
+		}
+		return coords;
+	}
 
 	private void populateLambdas() {
 		lambdas.put("BASE", (String s, Glyph.Builder b) -> {setBase(s,b);});

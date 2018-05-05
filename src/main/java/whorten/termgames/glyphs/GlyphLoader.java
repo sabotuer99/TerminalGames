@@ -8,8 +8,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 import whorten.termgames.glyphs.GlyphString.Appender;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.glyphs.interpreters.SpecInterpreter;
-import whorten.termgames.render.GlyphStringCoord;
 
 public class GlyphLoader {
 	

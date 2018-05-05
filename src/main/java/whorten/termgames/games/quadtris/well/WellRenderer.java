@@ -14,7 +14,7 @@ import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
-import whorten.termgames.render.GlyphStringCoord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.utils.BoxDrawingGenerator;
 import whorten.termgames.utils.StringUtils;

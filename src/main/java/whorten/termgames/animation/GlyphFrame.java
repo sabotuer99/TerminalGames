@@ -5,8 +5,8 @@ import java.util.Set;
 
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
-import whorten.termgames.render.GlyphCoord;
-import whorten.termgames.render.GlyphStringCoord;
+import whorten.termgames.glyphs.collate.GlyphCoord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.render.Renderer;
 
 public class GlyphFrame implements Frame {

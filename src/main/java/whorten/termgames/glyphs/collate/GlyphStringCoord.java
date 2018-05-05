@@ -1,5 +1,6 @@
-package whorten.termgames.render;
+package whorten.termgames.glyphs.collate;
 
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.GlyphString;
 
 public class GlyphStringCoord {
@@ -10,6 +11,12 @@ public class GlyphStringCoord {
 	public GlyphStringCoord(int row, int col, GlyphString glyphString){
 		this.row = row;
 		this.col = col;
+		this.glyphString = glyphString;
+	}
+	
+	public GlyphStringCoord(Coord coord, GlyphString glyphString){
+		this.row = coord.getRow();
+		this.col = coord.getCol();
 		this.glyphString = glyphString;
 	}
 	
