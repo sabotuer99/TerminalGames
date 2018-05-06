@@ -148,4 +148,22 @@ public class BoxDrawingGeneratorTests {
         //Assert
         assertEquals(expected, result[1].charAt(1));
     }
+    
+
+    @Test
+    public void Transform_GivenSingleSection_ReturnsSquare()
+    {
+        //Arrange
+    	BoxDrawingGenerator sut = new BoxDrawingGenerator();
+        String[] test = { "   ",
+                          " # ",
+                          "   "};
+        char expected = '▫';
+
+        //Act
+        String[] result = sut.transform(test);
+
+        //Assert
+        assertEquals(expected, result[1].charAt(1));
+    }
 }

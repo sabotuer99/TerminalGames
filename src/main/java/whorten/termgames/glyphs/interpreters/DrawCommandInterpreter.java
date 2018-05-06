@@ -69,16 +69,15 @@ public class DrawCommandInterpreter {
 	
 	private void populateLambdas() {
 		lambdas.put("LINE", (String params, Glyph base) -> {return drawLine(params, base);});
-		lambdas.put("BOX", (String params, Glyph base) -> {return drawBox(params, base);});
+		lambdas.put("RECT", (String params, Glyph base) -> {return drawRect(params, base);});
 	}
 	
-	private Set<GlyphStringCoord> drawBox(String paramsRaw, Glyph base) {
+	private Set<GlyphStringCoord> drawRect(String paramsRaw, Glyph base) {
 		
 		Map<String, Coord> endpoints = si.parseCoords(paramsRaw);
 		Coord origin = endpoints.get("ORIGIN");
 		Coord end = endpoints.get("END");
-		CoordRect box = new CoordRect(origin, end);
-		
+		CoordRect box = new CoordRect(origin, end);		
 
 		//return gsc.collate(base, Sets.union(set1, set2));
 		return gsc.collate(base, box);

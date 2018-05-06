@@ -1,4 +1,4 @@
-package whorten.termgames.glyphs;
+package whorten.termgames.glyphs.loader;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import whorten.termgames.glyphs.Glyph;
+import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.GlyphString.Appender;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.glyphs.interpreters.SpecInterpreter;

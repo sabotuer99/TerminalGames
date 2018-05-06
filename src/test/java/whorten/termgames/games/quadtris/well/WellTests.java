@@ -251,7 +251,7 @@ public class WellTests {
 	}
 	
 	@Test
-	public void isLegal_pieceAboveWell_returnsFalse(){
+	public void isLegal_pieceAboveWell_returnsTrue(){
 		Well sut = getSut();
 		Piece base = new Piece.Builder(new Coord(5,-2)) //square
 				.addOffset(new Coord(0,0))
@@ -262,7 +262,7 @@ public class WellTests {
 
 		boolean isLegal = sut.isLegal(base);
 				
-		assertFalse(isLegal);
+		assertTrue(isLegal);
 	}
 	
 	@Test

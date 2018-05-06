@@ -128,6 +128,13 @@ public class BoxDrawingGenerator {
                     case "## ### ##":
                         sb.append('╬');
                         continue;
+                    //  Dot           
+                    //  |   |                     
+                    //  | # | 
+                    //  |   |  
+                    case "    #    ":
+                        sb.append('▫');
+                        continue;
                     default:
                         break;
                 }

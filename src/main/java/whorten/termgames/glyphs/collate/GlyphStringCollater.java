@@ -3,8 +3,10 @@ package whorten.termgames.glyphs.collate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
@@ -48,5 +50,28 @@ public class GlyphStringCollater {
 		}
 				
 		return glyphs;
+	}
+	
+	
+	public Set<GlyphStringCoord> collate(Set<GlyphStringCoord> input) {
+		Set<GlyphStringCoord> sortedInput = new TreeSet<>(input);
+		Set<GlyphStringCoord> collated = new HashSet<>();
+		Iterator<GlyphStringCoord> iter = sortedInput.iterator();
+
+		GlyphStringCoord last = iter.next();
+		while(iter.hasNext()){
+			GlyphStringCoord here = iter.next();
+			//same row and adjacent columns, append
+			if(last.getRow() == here.getRow() &&
+			   Math.abs(last.getCol() - here.getCol()) == last.length()){
+				last = last.append(here);
+			} else {
+				collated.add(last);	
+				last = here;
+			}
+		}
+		collated.add(last);		
+		
+		return collated;
 	}
 }

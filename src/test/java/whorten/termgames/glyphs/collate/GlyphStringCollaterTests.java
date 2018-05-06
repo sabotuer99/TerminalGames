@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
+import whorten.termgames.glyphs.GlyphString;
 
 public class GlyphStringCollaterTests {
 
@@ -29,6 +30,7 @@ public class GlyphStringCollaterTests {
 		assertThat(result.iterator().next().getGlyphString().getBaseString())
 			.isEqualTo("X");
 	}
+	
 	@Test
 	public void collate_L_Shape(){
 		GlyphStringCollater sut = new GlyphStringCollater();
@@ -46,5 +48,20 @@ public class GlyphStringCollaterTests {
 							new Coord(1,1),
 							new Coord(1,2)
 						);
+	}
+	
+	@Test
+	public void collate_GlyphStringCoordSet(){
+		GlyphStringCollater sut = new GlyphStringCollater();
+		GlyphString test = new GlyphString.Builder("X").build();
+		
+		Set<GlyphStringCoord> result = sut.collate(
+				Sets.newHashSet(new GlyphStringCoord(new Coord(1,0), test),
+								new GlyphStringCoord(new Coord(2,0), test),
+								new GlyphStringCoord(new Coord(3,0), test)));
+		
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result.iterator().next().getGlyphString().getBaseString())
+		.isEqualTo("XXX");
 	}
 }

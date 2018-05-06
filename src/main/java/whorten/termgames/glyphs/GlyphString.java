@@ -17,18 +17,22 @@ public class GlyphString {
 	
 	//TODO Make this immutable
 	public GlyphString append(GlyphString next){
-		glyphs.addAll(next.getGlyphs());
-		stringRep += next.toString();
-		baseString += next.baseString;
-		return this;
+		GlyphString appended = new GlyphString();
+		appended.glyphs.addAll(glyphs);
+		appended.glyphs.addAll(next.glyphs);
+		appended.stringRep = stringRep + next.toString();
+		appended.baseString = baseString + next.baseString;
+		return appended;
 	}
 	
 	//TODO Make this immutable
 	public GlyphString prepend(Glyph first){
-		glyphs.add(0, first);
-		stringRep = first.toString() + stringRep;
-		baseString = first.getBase() + baseString;
-		return this;
+		GlyphString prepended = new GlyphString();
+		prepended.glyphs.addAll(glyphs);
+		prepended.glyphs.add(0, first);
+		prepended.stringRep = first.toString() + stringRep;
+		prepended.baseString = first.getBase() + baseString;
+		return prepended;
 	}
 	
 
