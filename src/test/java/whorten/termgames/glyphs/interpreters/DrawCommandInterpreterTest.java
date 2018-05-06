@@ -49,7 +49,7 @@ public class DrawCommandInterpreterTest {
 		DrawCommandInterpreter sut = new DrawCommandInterpreter();
 		sut.setDefaultGlyph(new Glyph.Builder("X").build());
 		
-		Set<GlyphStringCoord> result = sut.parse("BOX ORIGIN:0,0 END:5,5");
+		Set<GlyphStringCoord> result = sut.parse("BOX ORIGIN:1,1 END:6,6");
 		
 		
 		String output = drawCollection(result, 6, 6);
