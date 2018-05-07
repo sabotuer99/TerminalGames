@@ -1,4 +1,4 @@
-package whorten.termgames.glyphs;
+package whorten.termgames.glyphs.loader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,8 +9,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import whorten.termgames.glyphs.FgColor;
+import whorten.termgames.glyphs.Glyph;
+import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
-import whorten.termgames.glyphs.loader.GlyphLoader;
 
 public class GlyphLoaderTests {
 
