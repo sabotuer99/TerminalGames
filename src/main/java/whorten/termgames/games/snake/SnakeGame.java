@@ -77,10 +77,10 @@ public class SnakeGame extends Game {
 
 	private void initializeListeners() {
 		logger.debug("Initializing SnakeGame listeners.");
-		addListener(KeyDownEvent.class, (KeyDownEvent k) -> {handleKeyDownEvent(k);});
-		addListener(HeadMoveEvent.class, (HeadMoveEvent h) -> {handleHeadMoveEvent(h);});
-		addListener(TailMoveEvent.class, (TailMoveEvent t) -> {handleTailMoveEvent(t);});
-		addListener(EatFruitEvent.class, (EatFruitEvent h) -> {handleEatFruitEvent(h);});	
+		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
+		addListener(HeadMoveEvent.class, this::handleHeadMoveEvent);
+		addListener(TailMoveEvent.class, this::handleTailMoveEvent);
+		addListener(EatFruitEvent.class, this::handleEatFruitEvent);	
 	}
 
 	private void renderBoard() {

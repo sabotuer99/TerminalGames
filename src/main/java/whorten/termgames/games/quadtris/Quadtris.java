@@ -139,11 +139,11 @@ public class Quadtris extends Game {
 
 	private void initializeListeners() {
 		logger.debug("Initializing SnakeGame listeners.");
-		addListener(KeyDownEvent.class, (KeyDownEvent k) -> {handleKeyDownEvent(k);});
-		addListener(ToggleThemeEvent.class, (ToggleThemeEvent tte) -> {handleToggleThemeEvent(tte);});
-		addListener(FullRowsEvent.class, (FullRowsEvent fre) -> {handleFullRowsEvent(fre);});
-		addListener(RedrawPieceEvent.class, (RedrawPieceEvent rpe) -> {handleRedrawPieceEvent(rpe);});
-		addListener(SpawnPieceEvent.class, (SpawnPieceEvent spe) -> {handleSpawnPieceEvent(spe);});
+		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
+		addListener(ToggleThemeEvent.class, this::handleToggleThemeEvent);
+		addListener(FullRowsEvent.class, this::handleFullRowsEvent);
+		addListener(RedrawPieceEvent.class, this::handleRedrawPieceEvent);
+		addListener(SpawnPieceEvent.class, this::handleSpawnPieceEvent);
 	}
 	
 	
