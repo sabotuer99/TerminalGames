@@ -68,6 +68,21 @@ public class GlyphLoaderTests {
 	}
 	
 	@Test
+	public void setPROCESS_SPACE_appliesDefaultGlyphToSpaces(){
+		GlyphLoader sut = new GlyphLoader();
+		
+		Set<GlyphStringCoord> result = sut.parse(getBais("SPEC:DEFAULT BASE:O\n"
+													   + "PROCESS_SPACE:\n"
+													   + "APPLY:\n" 		
+				                                       + "     "));
+		
+		assertEquals(1, result.size());
+		for(GlyphStringCoord gsc : result){
+			assertEquals("OOOOO", gsc.getGlyphString().getBaseString());
+		}
+	}
+	
+	@Test
 	public void mappingsProvided_includesDEFAULT_appliesToUnmappedChars(){
 		GlyphLoader sut = new GlyphLoader();
 		

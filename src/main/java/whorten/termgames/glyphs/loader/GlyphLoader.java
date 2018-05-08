@@ -1,98 +1,115 @@
 package whorten.termgames.glyphs.loader;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.collate.GlyphStringCollater;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 
 public class GlyphLoader {
-	
-	private static final String APPLY = "APPLY";
 
 	public Set<GlyphStringCoord> parse(InputStream bais) {
 		Set<GlyphStringCoord> glyphs = new HashSet<GlyphStringCoord>();
-		Scanner in = new Scanner(bais);
+		BufferedReader in = new BufferedReader(new InputStreamReader(bais));
+
 		Map<String, Processor> processors = new HashMap<>();
 		processors.put("SPEC", new SpecProcessor());
 		processors.put("BOX", new BoxDrawingProcessor());
-		//processors.put("RANGE", new RangeSpecProcessor());
-		
+		// processors.put("RANGE", new RangeSpecProcessor());
+
 		Map<String, Processor> map = new HashMap<>();
 		map.put(" ", NoOpProcessor.getInstance());
+
+		Map<String, Consumer<String>> commands = new HashMap<>();
+		commands.put("APPLY", (p) -> apply(p, processors, map, in));
+		commands.put("SPEC", (p) -> process(processors, map, "SPEC", p));
+		commands.put("BOX", (p) -> process(processors, map, "BOX", p));
+		commands.put("PROCESS_SPACE", (p) -> map.put(" ", map.get("SPEC")));
+
+		try {
+				while (in.ready()) {
+					String line = in.readLine();
+					String cmd = getCommand(line);
+					String params = getParams(line);
 		
-		while(in.hasNext()){
-			String line = in.nextLine();
-			String cmd = getCommand(line);
-			String params = getParams(line);
-			
-			if(APPLY.equals(cmd)){
-				apply(params, processors, map, in);
-			} else {
-				Processor p = processors.get(cmd);
-				if(p != null){
-					String key = getKey(params);
-					p.withInstruction(params);
-					map.put(key, p);
+					if (commands.containsKey(cmd)) {
+						commands.get(cmd).accept(params);
+					}
 				}
+		
+				for (Processor p : processors.values()) {
+					glyphs.addAll(p.process());
+				}
+		} catch (IOException ex){
+			//gulp
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				//gulp
 			}
 		}
 		
-		for(Processor p : processors.values()){
-			glyphs.addAll(p.process());
-		}
-		
-		in.close();
-		return new GlyphStringCollater().collate(glyphs);	
+		return new GlyphStringCollater().collate(glyphs);
 	}
 
+	private void process(Map<String, Processor> processors, Map<String, Processor> map, String cmd, String params) {
+		Processor p = processors.get(cmd);
+		if (p != null) {
+			String key = getKey(params);
+			p.withInstruction(params);
+			map.put(key, p);
+		}
+	}
 
-	private void apply(String instructions,
-						Map<String, Processor> processors,
-						Map<String, Processor> map,
-						Scanner in){
-		//TODO process apply instructions for Coord offset or whatever
-		for(int row = 0; in.hasNext(); row++){
-			String line = in.nextLine();
-			String[] charz = line.split("");
-			for(int col = 0; col < charz.length; col++){
-				String key = charz[col];
-				Processor p = map.get(key);
-				Coord coord = new Coord(col, row);
-				if(p == null){
-					p = mostApplicable(processors, coord, key);					
+	private void apply(String instructions, Map<String, Processor> processors, Map<String, Processor> map, BufferedReader in){
+		// TODO process apply instructions for Coord offset or whatever
+		try{
+			for (int row = 0; in.ready(); row++) {
+				String line = in.readLine();
+				String[] charz = line.split("");
+				for (int col = 0; col < charz.length; col++) {
+					String key = charz[col];
+					Processor p = map.get(key);
+					Coord coord = new Coord(col, row);
+					if (p == null) {
+						p = mostApplicable(processors, coord, key);
+					}
+					p.apply(coord, key);
 				}
-				p.apply(coord, key);
 			}
+		} catch (IOException io){
+			//gulp
 		}
 	}
-	
-	
+
 	private Processor mostApplicable(Map<String, Processor> processors, Coord coord, String key) {
-		return processors.values().stream()
-				.max(getComparator(coord, key)).get();
+		return processors.values().stream().max(getComparator(coord, key)).get();
 	}
 
 	private Comparator<? super Processor> getComparator(final Coord coord, final String key) {
-		return new Comparator<Processor>(){
+		return new Comparator<Processor>() {
 
 			@Override
 			public int compare(Processor o1, Processor o2) {
-				return o1.applicability(coord, key)
-						- o2.applicability(coord, key);
-			}};
+				return o1.applicability(coord, key) - o2.applicability(coord, key);
+			}
+		};
 	}
 
 	private String getKey(String line) {
 		String key = "";
 		int split = line.indexOf(" ");
-		if(split != -1){
+		if (split != -1) {
 			key = line.substring(0, split);
 		}
 		return key;
@@ -101,7 +118,7 @@ public class GlyphLoader {
 	private String getParams(String line) {
 		String params = "";
 		int split = line.indexOf(":");
-		if(split != -1 && split != line.length() - 1){
+		if (split != -1 && split != line.length() - 1) {
 			params = line.substring(split + 1);
 		}
 		return params;
@@ -110,8 +127,8 @@ public class GlyphLoader {
 	private String getCommand(String line) {
 		String cmd = "";
 		int split = line.indexOf(":");
-		if(split != -1){
-			cmd = line.substring(0,split);
+		if (split != -1) {
+			cmd = line.substring(0, split);
 		}
 		return cmd;
 	}
