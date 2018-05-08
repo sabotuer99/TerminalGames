@@ -1,93 +1,118 @@
 package whorten.termgames.glyphs.loader;
 
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import whorten.termgames.glyphs.Glyph;
-import whorten.termgames.glyphs.GlyphString;
-import whorten.termgames.glyphs.GlyphString.Appender;
+import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.collate.GlyphStringCollater;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
-import whorten.termgames.glyphs.interpreters.SpecInterpreter;
 
 public class GlyphLoader {
 	
-	private SpecInterpreter si = new SpecInterpreter();
+	private static final String APPLY = "APPLY";
 
 	public Set<GlyphStringCoord> parse(InputStream bais) {
 		Set<GlyphStringCoord> glyphs = new HashSet<GlyphStringCoord>();
 		Scanner in = new Scanner(bais);
-		Map<String, Glyph> map = new HashMap<>();
-		processMetadata(in, map, glyphs);	
+		Map<String, Processor> processors = new HashMap<>();
+		processors.put("SPEC", new SpecProcessor());
+		processors.put("BOX", new BoxDrawingProcessor());
+		//processors.put("RANGE", new RangeSpecProcessor());
 		
-		for(int row = 0; in.hasNext(); row++){
+		Map<String, Processor> map = new HashMap<>();
+		map.put(" ", NoOpProcessor.getInstance());
+		
+		while(in.hasNext()){
 			String line = in.nextLine();
-			Appender current = new GlyphString.Appender();
-			for(int i = 0; i < line.length(); i++){
-				String c = charAt(line, i);
-				if(" ".equals(c)){
-					if(current.length() > 0){
-						GlyphStringCoord gsc = new GlyphStringCoord(row, i - current.length(), current.build());
-						glyphs.add(gsc);
-						current = new GlyphString.Appender();
-					}				
-					continue;
-				} else {
-					appendGlyph(map, current, c);					
+			String cmd = getCommand(line);
+			String params = getParams(line);
+			
+			if(APPLY.equals(cmd)){
+				apply(params, processors, map, in);
+			} else {
+				Processor p = processors.get(cmd);
+				if(p != null){
+					String key = getKey(params);
+					p.withInstruction(params);
+					map.put(key, p);
 				}
 			}
-			if(current.length() > 0){
-				int col = line.length() - current.length();
-				glyphs.add(finishGlyphString(row, col, current));
-			}
 		}
+		
+		for(Processor p : processors.values()){
+			glyphs.addAll(p.process());
+		}
+		
 		in.close();
-		return glyphs;
+		return new GlyphStringCollater().collate(glyphs);	
 	}
 
-	private GlyphStringCoord finishGlyphString(int row, int col, Appender current) {
-		return new GlyphStringCoord(row, col, current.build());
-	}
 
-	private String charAt(String line, int i) {
-		return Character.toString(line.charAt(i));
-	}
-
-	private void appendGlyph(Map<String, Glyph> map, Appender current, String c) {
-		Glyph mapped = map.get(c);
-		Glyph defaultGlyph = map.get("DEFAULT");
-		Glyph.Builder b = new Glyph.Builder(" ");
-		if(mapped == null){
-			if(defaultGlyph != null){
-				current.append(new Glyph.Builder(defaultGlyph).withBase(c).build());
-			} else {
-				current.append(b.withBase(c).build());							
+	private void apply(String instructions,
+						Map<String, Processor> processors,
+						Map<String, Processor> map,
+						Scanner in){
+		//TODO process apply instructions for Coord offset or whatever
+		for(int row = 0; in.hasNext(); row++){
+			String line = in.nextLine();
+			String[] charz = line.split("");
+			for(int col = 0; col < charz.length; col++){
+				String key = charz[col];
+				Processor p = map.get(key);
+				Coord coord = new Coord(col, row);
+				if(p == null){
+					p = mostApplicable(processors, coord, key);					
+				}
+				p.apply(coord, key);
 			}
-		} else {
-			current.append(mapped);
 		}
 	}
+	
+	
+	private Processor mostApplicable(Map<String, Processor> processors, Coord coord, String key) {
+		return processors.values().stream()
+				.max(getComparator(coord, key)).get();
+	}
 
-	private void processMetadata(Scanner in, Map<String, Glyph> map, Set<GlyphStringCoord> glyphs) {
-		try{	
-			String sentinel = in.nextLine();
-			for(String line = in.nextLine(); !line.equals(sentinel) && in.hasNext(); line = in.nextLine()){
-				int firstSpace = line.indexOf(" ");
-				String key = line.substring(0, firstSpace);
-				map.put(key, specToGlyph(line));				
-			}		
-		} catch (Exception ex){
+	private Comparator<? super Processor> getComparator(final Coord coord, final String key) {
+		return new Comparator<Processor>(){
+
+			@Override
+			public int compare(Processor o1, Processor o2) {
+				return o1.applicability(coord, key)
+						- o2.applicability(coord, key);
+			}};
+	}
+
+	private String getKey(String line) {
+		String key = "";
+		int split = line.indexOf(" ");
+		if(split != -1){
+			key = line.substring(0, split);
 		}
+		return key;
 	}
 
-	private Glyph specToGlyph(String spec) {
-		return si.parse(spec);
+	private String getParams(String line) {
+		String params = "";
+		int split = line.indexOf(":");
+		if(split != -1 && split != line.length() - 1){
+			params = line.substring(split + 1);
+		}
+		return params;
 	}
 
-	public void setSpecInterpreter(SpecInterpreter si){
-		this.si  = si;
+	private String getCommand(String line) {
+		String cmd = "";
+		int split = line.indexOf(":");
+		if(split != -1){
+			cmd = line.substring(0,split);
+		}
+		return cmd;
 	}
 }

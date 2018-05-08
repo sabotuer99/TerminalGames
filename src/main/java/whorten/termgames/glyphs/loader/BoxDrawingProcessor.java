@@ -38,6 +38,11 @@ public class BoxDrawingProcessor implements Processor{
 		return gscs;
 	}
 
+	@Override
+	public int applicability(Coord coord, String key) {
+		return map.containsKey(key) ? 10 : 0;
+	}
+
 	
 	
 }

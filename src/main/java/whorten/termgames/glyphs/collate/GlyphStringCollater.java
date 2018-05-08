@@ -54,6 +54,9 @@ public class GlyphStringCollater {
 	
 	
 	public Set<GlyphStringCoord> collate(Set<GlyphStringCoord> input) {
+		if(input == null){return new HashSet<>();}
+		if(input.size() == 0){return input;}
+		
 		Set<GlyphStringCoord> sortedInput = new TreeSet<>(input);
 		Set<GlyphStringCoord> collated = new HashSet<>();
 		Iterator<GlyphStringCoord> iter = sortedInput.iterator();

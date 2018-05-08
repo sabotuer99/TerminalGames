@@ -30,8 +30,7 @@ public class GlyphLoaderTests {
 	public void noMappingsProvided_returnsUndecoratedText(){
 		GlyphLoader sut = new GlyphLoader();
 		
-		Set<GlyphStringCoord> result = sut.parse(getBais("TEST\n"
-													   + "TEST\n" 		
+		Set<GlyphStringCoord> result = sut.parse(getBais("APPLY:\n"		
 									                   + "XXXXX"));
 		GlyphStringCoord gsc = result.iterator().next();
 		assertEquals(1, result.size());
@@ -44,8 +43,7 @@ public class GlyphLoaderTests {
 	public void noMappingsProvided_hasSpaces_returnsUndecoratedTextAtLocation(){
 		GlyphLoader sut = new GlyphLoader();
 		
-		Set<GlyphStringCoord> result = sut.parse(getBais("TEST\n"
-													   + "TEST\n"
+		Set<GlyphStringCoord> result = sut.parse(getBais("APPLY:\n"	
 													   + "    \n"												   
 									                   + "  XXX"));
 		GlyphStringCoord gsc = result.iterator().next();
@@ -59,9 +57,8 @@ public class GlyphLoaderTests {
 	public void mappingsProvided_appliesToGlyphStrings(){
 		GlyphLoader sut = new GlyphLoader();
 		
-		Set<GlyphStringCoord> result = sut.parse(getBais("TEST\n"
-													   + "X BASE:O\n"
-													   + "TEST\n" 		
+		Set<GlyphStringCoord> result = sut.parse(getBais("SPEC:X BASE:O\n"
+													   + "APPLY:\n" 		
 				                                       + "XXXXX"));
 		
 		assertEquals(1, result.size());
@@ -74,9 +71,8 @@ public class GlyphLoaderTests {
 	public void mappingsProvided_includesDEFAULT_appliesToUnmappedChars(){
 		GlyphLoader sut = new GlyphLoader();
 		
-		Set<GlyphStringCoord> result = sut.parse(getBais("TEST\n"
-													   + "DEFAULT FG:CYAN\n"
-													   + "TEST\n" 		
+		Set<GlyphStringCoord> result = sut.parse(getBais("SPEC:DEFAULT FG:CYAN\n"
+													   + "APPLY:\n" 		
 				                                       + "XXXXX"));
 		
 		assertEquals(1, result.size());

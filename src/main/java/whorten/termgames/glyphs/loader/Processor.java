@@ -8,5 +8,6 @@ import whorten.termgames.glyphs.collate.GlyphStringCoord;
 public interface Processor {
 	void withInstruction(String instruction);
 	void apply(Coord coord, String key);
+	int applicability(Coord coord, String key);
 	Set<GlyphStringCoord> process();
 }
