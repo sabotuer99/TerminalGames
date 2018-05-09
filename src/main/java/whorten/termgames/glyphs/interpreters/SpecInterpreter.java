@@ -3,6 +3,8 @@ package whorten.termgames.glyphs.interpreters;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +51,43 @@ public class SpecInterpreter {
 		return builder.build();
 	}
 
+	public String getGlyphSpec(String spec) {
+		String gpat = "GLYPH:\\[.*?[^\\\\]\\]";
+		if(Pattern.matches(gpat, spec)){
+			Pattern p = Pattern.compile(gpat);
+			Matcher m = p.matcher(spec);
+			return m.group();
+		}
+		return "";
+	}
+	
+	public Glyph parseGlyphSpec(String spec, Glyph defaultGlyph) {
+		String gspec = getGlyphSpec(spec);
+		Glyph base = defaultGlyph;
+		if(!"".equals(gspec)){
+			String glyphSpec = gspec.substring(7, gspec.length() - 1);
+			base = parse(glyphSpec);
+		}
+		return base;
+	}
+	
+	public String getCoordsSpec(String spec) {
+		String gpat = "COORDS:\\[.*?[^\\\\]\\]";
+		if(Pattern.matches(gpat, spec)){
+			Pattern p = Pattern.compile(gpat);
+			Matcher m = p.matcher(spec);
+			return m.group();
+		}
+		return "";
+	}
 
+	/**
+	 * Expects a string of coordinates in the form
+	 * FOO:x,y BAR:x,y 
+	 * 
+	 * @param rawCoords
+	 * @return
+	 */
 	public Map<String, Coord> parseCoords(String rawCoords){
 		String[] params = rawCoords.split(" ");
 		Map<String, Coord> coords = new HashMap<>();
