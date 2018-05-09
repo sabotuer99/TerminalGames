@@ -51,8 +51,8 @@ public class DrawCommandInterpreter {
 	}
 	
 	private void populateLambdas() {
-		lambdas.put("LINE", (String params, Glyph base) -> {return drawLine(params, base);});
-		lambdas.put("RECT", (String params, Glyph base) -> {return drawRect(params, base);});
+		lambdas.put("LINE", this::drawLine);
+		lambdas.put("RECT", this::drawRect);
 	}
 	
 	private Set<GlyphStringCoord> drawRect(String paramsRaw, Glyph base) {

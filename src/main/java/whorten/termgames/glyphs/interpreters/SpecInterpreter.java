@@ -56,6 +56,7 @@ public class SpecInterpreter {
 		if(Pattern.matches(gpat, spec)){
 			Pattern p = Pattern.compile(gpat);
 			Matcher m = p.matcher(spec);
+			m.find();
 			return m.group();
 		}
 		return "";
@@ -72,10 +73,11 @@ public class SpecInterpreter {
 	}
 	
 	public String getCoordsSpec(String spec) {
-		String gpat = "COORDS:\\[.*?[^\\\\]\\]";
+		String gpat = "COORDS:\\[.*?\\]";
 		if(Pattern.matches(gpat, spec)){
 			Pattern p = Pattern.compile(gpat);
 			Matcher m = p.matcher(spec);
+			m.find();
 			return m.group();
 		}
 		return "";
@@ -88,9 +90,15 @@ public class SpecInterpreter {
 	 * @param rawCoords
 	 * @return
 	 */
-	public Map<String, Coord> parseCoords(String rawCoords){
-		String[] params = rawCoords.split(" ");
+	public Map<String, Coord> parseCoords(String spec){
 		Map<String, Coord> coords = new HashMap<>();
+		String rawCoordSpec = getCoordsSpec(spec);
+		if("".equals(rawCoordSpec)){
+			return coords;
+		}
+		String rawCoords = rawCoordSpec.substring(8, rawCoordSpec.length() - 1); 
+		
+		String[] params = rawCoords.split(" ");
 		for(String param : params){
 			String[] p = param.split(":");
 			String key = p[0];
