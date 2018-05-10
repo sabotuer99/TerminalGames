@@ -1,6 +1,7 @@
 package whorten.termgames.glyphs.interpreters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -171,5 +172,26 @@ public class SpecInterpreterTests {
 		Glyph result = sut.parse("DEFAULT FG:CYAN");
 		
 		assertEquals(new Glyph.Builder(" ").withForegroundColor(FgColor.CYAN).build(), result);
+	}
+	
+	@Test
+	public void parse_DEFAULTspec_HasFGandBg_returnsSpaceGlyphWithFGandBGSet(){
+		SpecInterpreter sut = new SpecInterpreter();
+		
+		Glyph result = sut.parse("DEFAULT FG:0,0,255 BG:255,0,0");
+		
+		assertEquals(new Glyph.Builder(" ").withForegroundColor(0,0,255).withBackgroundColor(255,0,0).build(), result);
+	}
+	
+	@Test
+	public void parse_GLYPHspec_returnsGLYPH(){
+		SpecInterpreter sut = new SpecInterpreter();
+		
+		Glyph result = sut.parseGlyphSpec("GLYPH:[DEFAULT FG:LIGHT_GREEN BG:0,0,255]", null);
+		
+		assertNotNull(result);
+		assertEquals(new Glyph.Builder(" ")
+				.withForegroundColor(FgColor.LIGHT_GREEN)
+				.withBackgroundColor(0,0,255).build(), result);
 	}
 }

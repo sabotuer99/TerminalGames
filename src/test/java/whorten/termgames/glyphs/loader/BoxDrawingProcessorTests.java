@@ -17,7 +17,7 @@ public class BoxDrawingProcessorTests {
 	public void mappingsProvided_appliesToGlyphStrings(){
 		Processor sut = new BoxDrawingProcessor();
 		
-		sut.withInstruction("X FG:255,75,150");
+		sut.withInstruction("X GLYPH:[DEFAULT FG:255,75,150]");
 		sut.apply(new Coord(0,0), "X");
 		sut.apply(new Coord(1,0), "X");
 		sut.apply(new Coord(2,0), "X");
@@ -36,8 +36,8 @@ public class BoxDrawingProcessorTests {
 	public void DefineTwoKeys_GetIndependentDrawings(){
 		Processor sut = new BoxDrawingProcessor();
 		
-		sut.withInstruction("X FG:255,75,150");
-		sut.withInstruction("O FG:255,75,150");
+		sut.withInstruction("X GLYPH:[DEFAULT FG:255,75,150]");
+		sut.withInstruction("O GLYPH:[DEFAULT FG:255,75,150]");
 		sut.apply(new Coord(0,0), "X");
 		sut.apply(new Coord(1,0), "X");
 		sut.apply(new Coord(2,0), "O");

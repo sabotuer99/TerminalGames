@@ -12,19 +12,24 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCollater;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
+import whorten.termgames.glyphs.interpreters.SpecInterpreter;
 
 public class GlyphLoader {
 
+	private Coord offset = null;
+	
 	public Set<GlyphStringCoord> parse(InputStream bais) {
 		Set<GlyphStringCoord> glyphs = new HashSet<GlyphStringCoord>();
 		BufferedReader in = new BufferedReader(new InputStreamReader(bais));
+		offset = new Coord(0,0);
 
 		Map<String, Processor> processors = new HashMap<>();
 		processors.put("SPEC", new SpecProcessor());
 		processors.put("BOX", new BoxDrawingProcessor());
-		// processors.put("RANGE", new RangeSpecProcessor());
+		processors.put("RANGE", new RangeProcessor());
 
 		Map<String, Processor> map = new HashMap<>();
 		map.put(" ", NoOpProcessor.getInstance());
@@ -33,6 +38,8 @@ public class GlyphLoader {
 		commands.put("APPLY", (p) -> apply(p, processors, map, in));
 		commands.put("SPEC", (p) -> process(processors, map, "SPEC", p));
 		commands.put("BOX", (p) -> process(processors, map, "BOX", p));
+		commands.put("RANGE", (p) -> process(processors, map, "RANGE", p));
+		commands.put("OFFSET", (p) -> setOffset(p));
 		commands.put("PROCESS_SPACE", (p) -> map.put(" ", map.get("SPEC")));
 
 		try {
@@ -58,8 +65,14 @@ public class GlyphLoader {
 				//gulp
 			}
 		}
-		
+		glyphs = GlyphString.offSetCollection(glyphs, offset);
 		return new GlyphStringCollater().collate(glyphs);
+	}
+
+	private void setOffset(String p) {
+		SpecInterpreter si = new SpecInterpreter();
+		Map<String,Coord> points = si.parseCoords(p);
+		offset = points.get("ORIGIN");
 	}
 
 	private void process(Map<String, Processor> processors, Map<String, Processor> map, String cmd, String params) {

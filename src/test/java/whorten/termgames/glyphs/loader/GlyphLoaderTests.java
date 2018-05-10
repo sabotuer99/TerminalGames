@@ -99,6 +99,18 @@ public class GlyphLoaderTests {
 		assertEquals(expected, result.iterator().next().getGlyphString());
 	}
 	
+	@Test
+	public void mappingsProvided_BOXinstruction_appliesToUnmappedChars(){
+		GlyphLoader sut = new GlyphLoader();
+		
+		Set<GlyphStringCoord> result = sut.parse(getBais("BOX:X GLYPH:[DEFAULT FG:LIGHT_GREEN BG:0,0,255]\n"
+													   + "APPLY:\n" 		
+				                                       + "XXXXX"));
+		
+		assertEquals(1, result.size());
+	}
+	
+	
 	private InputStream getBais(String string){
 		
 		return new ByteArrayInputStream(string.getBytes());

@@ -50,6 +50,28 @@ public class SpecInterpreter {
 
 		return builder.build();
 	}
+	
+	public Map<String,String> getAllSpecs(String rawSpec){
+		Map<String,String> map = new HashMap<>();
+		if(rawSpec == null){ return map;}
+		
+		// remove subspec groups
+		rawSpec.replaceAll(getGlyphSpec(rawSpec), "");
+		rawSpec.replaceAll(getCoordsSpec(rawSpec), "");
+		
+		// get all the key/value pairs
+		String[] specs = rawSpec.split(" ");
+		for(String spec : specs){
+			String[] parts = spec.split(":");
+			String key = parts[0];
+			String value = "";
+			if(parts.length > 1){
+				value = parts[1];
+			}
+			map.put(key, value);
+		}
+		return map;
+	}
 
 	public String getGlyphSpec(String spec) {
 		String gpat = "GLYPH:\\[.*?[^\\\\]\\]";
@@ -111,13 +133,13 @@ public class SpecInterpreter {
 	}
 
 	private void populateLambdas() {
-		lambdas.put("BASE", (String s, Glyph.Builder b) -> {setBase(s,b);});
-		lambdas.put("FG", (String s, Glyph.Builder b) -> {setFg(s,b);});
-		lambdas.put("BG", (String s, Glyph.Builder b) -> {setBg(s,b);});
-		lambdas.put("FGA", (String s, Glyph.Builder b) -> {setFgAfter(s,b);});
-		lambdas.put("BGA", (String s, Glyph.Builder b) -> {setBgAfter(s,b);});
-		lambdas.put("BOLD", (String s, Glyph.Builder b) -> {setBold(s,b);});
-		lambdas.put("UNDERLINE", (String s, Glyph.Builder b) -> {setUnderline(s,b);});
+		lambdas.put("BASE", this::setBase);
+		lambdas.put("FG", this::setFg);
+		lambdas.put("BG", this::setBg);
+		lambdas.put("FGA", this::setFgAfter);
+		lambdas.put("BGA", this::setBgAfter);
+		lambdas.put("BOLD", this::setBold);
+		lambdas.put("UNDERLINE", this::setUnderline);
 	}
 
 	private void setUnderline(String setting, Builder builder) {
@@ -129,6 +151,7 @@ public class SpecInterpreter {
 	}
 
 	private void setBgAfter(String setting, Builder builder) {
+		if(setting == null || setting.length() == 0) { return; }
 		int[] rgb = getRbg(setting);
 		if(rgb.length == 3){
 			builder.withBgAfter(rgb[0], rgb[1], rgb[2]);
@@ -136,6 +159,7 @@ public class SpecInterpreter {
 	}
 
 	private void setFgAfter(String setting, Builder builder) {
+		if(setting == null || setting.length() == 0) { return; }
 		int[] rgb = getRbg(setting);
 		if(rgb.length == 3){
 			builder.withFgAfter(rgb[0], rgb[1], rgb[2]);
@@ -143,6 +167,7 @@ public class SpecInterpreter {
 	}
 
 	private void setFg(String setting, Builder builder) {
+		if(setting == null || setting.length() == 0) { return; }
 		int[] rgb = getRbg(setting);
 		if(rgb.length == 3){
 			builder.withForegroundColor(rgb[0], rgb[1], rgb[2]);
@@ -157,6 +182,7 @@ public class SpecInterpreter {
 	}
 	
 	private void setBg(String setting, Builder builder) {
+		if(setting == null || setting.length() == 0) { return; }
 		int[] rgb = getRbg(setting);
 		if(rgb.length == 3){
 			builder.withBackgroundColor(rgb[0], rgb[1], rgb[2]);

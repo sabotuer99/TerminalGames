@@ -2,6 +2,11 @@ package whorten.termgames.glyphs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 
 public class GlyphString {
 	
@@ -164,6 +169,12 @@ public class GlyphString {
 		public int length() {
 			return aglyphs.size();
 		}
+	}
+
+	public static Set<GlyphStringCoord> offSetCollection(Set<GlyphStringCoord> glyphs, Coord offset) {
+		return glyphs.stream()
+				.map(gsc -> new GlyphStringCoord(Coord.add(gsc.getCoord(), offset), gsc.getGlyphString()))
+				.collect(Collectors.toSet());
 	}
 
 }

@@ -1,7 +1,9 @@
 package whorten.termgames.games.snake;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,8 +19,10 @@ import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
-import whorten.termgames.render.GameBorder;
-import whorten.termgames.render.Renderer;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
+import whorten.termgames.glyphs.loader.GlyphLoader;
+//import whorten.termgames.render.GameBorder;
+//import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Direction;
@@ -36,7 +40,7 @@ public class SnakeGame extends Game {
 	private Snake snake;
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
 	private Glyph badGlyph = defaultBadFruitGlyph();
-	private GameBorder gb;
+	//private GameBorder gb;
 	private Map<Coord, Fruit> fruits;
 	private Glyph bodyGlyph =  defaultBodyGlyph();
 	private Glyph headUpGlyph = headSegment("^"); //"▲")
@@ -86,37 +90,45 @@ public class SnakeGame extends Game {
 	private void renderBoard() {
 		logger.debug("Rendering SnakeGame board.");
 		renderer.clearScreen();
-		gb = defaultGameBorder(renderer);
-		renderer.drawGlyphCollection(gb.getGlyphCoords());
 		
-		GlyphString title = new GlyphString.Builder("SNAKE!!!")
-									.withBgColor(BgColor.LIGHT_CYAN)
-									.withFgColor(FgColor.BLACK)
-									.build();
-		renderer.drawAt(4, 66, title);
-		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
-		updateScore(1);
+		GlyphLoader gl = new GlyphLoader();
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		InputStream file = classLoader.getResourceAsStream("whorten/termgames/games/snake/snake_background.gstxt");
+		Set<GlyphStringCoord> background = gl.parse(file);
+		renderer.drawGlyphStringCollection(background);
+		
+//		gb = defaultGameBorder(renderer);
+//		renderer.drawGlyphCollection(gb.getGlyphCoords());
+//		
+//		GlyphString title = new GlyphString.Builder("SNAKE!!!")
+//									.withBgColor(BgColor.LIGHT_CYAN)
+//									.withFgColor(FgColor.BLACK)
+//									.build();
+//		renderer.drawAt(4, 66, title);
+//		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
+		
 		//                                               ###################
-		GlyphString instr1 = menuBuilder.withBaseString("Use the arrow keys ").build();
-		GlyphString instr2 = menuBuilder.withBaseString("to change direction").build();
-		GlyphString instr3 = menuBuilder.withBaseString("   Eat red apples  ").build();
-		GlyphString instr4 = menuBuilder.withBaseString("to grow longer!    ").build();
-		GlyphString instr5 = menuBuilder.withBaseString("   But avoid the   ").build();
-		GlyphString instr6 = menuBuilder.withBaseString("cans of poison!    ").build();
-		GlyphString instr7 = menuBuilder.withBaseString("Speed  <   >       ").build();
-		GlyphString instr8 = menuBuilder.withBaseString("Music: [M]         ").build();
-		GlyphString instr9 = menuBuilder.withBaseString("Sound: [S]         ").build();
-		renderer.drawAt(8, 61, instr1);
-		renderer.drawAt(9, 61, instr2);
-		renderer.drawAt(11, 61, instr3);
-		renderer.drawAt(11, 61, gfGlyph);
-		renderer.drawAt(12, 61, instr4);
-		renderer.drawAt(14, 61, instr5);
-		renderer.drawAt(14, 61, badGlyph);
-		renderer.drawAt(15, 61, instr6);
-		renderer.drawAt(17, 61, instr7);
-		renderer.drawAt(19, 61, instr8);
-		renderer.drawAt(20, 61, instr9);
+//		GlyphString instr1 = menuBuilder.withBaseString("Use the arrow keys ").build();
+//		GlyphString instr2 = menuBuilder.withBaseString("to change direction").build();
+//		GlyphString instr3 = menuBuilder.withBaseString("   Eat red apples  ").build();
+//		GlyphString instr4 = menuBuilder.withBaseString("to grow longer!    ").build();
+//		GlyphString instr5 = menuBuilder.withBaseString("   But avoid the   ").build();
+//		GlyphString instr6 = menuBuilder.withBaseString("cans of poison!    ").build();
+//		GlyphString instr7 = menuBuilder.withBaseString("Speed  <   >       ").build();
+//		GlyphString instr8 = menuBuilder.withBaseString("Music: [M]         ").build();
+//		GlyphString instr9 = menuBuilder.withBaseString("Sound: [S]         ").build();
+//		renderer.drawAt(8, 61, instr1);
+//		renderer.drawAt(9, 61, instr2);
+//		renderer.drawAt(11, 61, instr3);
+//		renderer.drawAt(11, 61, gfGlyph);
+//		renderer.drawAt(12, 61, instr4);
+//		renderer.drawAt(14, 61, instr5);
+//		renderer.drawAt(14, 61, badGlyph);
+//		renderer.drawAt(15, 61, instr6);
+//		renderer.drawAt(17, 61, instr7);
+//		renderer.drawAt(19, 61, instr8);
+//		renderer.drawAt(20, 61, instr9);
+		updateScore(1);
 		updateSpeed();
 		updateSound();
 	}
@@ -340,13 +352,13 @@ public class SnakeGame extends Game {
 		        .build();
 	}
 	
-	private GameBorder defaultGameBorder(Renderer renderer) {
-		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
-							.withFgColor(FgColor.LIGHT_GREEN)
-							.withBgColor(0, 0, 255)
-							.withDefaultLayout()
-							.build();
-	}
+//	private GameBorder defaultGameBorder(Renderer renderer) {
+//		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
+//							.withFgColor(FgColor.LIGHT_GREEN)
+//							.withBgColor(0, 0, 255)
+//							.withDefaultLayout()
+//							.build();
+//	}
 
 	private Glyph headSegment(String base) {
 		return new Glyph.Builder(base)

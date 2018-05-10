@@ -61,4 +61,8 @@ public class GlyphStringCoord implements Comparable<GlyphStringCoord>{
 	public GlyphStringCoord append(GlyphStringCoord here) {
 		return new GlyphStringCoord(coord, glyphString.append(here.glyphString));
 	}
+
+	public Coord getCoord() {
+		return coord;
+	}
 }

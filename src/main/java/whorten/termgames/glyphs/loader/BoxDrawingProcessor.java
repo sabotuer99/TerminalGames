@@ -19,7 +19,7 @@ public class BoxDrawingProcessor implements Processor{
 	@Override
 	public void withInstruction(String instruction) {
 		String key = instruction.substring(0, 1);
-		Glyph glyph = si.parse(instruction);
+		Glyph glyph = si.parseGlyphSpec(instruction, new Glyph.Builder(" ").build());
 		map.put(key, new BoxDrawingBuilder().withBaseGlyph(glyph));		
 	}
 
