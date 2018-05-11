@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -57,20 +58,30 @@ public class RangeProcessor implements Processor{
 		if(coord == null || key == null){
 			return;
 		}
-		Entry<Range,Glyph> g = ranges.entrySet()
-		      .stream()
-		      .filter(entry -> entry.getKey().inRange(coord))
-		      .findFirst()
-		      .get();
+		Entry<Range, Glyph> g = getFirstRange(coord);
 		if(g != null && g.getValue() != null){
-			GlyphString gs = new GlyphString.Builder(g.getValue()).withBaseString(key).build();
+			String base = " ".equals(g.getValue().getBase()) ? key : g.getValue().getBase();
+			GlyphString gs = new GlyphString.Builder(g.getValue()).withBaseString(base).build();
 			gscs.add(new GlyphStringCoord(coord, gs));
+		}
+	}
+
+	private Entry<Range, Glyph> getFirstRange(Coord coord) {
+		try{
+			Entry<Range,Glyph> g = ranges.entrySet()
+			      .stream()
+			      .filter(entry -> entry.getKey().inRange(coord))
+			      .findFirst()
+			      .get();
+			return g;
+		} catch (NoSuchElementException e){
+			return null;
 		}
 	}
 
 	@Override
 	public int applicability(Coord coord, String key) {
-		return 0;
+		return getFirstRange(coord) == null ? 0 : 9;
 	}
 
 	@Override

@@ -74,12 +74,12 @@ public class SpecInterpreter {
 	}
 
 	public String getGlyphSpec(String spec) {
-		String gpat = "GLYPH:\\[.*?[^\\\\]\\]";
+		String gpat = ".*(GLYPH:\\[.*?[^\\\\]\\]).*";
 		if(Pattern.matches(gpat, spec)){
 			Pattern p = Pattern.compile(gpat);
 			Matcher m = p.matcher(spec);
 			m.find();
-			return m.group();
+			return m.group(1);
 		}
 		return "";
 	}

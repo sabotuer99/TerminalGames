@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
@@ -37,6 +38,25 @@ public class BoxDrawingBuilderTests {
 
 		GlyphString gs = result.iterator().next().getGlyphString();
 		GlyphString expected = new GlyphString.Builder("▫").withFgColor(FgColor.CYAN).build();
+		assertThat(gs).isEqualTo(expected);
+	}
+	
+	@Test
+	public void setBaseGlyphWithSpace_SetsGlyphStringStyle(){
+		BoxDrawingBuilder bdb = new BoxDrawingBuilder();
+		bdb.withCoord(new Coord(0,0));
+		bdb.withBaseGlyph(new Glyph.Builder(" ")
+				.withForegroundColor(FgColor.CYAN)
+				.withBackgroundColor(BgColor.BLUE)
+				.build());
+		
+		Set<GlyphStringCoord> result = bdb.build();
+
+		GlyphString gs = result.iterator().next().getGlyphString();
+		GlyphString expected = new GlyphString.Builder("▫")
+				.withFgColor(FgColor.CYAN)
+				.withBgColor(BgColor.BLUE)
+				.build();
 		assertThat(gs).isEqualTo(expected);
 	}
 	

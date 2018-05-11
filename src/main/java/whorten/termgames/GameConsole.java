@@ -37,6 +37,8 @@ import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
+import whorten.termgames.glyphs.loader.GlyphLoader;
 import whorten.termgames.reflection.ClassFinder;
 import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.OutputStreamRenderer;
@@ -51,10 +53,6 @@ import whorten.termgames.utils.CircularList;
 import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.StringUtils;
 
-/**
- * Hello world!
- *
- */
 public class GameConsole {
 	private static final String BOOP_SOUND = "sounds/boop.wav";
 	private static final String SELECT_SOUND = "sounds/three_boop.wav";
@@ -414,6 +412,12 @@ public class GameConsole {
 	
 	public long getTimeMillis(){
 		return System.currentTimeMillis();
+	}
+	
+	public Set<GlyphStringCoord> loadFromFile(String fileName){
+		GlyphLoader gl = new GlyphLoader();
+		InputStream file = classLoader.getResourceAsStream(fileName);
+		return gl.parse(file);
 	}
 	
 }

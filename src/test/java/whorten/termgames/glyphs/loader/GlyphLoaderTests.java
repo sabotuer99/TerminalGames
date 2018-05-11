@@ -2,6 +2,7 @@ package whorten.termgames.glyphs.loader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -108,6 +109,17 @@ public class GlyphLoaderTests {
 				                                       + "XXXXX"));
 		
 		assertEquals(1, result.size());
+	}
+	
+	@Test
+	public void snakeBoard_IntegrationTest(){
+		GlyphLoader gl = new GlyphLoader();
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		InputStream file = classLoader.getResourceAsStream("whorten/termgames/games/snake/snake_background.gstxt");
+		Set<GlyphStringCoord> background = gl.parse(file);
+		
+		assertNotNull(background);
+		assertTrue(background.size() > 0);
 	}
 	
 	
