@@ -1,0 +1,29 @@
+OFFSET:COORDS:[ORIGIN:1,1]
+BOX:# GLYPH:[DEFAULT FG:LIGHT_YELLOW BG:200,100,0]
+RANGE:MINROW:3 MAXROW:3 MINCOL:61 MAXCOL:76 GLYPH:[DEFAULT FG:255,255,200 BG:100,0,200]
+RANGE_SPACE:
+APPLY:
+################################################################################
+#                                                         #                    #
+#                                                         #                    #
+#                                                         #  -={ QuadTris }=-  #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         # [← →]  move piece  #
+#                                                         # [ ↓ ]  drop piece  #
+#                                                         #                    #
+#                                                         # [ z ] counterclock #
+#                                                         # [ x ] clockwise    #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         # Theme: [T]         #
+#                                                         #                    #
+#                                                         # Music: [M]         #
+#                                                         # Sound: [S]         #
+#                                                         #                    #
+#                                                         #                    #
+#                                                         #                    #
+################################################################################

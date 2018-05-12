@@ -41,6 +41,7 @@ public class GlyphLoader {
 		commands.put("RANGE", (p) -> process(processors, map, "RANGE", p));
 		commands.put("OFFSET", (p) -> setOffset(p));
 		commands.put("PROCESS_SPACE", (p) -> map.put(" ", map.get("SPEC")));
+		commands.put("RANGE_SPACE", (p) -> map.put(" ", map.get("RANGE")));
 
 		try {
 				while (in.ready()) {

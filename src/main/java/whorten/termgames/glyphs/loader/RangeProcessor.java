@@ -107,7 +107,7 @@ public class RangeProcessor implements Processor{
 		map.put("MINCOL", v -> {
 			int minCol = Integer.parseInt(v);
 			rb.withMinCol(minCol);
-		});		
+		});	
 		return map;
 	}
 	

@@ -2,6 +2,7 @@ package whorten.termgames.games.quadtris;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,8 +24,7 @@ import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
-import whorten.termgames.render.GameBorder;
-import whorten.termgames.render.Renderer;
+import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.sounds.events.PlaySoundEvent;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
@@ -40,8 +40,10 @@ public class Quadtris extends Game {
 	private static final String TRIBEEP_SOUND = "sounds/three_boop.wav";
 	private String currentTheme = THEME_A;
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
+	private static final String QUADTRIS_BACKGROUND_FILE = 
+			"whorten/termgames/games/quadtris/quadtris_background.gstxt";
 	private WellRenderer wellRenderer;
-	private GameBorder gb;
+	//private GameBorder gb;
 	private Coord wellOrigin;
 	private int level = 0;
 	private int score;
@@ -103,38 +105,12 @@ public class Quadtris extends Game {
 	private void renderBoard() {
 		logger.debug("Rendering Quadtris board.");
 		renderer.clearScreen();
-		gb = defaultGameBorder(renderer);
-		renderer.drawGlyphCollection(gb.getGlyphCoords());		
+		Set<GlyphStringCoord> background = console.loadFromFile(QUADTRIS_BACKGROUND_FILE);
+		renderer.drawGlyphStringCollection(background);	
 		updateScore(0);
-		drawMenu();
 		updateSound();
 		updateTheme();		
 		wellRenderer.drawBlockWell();
-	}
-
-	private void drawMenu() {
-		GlyphString title = new GlyphString.Builder("-={ QuadTris }=-")
-				.isBold(true)
-				.withBgColor(100,0,200)
-				.withFgColor(255,255,200)
-				.build();
-		renderer.drawAt(4, 62, title);
-		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
-		//                                               ###################
-		GlyphString instr1 = menuBuilder.withBaseString("[← →]  move piece  ").build();
-		GlyphString instr2 = menuBuilder.withBaseString("[ ↓ ]  drop piece  ").build();
-		GlyphString instr3 = menuBuilder.withBaseString("[ z ] counterclock ").build();
-		GlyphString instr4 = menuBuilder.withBaseString("[ x ] clockwise    ").build();
-		GlyphString instr5 = menuBuilder.withBaseString("Theme: [T]         ").build();
-		GlyphString instr8 = menuBuilder.withBaseString("Music: [M]         ").build();
-		GlyphString instr9 = menuBuilder.withBaseString("Sound: [S]         ").build();
-		renderer.drawAt(8, 61, instr1);
-		renderer.drawAt(9, 61, instr2);
-		renderer.drawAt(11, 61, instr3);
-		renderer.drawAt(12, 61, instr4);
-		renderer.drawAt(17, 61, instr5);
-		renderer.drawAt(19, 61, instr8);
-		renderer.drawAt(20, 61, instr9);
 	}
 
 	private void initializeListeners() {
@@ -290,9 +266,7 @@ public class Quadtris extends Game {
 						.prepend(minis.get(name));
 			renderer.drawAt(15 + index, 32, statLine);
 			index++;
-		}
-		
-		
+		}	
 	}
 
 	private void updateSound() {
@@ -308,13 +282,4 @@ public class Quadtris extends Game {
 		renderer.drawAt(19, 74, console.isMusicOn() ? music_on : music_off);
 		renderer.drawAt(20, 74, console.isSoundOn() ? sound_on : sound_off);	
 	}
-	
-	private GameBorder defaultGameBorder(Renderer renderer) {
-		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth())
-							.withFgColor(FgColor.LIGHT_YELLOW)
-							.withBgColor(200, 100, 0)
-							.withDefaultLayout()
-							.build();
-	}
-
 }

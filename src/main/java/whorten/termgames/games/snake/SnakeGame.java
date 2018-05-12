@@ -34,7 +34,8 @@ public class SnakeGame extends Game {
 	private static final String BLEH_SOUND = "sounds/bleh.wav";
 	private static final String OOF_SOUND = "sounds/oof.wav";
 	private static final String MUSIC_MIDI = "midi/Snake_Theme.mid";
-	private static final String SNAKE_BACKGROUND_FILE = "whorten/termgames/games/snake/snake_background.gstxt";
+	private static final String SNAKE_BACKGROUND_FILE = 
+			"whorten/termgames/games/snake/snake_background.gstxt";
 	private Direction direction;
 	private Snake snake;
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
