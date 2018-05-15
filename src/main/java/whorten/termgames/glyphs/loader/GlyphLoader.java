@@ -30,6 +30,7 @@ public class GlyphLoader {
 		processors.put("SPEC", new SpecProcessor());
 		processors.put("BOX", new BoxDrawingProcessor());
 		processors.put("RANGE", new RangeProcessor());
+		processors.put("GRADIENT", new GradientProcessor());
 
 		Map<String, Processor> map = new HashMap<>();
 		map.put(" ", NoOpProcessor.getInstance());
@@ -39,10 +40,12 @@ public class GlyphLoader {
 		commands.put("SPEC", (p) -> process(processors, map, "SPEC", p));
 		commands.put("BOX", (p) -> process(processors, map, "BOX", p));
 		commands.put("RANGE", (p) -> process(processors, map, "RANGE", p));
+		commands.put("GRADIENT", (p) -> process(processors, map, "GRADIENT", p));
 		commands.put("OFFSET", (p) -> setOffset(p));
 		commands.put("PROCESS_SPACE", (p) -> map.put(" ", map.get("SPEC")));
 		commands.put("RANGE_SPACE", (p) -> map.put(" ", map.get("RANGE")));
-
+		commands.put("GRADIENT_SPACE", (p) -> map.put(" ", map.get("GRADIENT")));
+		
 		try {
 				while (in.ready()) {
 					String line = in.readLine();

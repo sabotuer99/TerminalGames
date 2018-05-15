@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.geometry.Range;
 import whorten.termgames.geometry.Range.Builder;
-import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.glyphs.gradient.GradientSpec;
@@ -20,18 +19,63 @@ import whorten.termgames.glyphs.interpreters.SpecInterpreter;
 public class GradientProcessor implements Processor {
 
 	SpecInterpreter si = new SpecInterpreter();
-	Map<Range,GradientSpec> ranges = new HashMap<>();
+	Map<Range,Map<String,GradientSpec>> ranges = new HashMap<>();
 	Set<GlyphStringCoord> gscs = new HashSet<>();
 	
 	@Override
 	public void withInstruction(String instruction) {
 		Range range = parseRange(instruction);
-		GradientSpec gs = parseGradient(instruction);
+		Map<String,GradientSpec> gs = parseGradients(instruction, range);
 		ranges.put(range, gs);
 	}
 
-	private GradientSpec parseGradient(String instruction) {
-		// TODO Auto-generated method stub
+	private Map<String,GradientSpec> parseGradients(String instruction, Range range) {
+		Map<String,GradientSpec> map = new HashMap<>();
+		Map<String,String> specs = si.getAllSpecs(instruction);
+		
+		GradientSpec fg = parseGradientSpec("FG", specs, range);
+		GradientSpec bg = parseGradientSpec("BG", specs, range);
+
+		if(fg != null){
+			map.put("FG", fg);
+		}
+		if(bg != null){
+			map.put("BG", bg);
+		}
+		
+		return map;
+	}
+	
+	private GradientSpec parseGradientSpec(String prefix, Map<String,String> specs, Range range){
+		if(specs.containsKey(prefix + "END") && specs.containsKey(prefix + "START")){
+			int[] startRGB = parseRGB(specs.get(prefix + "START"));
+			int[] endRGB = parseRGB(specs.get(prefix + "END"));
+			if(startRGB != null && endRGB != null){
+				return new GradientSpec.Builder()
+						.withStartRGB(startRGB[0], startRGB[1], startRGB[2])
+						.withEndRGB(endRGB[0], endRGB[1], endRGB[2])
+						.withCols(range.maxCol - range.minCol + 1)
+						.withRows(range.maxRow - range.minRow + 1)
+						.setHorizontal(specs.containsKey(prefix + "HORZ"))
+						.build();			
+			}
+		}
+		return null;
+	}
+
+	private int[] parseRGB(String string) {
+		String[] rawVals = string.split(",");
+		if(rawVals.length == 3){
+			try{
+				int[] rgb = new int[3];
+				rgb[0] = Integer.parseInt(rawVals[0]);
+				rgb[1] = Integer.parseInt(rawVals[1]);
+				rgb[2] = Integer.parseInt(rawVals[2]);
+				return rgb;
+			} catch (Exception ex){
+				//gulp
+			}
+		}
 		return null;
 	}
 
@@ -61,17 +105,27 @@ public class GradientProcessor implements Processor {
 		if(coord == null || key == null){
 			return;
 		}
-		Entry<Range, GradientSpec> g = getFirstRange(coord);
+		Entry<Range,Map<String,GradientSpec>> g = getFirstRange(coord);
 		if(g != null && g.getValue() != null){
-			//String base = " ".equals(g.getValue().getBase()) ? key : g.getValue().getBase();
-			//GlyphString gs = new GlyphString.Builder(g.getValue()).withBaseString(base).build();
-			//gscs.add(new GlyphStringCoord(coord, gs));
+			Map<String,GradientSpec> gradients = g.getValue();
+			GlyphString.Builder gsb = new GlyphString.Builder(key);
+			int row = coord.getRow() - g.getKey().minRow;
+			int col = coord.getCol() - g.getKey().minCol;
+			if(gradients.containsKey("BG")){
+				int[] rbg = gradients.get("BG").rgbFor(row, col);
+				gsb.withBgColor(rbg[0], rbg[1], rbg[2]);
+			}
+			if(gradients.containsKey("FG")){
+				int[] rbg = gradients.get("FG").rgbFor(row, col);
+				gsb.withFgColor(rbg[0], rbg[1], rbg[2]);
+			}
+			gscs.add(new GlyphStringCoord(coord, gsb.build()));
 		}
 	}
 
-	private Entry<Range,GradientSpec> getFirstRange(Coord coord) {
+	private Entry<Range,Map<String,GradientSpec>> getFirstRange(Coord coord) {
 		try{
-			Entry<Range,GradientSpec> g = ranges.entrySet()
+			Entry<Range,Map<String,GradientSpec>> g = ranges.entrySet()
 			      .stream()
 			      .filter(entry -> entry.getKey().inRange(coord))
 			      .findFirst()

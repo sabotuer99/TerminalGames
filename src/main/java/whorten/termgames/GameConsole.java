@@ -40,7 +40,6 @@ import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.glyphs.loader.GlyphLoader;
 import whorten.termgames.reflection.ClassFinder;
-import whorten.termgames.render.GameBorder;
 import whorten.termgames.render.OutputStreamRenderer;
 import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.SoundPlayer;
@@ -72,6 +71,8 @@ public class GameConsole {
 	private Game currentGame = null;
 	private int gameIndex = 0;
 	private final static Logger logger = LogManager.getLogger(GameConsole.class);
+	private static final String MAIN_MENU_BACKGROUND_FILE = 
+			"whorten/termgames/mainmenu_background.gstxt";
 	private EventListener<PlaySoundEvent> pseEventListener = null;	
 	private EventListener<MidiStartEvent> midiStartEventListener = null;	
 	private EventListener<MidiStopEvent> midiStopEventListener = null;	
@@ -222,30 +223,7 @@ public class GameConsole {
 
 		renderer.turnOffCursor();
 		renderer.clearScreen();
-		GameBorder gb = defaultGameBorder(renderer);
-		renderer.drawGlyphCollection(gb.getGlyphCoords());
-
-		GlyphString.Builder menuBuilder = new GlyphString.Builder(" ");
-		String title1 = " _____                      ____                           ";
-		String title2 = "|_   _|__ _ __ _ __ ___    / ___| __ _ _ __ ___   ___  ___ ";
-		String title3 = "  | |/ _ \\ '__| '_ ` _ \\  | |  _ / _` | '_ ` _ \\ / _ \\/ __|";
-		String title4 = "  | |  __/ |  | | | | | | | |_| | (_| | | | | | |  __/\\__ \\";
-		String title5 = "  |_|\\___|_|  |_| |_| |_|  \\____|\\__,_|_| |_| |_|\\___||___/";
-		GlyphString gsTitle1 = menuBuilder.withBaseString(title1).withFgColor(0, 0, 255).build();
-		GlyphString gsTitle2 = menuBuilder.withBaseString(title2).withFgColor(0, 64, 255).build();
-		GlyphString gsTitle3 = menuBuilder.withBaseString(title3).withFgColor(0, 128, 255).build();
-		GlyphString gsTitle4 = menuBuilder.withBaseString(title4).withFgColor(0, 192, 255).build();
-		GlyphString gsTitle5 = menuBuilder.withBaseString(title5).withFgColor(0, 255, 255).build();
-		renderer.drawAt(2, 11, gsTitle1);
-		renderer.drawAt(3, 11, gsTitle2);
-		renderer.drawAt(4, 11, gsTitle3);
-		renderer.drawAt(5, 11, gsTitle4);
-		renderer.drawAt(6, 11, gsTitle5);
-	}
-
-	private GameBorder defaultGameBorder(Renderer renderer2) {
-		return new GameBorder.Builder(renderer.getCanvasHeight(), renderer.getCanvasWidth()).withFgColor(100, 100, 255)
-				.withBgColor(100, 0, 255).withNoSidebar().build();
+		renderer.drawGlyphStringCollection(loadFromFile(MAIN_MENU_BACKGROUND_FILE));
 	}
 
 	private void initEventSystem() {
