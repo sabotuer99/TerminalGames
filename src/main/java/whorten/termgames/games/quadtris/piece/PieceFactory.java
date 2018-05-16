@@ -43,7 +43,7 @@ public class PieceFactory {
 				                    .withForegroundColor(0, 255, 255)
 				                    .withBackgroundColor(0, 255, 255)
 				                    .build();
-		Glyph miniGlyph = new Glyph.Builder("|")
+		Glyph miniGlyph = new Glyph.Builder("⡇")
 									.withForegroundColor(0, 255, 255)
 									.build();
 		
@@ -71,7 +71,7 @@ public class PieceFactory {
 					                    .withBackgroundColor(0, 0, 255)
 					                    .build();
 		
-		Glyph miniGlyph = new Glyph.Builder("⅃")
+		Glyph miniGlyph = new Glyph.Builder("⠼")
 				.withForegroundColor(0, 0, 255)
 				.build();
 
@@ -99,7 +99,7 @@ public class PieceFactory {
 						                .withBackgroundColor(255, 127, 0)
 						                .build();
 		
-		Glyph miniGlyph = new Glyph.Builder("L")
+		Glyph miniGlyph = new Glyph.Builder("⠧")
                 .withForegroundColor(255, 127, 0)
 				.build();
 
@@ -126,7 +126,7 @@ public class PieceFactory {
 					                    .withBackgroundColor(255, 255, 0)
 					                    .build();	
 		
-		Glyph miniGlyph = new Glyph.Builder("▫")
+		Glyph miniGlyph = new Glyph.Builder("⠛")
                 .withForegroundColor(255, 255, 0)
 				.build();
 
@@ -153,7 +153,7 @@ public class PieceFactory {
 					                    .withBackgroundColor(0, 255, 0)
 					                    .build();
 		
-		Glyph miniGlyph = new Glyph.Builder("≶")
+		Glyph miniGlyph = new Glyph.Builder("⠳")
                 .withForegroundColor(0, 255, 0)
 				.build();
 
@@ -180,7 +180,7 @@ public class PieceFactory {
 					                    .withBackgroundColor(255, 0, 255)
 					                    .build();
 		
-		Glyph miniGlyph = new Glyph.Builder("┬")
+		Glyph miniGlyph = new Glyph.Builder("⠺")
                 .withForegroundColor(255, 0, 255)
 				.build();
 
@@ -207,7 +207,7 @@ public class PieceFactory {
 				                    .withBackgroundColor(255, 0, 0)
 				                    .build();
 		
-		Glyph miniGlyph = new Glyph.Builder("≷")
+		Glyph miniGlyph = new Glyph.Builder("⠞")
                 .withForegroundColor(255, 0, 0)
 				.build();
 
