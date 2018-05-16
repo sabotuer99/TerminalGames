@@ -1,14 +1,13 @@
 package whorten.termgames.games.tableflipper.board;
 
-import java.util.Set;
+import whorten.termgames.entity.AbstractEntity;
+import whorten.termgames.entity.EntityBuilder;
 
-import whorten.termgames.entity.Entity;
-import whorten.termgames.geometry.Coord;
+public class Table extends AbstractEntity<Table>  {
 
-public class Table implements Entity {
 
 	@Override
-	public Set<Coord> getCoords() {
+	public EntityBuilder toBuilder(AbstractEntity<Table> abstractEntity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
