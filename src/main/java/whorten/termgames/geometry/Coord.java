@@ -1,7 +1,9 @@
 package whorten.termgames.geometry;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public final class Coord implements Comparable<Coord>{
 	
@@ -19,6 +21,38 @@ public final class Coord implements Comparable<Coord>{
 	
 	public int getRow(){
 		return row;
+	}
+	
+	public static Set<Coord> allUp(Set<Coord> coords, int up){
+		Set<Coord> moved = new HashSet<>();
+		for(Coord coord : coords){
+			moved.add(up(coord, up));
+		}
+		return moved;
+	}
+	
+	public static Set<Coord> allDown(Set<Coord> coords, int down){
+		Set<Coord> moved = new HashSet<>();
+		for(Coord coord : coords){
+			moved.add(down(coord, down));
+		}
+		return moved;
+	}
+	
+	public static Set<Coord> allLeft(Set<Coord> coords, int left){
+		Set<Coord> moved = new HashSet<>();
+		for(Coord coord : coords){
+			moved.add(left(coord, left));
+		}
+		return moved;
+	}
+	
+	public static Set<Coord> allRight(Set<Coord> coords, int right){
+		Set<Coord> moved = new HashSet<>();
+		for(Coord coord : coords){
+			moved.add(right(coord, right));
+		}
+		return moved;
 	}
 	
 	public static Coord up(Coord coord, int up){

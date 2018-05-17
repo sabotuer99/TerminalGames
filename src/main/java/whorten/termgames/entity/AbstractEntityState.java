@@ -7,7 +7,7 @@ import whorten.termgames.geometry.Coord;
 
 public abstract class AbstractEntityState implements EntityState{
 
-	Set<Coord> coords = new HashSet<>();
+	protected Set<Coord> coords = new HashSet<>();
 	
 	@Override
 	public abstract EntityState moveUp();
