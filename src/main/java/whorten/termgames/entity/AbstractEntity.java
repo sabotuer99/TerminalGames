@@ -7,12 +7,11 @@ import whorten.termgames.geometry.Coord;
 
 public abstract class AbstractEntity<K extends Entity> implements Entity {
 
-	protected Set<Coord> coords;
-	EntityState state;
+	protected EntityState state;
 	
 	@Override
 	public Set<Coord> getCoords() {
-		return new HashSet<>(coords);
+		return new HashSet<>(state.getCoords());
 	}
 
 	@Override

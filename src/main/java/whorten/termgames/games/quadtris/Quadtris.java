@@ -41,7 +41,7 @@ public class Quadtris extends Game {
 	private String currentTheme = THEME_A;
 	private final static Logger logger = LogManager.getLogger(Quadtris.class);
 	private static final String QUADTRIS_BACKGROUND_FILE = 
-			"whorten/termgames/games/quadtris/quadtris_background.gstxt";
+			"gspecs/quadtris_background.gstxt";
 	private WellRenderer wellRenderer;
 	//private GameBorder gb;
 	private Coord wellOrigin;

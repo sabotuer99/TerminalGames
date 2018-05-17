@@ -5,9 +5,14 @@ import whorten.termgames.entity.EntityBuilder;
 
 public class Player extends AbstractEntity<Player> {
 
+	PlayerState pstate = new PlayerState();
+	public Player(){
+		super.state = pstate;
+	}
+	
+	
 	@Override
 	public EntityBuilder toBuilder(AbstractEntity<Player> abstractEntity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

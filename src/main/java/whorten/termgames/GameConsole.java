@@ -72,7 +72,7 @@ public class GameConsole {
 	private int gameIndex = 0;
 	private final static Logger logger = LogManager.getLogger(GameConsole.class);
 	private static final String MAIN_MENU_BACKGROUND_FILE = 
-			"whorten/termgames/mainmenu_background.gstxt";
+			"gspecs/mainmenu_background.gstxt";
 	private EventListener<PlaySoundEvent> pseEventListener = null;	
 	private EventListener<MidiStartEvent> midiStartEventListener = null;	
 	private EventListener<MidiStopEvent> midiStopEventListener = null;	
