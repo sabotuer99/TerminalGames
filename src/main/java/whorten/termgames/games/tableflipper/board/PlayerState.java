@@ -1,7 +1,6 @@
 package whorten.termgames.games.tableflipper.board;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import whorten.termgames.entity.AbstractEntityState;
 import whorten.termgames.entity.EntityState;
@@ -38,7 +37,7 @@ public class PlayerState extends AbstractEntityState {
 	
 	public static PlayerState getStartState(Coord baseCoord){
 		PlayerState ps = new PlayerState(PlayerStrings.STAND_STILL);
-		return null;
+		return ps;
 	}
 
 	private static void addBaseStates(PlayerState base) {
@@ -70,10 +69,10 @@ public class PlayerState extends AbstractEntityState {
 	
 	private String baseString;
 	private PlayerState stand;
-	private EntityState up;
-	private EntityState down;
-	private EntityState left;
-	private EntityState right;
+	private PlayerState up;
+	private PlayerState down;
+	private PlayerState left;
+	private PlayerState right;
 	private PlayerState flipLeft;
 	private PlayerState flipRight;
 	private PlayerState doubleFlip;
@@ -81,38 +80,61 @@ public class PlayerState extends AbstractEntityState {
 
 	@Override
 	public EntityState moveUp() {
+		PlayerState up = new PlayerState(this.up);
+		up.coords = Coord.allUp(this.coords, 1);
+		up.stand = base_stand;
 		return up;
 	}
 
 	@Override
 	public EntityState moveDown() {
+		PlayerState down = new PlayerState(this.down);
+		down.coords = Coord.allDown(this.coords, 1);
+		down.stand = base_stand;
 		return down;
 	}
 
 	@Override
 	public EntityState moveLeft() {
+		PlayerState left = new PlayerState(this.left);
+		left.coords = Coord.allLeft(this.coords, 1);
+		left.stand = base_left;
 		return left;
 	}
 
 	@Override
 	public EntityState moveRight() {
-		// TODO Auto-generated method stub
+		PlayerState right = new PlayerState(this.right);
+		right.coords = Coord.allRight(this.coords, 1);
+		right.stand = base_right;
 		return right;
 	}
 	
 	public PlayerState flipNothing(){
+		PlayerState flipNothing = new PlayerState(this.flipNothing);
+		flipNothing.coords = new HashSet<>(this.coords);
+		flipNothing.stand = this.stand;
 		return flipNothing;
 	}
 	
 	public PlayerState flipLeft(){
+		PlayerState flipLeft = new PlayerState(this.flipLeft);
+		flipLeft.coords = new HashSet<>(this.coords);
+		flipLeft.stand = this.stand;
 		return flipLeft;
 	}
 	
 	public PlayerState flipRight(){
+		PlayerState flipRight = new PlayerState(this.flipRight);
+		flipRight.coords = new HashSet<>(this.coords);
+		flipRight.stand = this.stand;
 		return flipRight;
 	}
 	
 	public PlayerState doubleFlip(){
+		PlayerState doubleFlip = new PlayerState(this.doubleFlip);
+		doubleFlip.coords = new HashSet<>(this.coords);
+		doubleFlip.stand = this.stand;
 		return doubleFlip;
 	}
 	
