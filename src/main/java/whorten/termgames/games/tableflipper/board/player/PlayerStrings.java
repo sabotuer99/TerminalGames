@@ -1,7 +1,6 @@
-package whorten.termgames.games.tableflipper.board;
+package whorten.termgames.games.tableflipper.board.player;
 
 public class PlayerStrings {
-
 	public static final String THROW_BOTH  = "ヽ(`Д´)ﾉ"; //throw both
 	public static final String THROW_LEFT  = "L(`Д´L)"; //throw left
 	public static final String THROW_RIGHT = "(⅃`Д´)⅃";  //throw right

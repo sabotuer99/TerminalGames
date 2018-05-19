@@ -1,12 +1,11 @@
-package whorten.termgames.games.tableflipper.board;
+package whorten.termgames.games.tableflipper.board.player;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import whorten.termgames.entity.AbstractEntityState;
-import whorten.termgames.entity.EntityState;
 import whorten.termgames.geometry.Coord;
 
-public class PlayerState extends AbstractEntityState {
+public class PlayerState extends AbstractEntityState<PlayerState> {
 	
 	private static PlayerState base_flipLeft = new PlayerState(PlayerStrings.THROW_LEFT);
 	private static PlayerState base_flipRight = new PlayerState(PlayerStrings.THROW_RIGHT);
@@ -36,7 +35,12 @@ public class PlayerState extends AbstractEntityState {
 	}
 	
 	public static PlayerState getStartState(Coord baseCoord){
-		PlayerState ps = new PlayerState(PlayerStrings.STAND_STILL);
+		PlayerState ps = new PlayerState(base_stand);
+		ps.coords = new TreeSet<Coord>();
+		ps.coords.add(baseCoord);
+		for(int i = 1; i < 7; i++){
+			ps.coords.add(Coord.right(baseCoord, i));
+		}
 		return ps;
 	}
 
@@ -55,7 +59,7 @@ public class PlayerState extends AbstractEntityState {
 	}
 	private PlayerState(PlayerState base){
 		this.baseString  = base.baseString;
-		this.coords      = new HashSet<>(base.coords);
+		this.coords      = new TreeSet<>(base.coords);
 		this.stand       = base.stand;      
 		this.up          = base.up;         
 		this.down        = base.down;       
@@ -79,67 +83,77 @@ public class PlayerState extends AbstractEntityState {
 	private PlayerState flipNothing;
 
 	@Override
-	public EntityState moveUp() {
+	public PlayerState moveUp() {
 		PlayerState up = new PlayerState(this.up);
-		up.coords = Coord.allUp(this.coords, 1);
+		up.coords = new TreeSet<>(Coord.allUp(this.coords, 1));
 		up.stand = base_stand;
 		return up;
 	}
 
 	@Override
-	public EntityState moveDown() {
+	public PlayerState moveDown() {
 		PlayerState down = new PlayerState(this.down);
-		down.coords = Coord.allDown(this.coords, 1);
+		down.coords = new TreeSet<>(Coord.allDown(this.coords, 1));
 		down.stand = base_stand;
 		return down;
 	}
 
 	@Override
-	public EntityState moveLeft() {
+	public PlayerState moveLeft() {
 		PlayerState left = new PlayerState(this.left);
-		left.coords = Coord.allLeft(this.coords, 1);
+		left.coords = new TreeSet<>(Coord.allLeft(this.coords, 1));
 		left.stand = base_left;
 		return left;
 	}
 
 	@Override
-	public EntityState moveRight() {
+	public PlayerState moveRight() {
 		PlayerState right = new PlayerState(this.right);
-		right.coords = Coord.allRight(this.coords, 1);
+		right.coords = new TreeSet<>(Coord.allRight(this.coords, 1));
 		right.stand = base_right;
 		return right;
 	}
 	
 	public PlayerState flipNothing(){
 		PlayerState flipNothing = new PlayerState(this.flipNothing);
-		flipNothing.coords = new HashSet<>(this.coords);
+		flipNothing.coords = new TreeSet<>(this.coords);
 		flipNothing.stand = this.stand;
 		return flipNothing;
 	}
 	
 	public PlayerState flipLeft(){
 		PlayerState flipLeft = new PlayerState(this.flipLeft);
-		flipLeft.coords = new HashSet<>(this.coords);
+		flipLeft.coords = new TreeSet<>(this.coords);
 		flipLeft.stand = this.stand;
 		return flipLeft;
 	}
 	
 	public PlayerState flipRight(){
 		PlayerState flipRight = new PlayerState(this.flipRight);
-		flipRight.coords = new HashSet<>(this.coords);
+		flipRight.coords = new TreeSet<>(this.coords);
 		flipRight.stand = this.stand;
 		return flipRight;
 	}
 	
 	public PlayerState doubleFlip(){
 		PlayerState doubleFlip = new PlayerState(this.doubleFlip);
-		doubleFlip.coords = new HashSet<>(this.coords);
+		doubleFlip.coords = new TreeSet<>(this.coords);
 		doubleFlip.stand = this.stand;
 		return doubleFlip;
 	}
 	
 	public PlayerState stand(){
 		return stand;
+	}
+
+	@Override
+	public String getBaseString() {
+		return baseString;
+	}
+
+	@Override
+	public Coord getBaseCoord() {
+		return coords.iterator().next();
 	}
 
 }

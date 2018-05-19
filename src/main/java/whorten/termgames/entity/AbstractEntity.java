@@ -5,9 +5,11 @@ import java.util.Set;
 
 import whorten.termgames.geometry.Coord;
 
-public abstract class AbstractEntity<K extends Entity> implements Entity {
+public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>, 
+									 S extends EntityState<S>,
+									 B extends EntityBuilder<K,S,B>> implements Entity {
 
-	protected EntityState state;
+	protected S state;
 	
 	@Override
 	public Set<Coord> getCoords() {
@@ -15,26 +17,26 @@ public abstract class AbstractEntity<K extends Entity> implements Entity {
 	}
 
 	@Override
-	public final Entity moveUp() {
-		return toBuilder(this).withState(state.moveUp()).build();
+	public final K moveUp() {
+		return toBuilder().withState(state.moveUp()).build();
 	}
 
 	@Override
-	public final Entity moveDown() {
-		return toBuilder(this).withState(state.moveDown()).build();
+	public final K moveDown() {
+		return toBuilder().withState(state.moveDown()).build();
 	}
 
 	@Override
-	public final Entity moveLeft() {
-		return toBuilder(this).withState(state.moveLeft()).build();
+	public final K moveLeft() {
+		return toBuilder().withState(state.moveLeft()).build();
 	}
 
 	@Override
-	public final Entity moveRight() {
-		return toBuilder(this).withState(state.moveRight()).build();
+	public final K moveRight() {
+		return toBuilder().withState(state.moveRight()).build();
 	}
 	
-	public abstract EntityBuilder toBuilder(AbstractEntity<K> abstractEntity);
+	public abstract B toBuilder();
 	
 
 }

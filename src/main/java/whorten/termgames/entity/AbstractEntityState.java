@@ -1,29 +1,30 @@
 package whorten.termgames.entity;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import whorten.termgames.geometry.Coord;
 
-public abstract class AbstractEntityState implements EntityState{
+public abstract class AbstractEntityState<K extends EntityState<K>> 
+	implements EntityState<K>{
 
-	protected Set<Coord> coords = new HashSet<>();
+	protected Set<Coord> coords = new TreeSet<>();
 	
 	@Override
-	public abstract EntityState moveUp();
+	public abstract K moveUp();
 
 	@Override
-	public abstract EntityState moveDown();
+	public abstract K moveDown();
 
 	@Override
-	public abstract EntityState moveLeft();
+	public abstract K moveLeft();
 
 	@Override
-	public abstract EntityState moveRight();
+	public abstract K moveRight();
 
 	@Override
 	public Set<Coord> getCoords() {
-		return new HashSet<>(coords);
+		return new TreeSet<>(coords);
 	}
 
 }
