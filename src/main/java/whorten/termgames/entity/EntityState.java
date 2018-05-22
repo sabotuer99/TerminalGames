@@ -3,6 +3,7 @@ package whorten.termgames.entity;
 import java.util.Set;
 
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.Glyph;
 
 public interface EntityState<K extends EntityState<K>> {
 	K moveUp();
@@ -12,4 +13,5 @@ public interface EntityState<K extends EntityState<K>> {
 	Set<Coord> getCoords();
 	String getBaseString();
 	Coord getBaseCoord();
+	Glyph getBaseGlyph();
 }

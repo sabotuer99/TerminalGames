@@ -4,6 +4,7 @@ import java.util.TreeSet;
 
 import whorten.termgames.entity.AbstractEntityState;
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.Glyph;
 
 public class PlayerState extends AbstractEntityState<PlayerState> {
 	
@@ -154,6 +155,11 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	@Override
 	public Coord getBaseCoord() {
 		return coords.iterator().next();
+	}
+
+	@Override
+	public Glyph getBaseGlyph() {
+		return new Glyph.Builder(" ").build();
 	}
 
 }

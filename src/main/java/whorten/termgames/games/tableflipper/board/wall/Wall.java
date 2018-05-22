@@ -3,7 +3,7 @@ package whorten.termgames.games.tableflipper.board.wall;
 import whorten.termgames.entity.AbstractEntity;
 import whorten.termgames.entity.EntityBuilder;
 
-public class Wall  extends AbstractEntity<Wall, WallState, Wall.Builder> {
+public class Wall extends AbstractEntity<Wall, WallState, Wall.Builder> {
 
 
 	@Override
@@ -24,6 +24,12 @@ public class Wall  extends AbstractEntity<Wall, WallState, Wall.Builder> {
 			return null;
 		}
 		
+	}
+
+	@Override
+	public WallState getState() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

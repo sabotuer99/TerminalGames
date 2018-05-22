@@ -2,6 +2,7 @@ package whorten.termgames.entity;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -128,6 +129,12 @@ public class EntityBoard {
 			      .map((Coord c) -> entityAt(lambda.apply(c)))				  
 			      .filter((Entity e) -> e != subject)
 			      .collect(toSet());
+	}
+
+	public void addAll(Collection<? extends Entity> entities) {
+		for(Entity e : entities){
+			addEntity(e);
+		}
 	}
 
 }

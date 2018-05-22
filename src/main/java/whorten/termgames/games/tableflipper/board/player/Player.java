@@ -8,6 +8,32 @@ public class Player extends AbstractEntity<Player,PlayerState,Player.Builder> {
 
 	private Player(){}	
 	
+	PlayerState state;
+	
+	public static Player newInstance(Coord baseCoord){
+		Player p = new Player();
+		p.state = PlayerState.getStartState(baseCoord);
+		return p;
+	}
+	
+	public Player flip(boolean left, boolean right){
+		Builder b = this.toBuilder();
+		if(left && right){
+			return b.withState(state.doubleFlip()).build();
+		}
+		if(left){
+			return b.withState(state.flipLeft()).build();
+		}
+		if(right){
+			return b.withState(state.flipRight()).build();
+		}
+		return b.withState(state.flipNothing()).build();
+	}
+	
+	public Player stand() {
+		return this.toBuilder().withState(state.stand()).build();
+	}
+	
 	@Override
 	public Builder toBuilder() {
 		return new Builder(this);
@@ -34,4 +60,10 @@ public class Player extends AbstractEntity<Player,PlayerState,Player.Builder> {
 		}
 		
 	}
+
+	@Override
+	public PlayerState getState() {
+		return state;
+	}
+
 }

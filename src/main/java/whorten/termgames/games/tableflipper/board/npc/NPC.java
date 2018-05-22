@@ -24,4 +24,10 @@ public class NPC extends AbstractEntity<NPC, NPCState, NPC.Builder> {
 
 	}
 
+	@Override
+	public NPCState getState() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

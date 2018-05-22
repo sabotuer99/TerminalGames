@@ -24,4 +24,10 @@ public class Table extends AbstractEntity<Table, TableState, Table.Builder>  {
 		}
 		
 	}
+
+	@Override
+	public TableState getState() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

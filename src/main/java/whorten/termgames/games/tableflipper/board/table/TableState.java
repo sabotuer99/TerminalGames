@@ -2,6 +2,7 @@ package whorten.termgames.games.tableflipper.board.table;
 
 import whorten.termgames.entity.AbstractEntityState;
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.glyphs.Glyph;
 
 public class TableState extends AbstractEntityState<TableState>{
 
@@ -37,6 +38,12 @@ public class TableState extends AbstractEntityState<TableState>{
 
 	@Override
 	public TableState moveRight() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Glyph getBaseGlyph() {
 		// TODO Auto-generated method stub
 		return null;
 	}
