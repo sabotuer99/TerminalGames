@@ -16,6 +16,7 @@ import whorten.termgames.games.tableflipper.board.player.Player;
 import whorten.termgames.games.tableflipper.board.table.Table;
 import whorten.termgames.games.tableflipper.board.wall.Wall;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
+import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
@@ -34,25 +35,25 @@ public class TableFlipperBoard {
 	public synchronized void movePlayerUp(long time){
 		lastPlayerMove = time;
 		Player next = player.moveUp();
-		safeMovePlayer(next);
+		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerDown(long time){
 		lastPlayerMove = time;
 		Player next = player.moveDown();
-		safeMovePlayer(next);
+		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerLeft(long time){
 		lastPlayerMove = time;
 		Player next = player.moveLeft();
-		safeMovePlayer(next);
+		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerRight(long time){
 		lastPlayerMove = time;
 		Player next = player.moveRight();
-		safeMovePlayer(next);
+		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void flip(long time){
@@ -60,7 +61,7 @@ public class TableFlipperBoard {
 		boolean left = tableLeft();
 		boolean right = tableRight();
 		Player next = player.flip(left, right);
-		safeMovePlayer(next);
+		safeMovePlayer(next, false);
 	}
 	
 	private boolean tableLeft() {
@@ -76,15 +77,18 @@ public class TableFlipperBoard {
 	public synchronized void tick(long time){
 		if(time > lastPlayerMove + 250){
 			Player next = player.stand();
-			safeMovePlayer(next);
+			safeMovePlayer(next, false);
 		}
 	}
 
-	private void safeMovePlayer(Player next) {
+	private void safeMovePlayer(Player next, boolean playermove) {
 		board.removeEntity(player);
 		if(board.canAdd(next) && !player.getState().equals(next.getState())){
 			board.addEntity(next);
 			eventbus.fire(new EntityChangeEvent(player, next));
+			if(playermove){
+				eventbus.fire(new PlayerMoveEvent());				
+			}
 			player = next;
 		} else {
 			board.addEntity(player);

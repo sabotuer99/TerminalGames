@@ -9,6 +9,7 @@ import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
+import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
 import whorten.termgames.utils.Keys;
@@ -16,7 +17,10 @@ import whorten.termgames.utils.Keys;
 
 public class TableFlipper extends Game {
 
-	private final static Logger logger = LogManager.getLogger(TableFlipper.class);
+	private static final Logger logger = LogManager.getLogger(TableFlipper.class);
+	private static final String MUSIC_FILE = "midi/Table_Flipper_Theme.mid";
+	private static final String FOOTSTEP_SOUND = "sounds/footstep.wav";
+	private static final String AH_SOUND = "sounds/girl-ah.wav";
 	private TableFlipperBoard board;
 	private TableFlipperRenderer tfr;
 	
@@ -32,12 +36,13 @@ public class TableFlipper extends Game {
 	private void initializeListeners() {
 		logger.debug("Initializing TableFlipper listeners.");
 		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
-		addListener(EntityChangeEvent.class, this::handleEntityMoveEvent);
+		addListener(EntityChangeEvent.class, this::handleEntityChangeEvent);
 		addListener(TableFlipEvent.class, this::handleTableFlipEvent);
+		addListener(PlayerMoveEvent.class, this::handlePlayerMoveEvent);
 	}
 
 	private void run() {
-		//playMusic(currentTheme);
+		playMusic(MUSIC_FILE);
 		//wellRenderer.drawPiece(quadtrisBoard.getCurrentPiece());
 		//wellRenderer.previewPiece(quadtrisBoard.getNextPiece());
 		//updateStats();
@@ -46,7 +51,7 @@ public class TableFlipper extends Game {
 			console.pause(20);
 			board.tick(console.getTimeMillis());	
 		}
-		//stopMusic();
+		stopMusic();
 		eventBus.fire(new StopAllAnimationEvent());
 	}
 
@@ -76,6 +81,7 @@ public class TableFlipper extends Game {
 		case "Z":
 		case "z":
 			board.flip(console.getTimeMillis());
+			playSound(AH_SOUND);
 			break;
 		case Keys.DOWN_ARROW:
 			board.movePlayerDown(console.getTimeMillis());
@@ -92,7 +98,7 @@ public class TableFlipper extends Game {
 		}
 	}
 	
-	private void handleEntityMoveEvent(EntityChangeEvent eme){
+	private void handleEntityChangeEvent(EntityChangeEvent eme){
 		//erase from entity
 		//draw to entity
 		tfr.clearEntity(eme.getFrom());
@@ -101,5 +107,9 @@ public class TableFlipper extends Game {
 	
 	private void handleTableFlipEvent(TableFlipEvent tfe){
 		
+	}
+	
+	private void handlePlayerMoveEvent(PlayerMoveEvent pme){
+		playSound(FOOTSTEP_SOUND);
 	}
 }

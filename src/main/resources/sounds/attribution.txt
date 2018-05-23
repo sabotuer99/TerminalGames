@@ -7,3 +7,6 @@ oof.wav     : https://freesound.org/people/fotoshop/sounds/47356/
 boop.wav    : https://freesound.org/people/fordps3/sounds/186669/
 beep.wav    : https://freesound.org/people/altemark/sounds/39747/
 thunk.wav   : https://freesound.org/people/moca/sounds/49041/
+footstep.wav: https://freesound.org/people/OwlStorm/sounds/151237/
+guy-ah.wav  : https://freesound.org/people/ecfike/sounds/154544/
+girl-ah.wav : https://freesound.org/people/Yudena/sounds/377560/
