@@ -27,4 +27,29 @@ public abstract class AbstractEntityState<K extends EntityState<K>>
 		return new TreeSet<>(coords);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((coords == null) ? 0 : coords.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractEntityState<?> other = (AbstractEntityState<?>) obj;
+		if (coords == null) {
+			if (other.coords != null)
+				return false;
+		} else if (!coords.equals(other.coords))
+			return false;
+		return true;
+	}
+
 }

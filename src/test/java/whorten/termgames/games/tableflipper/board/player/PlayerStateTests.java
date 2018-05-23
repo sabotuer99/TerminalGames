@@ -1,7 +1,11 @@
-package whorten.termgames.games.tableflipper.board;
+package whorten.termgames.games.tableflipper.board.player;
+
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.Set;
 
 import org.junit.Test;
-import static com.google.common.truth.Truth.*;
+
 import whorten.termgames.entity.EntityState;
 import whorten.termgames.games.tableflipper.board.player.PlayerState;
 import whorten.termgames.games.tableflipper.board.player.PlayerStrings;
@@ -26,7 +30,7 @@ public class PlayerStateTests {
 		EntityState<?> moved = sut.moveLeft();
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_LEFT);
-		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(-1,0));
+		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(-2,0));
 	}
 	
 	
@@ -37,7 +41,7 @@ public class PlayerStateTests {
 		EntityState<?> moved = sut.moveRight();
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_RIGHT);
-		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(1,0));
+		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(2,0));
 	}
 	
 	
@@ -58,6 +62,26 @@ public class PlayerStateTests {
 		EntityState<?> moved = sut.moveRight().flipNothing();
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.THROW_RIGHT);
-		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(1,0));
+		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(2,0));
+	}
+	
+	@Test
+	public void getCoords_returnsValidSet(){		
+		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
+		
+		Set<Coord> coords = sut.getCoords();
+		
+		assertThat(coords).isNotEmpty();
+		assertThat(coords.size()).isEqualTo(7);
+	}
+	
+	@Test
+	public void stand_idempotent(){		
+		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
+		
+		PlayerState stand1 = sut.stand();
+		PlayerState stand2 = stand1.stand();
+		
+		assertThat(stand1).isEqualTo(stand2);
 	}
 }

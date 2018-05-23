@@ -8,11 +8,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import whorten.termgames.games.snake.SnakeGame;
-
 public class EventBus {
 	
-	private final static Logger logger = LogManager.getLogger(SnakeGame.class);
+	private final static Logger logger = LogManager.getLogger(EventBus.class);
 	private final Map<String, HandlerGroup<?>> map = new HashMap<>();
 	
 	public <K extends Event> void subscribe(Class<K> c, EventListener<K> e){

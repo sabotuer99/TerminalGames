@@ -7,7 +7,6 @@ import whorten.termgames.GameConsole;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
-import whorten.termgames.games.quadtris.Quadtris;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
@@ -17,7 +16,7 @@ import whorten.termgames.utils.Keys;
 
 public class TableFlipper extends Game {
 
-	private final static Logger logger = LogManager.getLogger(Quadtris.class);
+	private final static Logger logger = LogManager.getLogger(TableFlipper.class);
 	private TableFlipperBoard board;
 	private TableFlipperRenderer tfr;
 	
@@ -31,7 +30,7 @@ public class TableFlipper extends Game {
 	}
 	
 	private void initializeListeners() {
-		logger.debug("Initializing SnakeGame listeners.");
+		logger.debug("Initializing TableFlipper listeners.");
 		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
 		addListener(EntityChangeEvent.class, this::handleEntityMoveEvent);
 		addListener(TableFlipEvent.class, this::handleTableFlipEvent);

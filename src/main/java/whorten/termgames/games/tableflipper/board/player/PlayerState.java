@@ -37,6 +37,7 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	
 	public static PlayerState getStartState(Coord baseCoord){
 		PlayerState ps = new PlayerState(base_stand);
+		ps.stand = base_stand;
 		ps.coords = new TreeSet<Coord>();
 		ps.coords.add(baseCoord);
 		for(int i = 1; i < 7; i++){
@@ -102,7 +103,7 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	@Override
 	public PlayerState moveLeft() {
 		PlayerState left = new PlayerState(this.left);
-		left.coords = new TreeSet<>(Coord.allLeft(this.coords, 1));
+		left.coords = new TreeSet<>(Coord.allLeft(this.coords, 2));
 		left.stand = base_left;
 		return left;
 	}
@@ -110,7 +111,7 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	@Override
 	public PlayerState moveRight() {
 		PlayerState right = new PlayerState(this.right);
-		right.coords = new TreeSet<>(Coord.allRight(this.coords, 1));
+		right.coords = new TreeSet<>(Coord.allRight(this.coords, 2));
 		right.stand = base_right;
 		return right;
 	}
@@ -144,6 +145,9 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	}
 	
 	public PlayerState stand(){
+		PlayerState stand = new PlayerState(this.stand);
+		stand.coords = new TreeSet<>(this.coords);
+		stand.stand = stand;
 		return stand;
 	}
 
@@ -161,5 +165,39 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	public Glyph getBaseGlyph() {
 		return new Glyph.Builder(" ").build();
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("PlayerState: baseString:[%s] baseCoord:[%s] baseGlyph:[%s]",
+				getBaseString(),
+				getBaseCoord(),
+				getBaseGlyph());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((baseString == null) ? 0 : baseString.hashCode());
+		result = prime * result + ((getBaseCoord() == null) ? 0 : getBaseCoord().hashCode());
+		result = prime * result + ((getBaseGlyph() == null) ? 0 : getBaseGlyph().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerState other = (PlayerState) obj;
+		return (this.baseString.equals(other.baseString) 
+		     && this.getBaseCoord().equals(other.getBaseCoord())
+		     && this.getBaseGlyph().equals(other.getBaseGlyph()));
+	}
+	
+
 
 }

@@ -28,7 +28,7 @@ public class TableFlipperRenderer {
 	}
 
 	public void clearEntity(Entity e) {
-		GlyphStringCoord g = e.getGlyphStringCoord();
+		GlyphStringCoord g = e.getGlyphStringCoord().offset(new Coord(1,1));;
 		console.getRenderer().clearRowRange(g.getRow(), g.getCol(), 
 				g.getGlyphString().getGlyphs().size());
 	}

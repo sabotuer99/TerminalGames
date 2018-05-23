@@ -1,7 +1,7 @@
 package whorten.termgames.games.tableflipper.board.player;
 
 public class PlayerStrings {
-	public static final String THROW_BOTH  = "ヽ(`Д´)ﾉ"; //throw both
+	public static final String THROW_BOTH  = "\\(`Д´)/"; //throw both
 	public static final String THROW_LEFT  = "L(`Д´L)"; //throw left
 	public static final String THROW_RIGHT = "(⅃`Д´)⅃";  //throw right
 	public static final String WALK_RIGHT  = "(ˎಠ_ಠ) ";  //right

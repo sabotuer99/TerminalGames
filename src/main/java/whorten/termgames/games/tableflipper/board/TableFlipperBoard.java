@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
 import whorten.termgames.events.EventBus;
+import whorten.termgames.games.tableflipper.TableFlipper;
 import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.games.tableflipper.board.player.Player;
 import whorten.termgames.games.tableflipper.board.table.Table;
@@ -16,12 +20,13 @@ import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
 
-	EntityBoard board;
-	Player player;
-	List<Table> tables;
-	List<NPC> npcs;
-	List<Wall> walls;
-	EventBus eventbus;
+	private final static Logger logger = LogManager.getLogger(TableFlipper.class);
+	private EntityBoard board;
+	private Player player;
+	private List<Table> tables;
+	private List<NPC> npcs;
+	private List<Wall> walls;
+	private EventBus eventbus;
 	long lastPlayerMove;
 	
 	private TableFlipperBoard(){}
@@ -76,18 +81,20 @@ public class TableFlipperBoard {
 	}
 
 	private void safeMovePlayer(Player next) {
-		if(board.canAdd(next)){
+		board.removeEntity(player);
+		if(board.canAdd(next) && !player.getState().equals(next.getState())){
 			board.addEntity(next);
-			board.removeEntity(player);
 			eventbus.fire(new EntityChangeEvent(player, next));
 			player = next;
+		} else {
+			board.addEntity(player);
 		}
 	}
 	
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
-							.withHeight(24)
-							.withWidth(60)
+							.withHeight(22)
+							.withWidth(57)
 							.build();
 		Player player = Player.newInstance(new Coord(1,1));
 		List<Table> tables = new ArrayList<>();
@@ -106,6 +113,7 @@ public class TableFlipperBoard {
 			tfb.tables = tables;
 			tfb.walls = walls;
 			tfb.npcs = npcs;
+			tfb.eventbus = eventbus;
 			
 			tfb.board.addEntity(player);
 			tfb.board.addAll(tables);
