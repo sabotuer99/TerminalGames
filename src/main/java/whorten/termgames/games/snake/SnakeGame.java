@@ -14,6 +14,7 @@ import whorten.termgames.games.snake.events.EatFruitEvent;
 import whorten.termgames.games.snake.events.HeadMoveEvent;
 import whorten.termgames.games.snake.events.TailMoveEvent;
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.geometry.Direction;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
@@ -23,7 +24,6 @@ import whorten.termgames.glyphs.collate.GlyphStringCoord;
 //import whorten.termgames.render.Renderer;
 import whorten.termgames.sounds.events.ToggleMusicEvent;
 import whorten.termgames.sounds.events.ToggleSoundEvent;
-import whorten.termgames.utils.Direction;
 import whorten.termgames.utils.Keys;
 
 public class SnakeGame extends Game {

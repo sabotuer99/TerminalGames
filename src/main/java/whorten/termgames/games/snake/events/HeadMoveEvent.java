@@ -2,7 +2,7 @@ package whorten.termgames.games.snake.events;
 
 import whorten.termgames.events.Event;
 import whorten.termgames.geometry.Coord;
-import whorten.termgames.utils.Direction;
+import whorten.termgames.geometry.Direction;
 
 public class HeadMoveEvent implements Event{
 	

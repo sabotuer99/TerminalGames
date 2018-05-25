@@ -127,4 +127,8 @@ public class TableFlipperBoard {
 			return tfb;
 		}
 	}
+
+	public Entity getPlayer() {
+		return player;
+	}
 }

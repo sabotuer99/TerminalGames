@@ -23,6 +23,12 @@ public final class Coord implements Comparable<Coord>{
 		return row;
 	}
 	
+	public static double distance(Coord a, Coord b){
+		int rise = a.getRow() - b.getRow();
+		int run = a.getCol() - b.getCol();
+		return Math.sqrt(rise * rise + run * run);
+	}
+	
 	public static Set<Coord> allUp(Set<Coord> coords, int up){
 		Set<Coord> moved = new HashSet<>();
 		for(Coord coord : coords){

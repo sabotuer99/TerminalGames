@@ -43,10 +43,7 @@ public class TableFlipper extends Game {
 
 	private void run() {
 		playMusic(MUSIC_FILE);
-		//wellRenderer.drawPiece(quadtrisBoard.getCurrentPiece());
-		//wellRenderer.previewPiece(quadtrisBoard.getNextPiece());
-		//updateStats();
-		//long lastTick = console.getTimeMillis();
+		tfr.drawEntity(board.getPlayer());
 		while (running) {				
 			console.pause(20);
 			board.tick(console.getTimeMillis());	

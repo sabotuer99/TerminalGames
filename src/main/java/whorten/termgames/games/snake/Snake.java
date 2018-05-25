@@ -9,7 +9,7 @@ import whorten.termgames.games.snake.events.EatFruitEvent;
 import whorten.termgames.games.snake.events.HeadMoveEvent;
 import whorten.termgames.games.snake.events.TailMoveEvent;
 import whorten.termgames.geometry.Coord;
-import whorten.termgames.utils.Direction;
+import whorten.termgames.geometry.Direction;
 
 
 public class Snake {
