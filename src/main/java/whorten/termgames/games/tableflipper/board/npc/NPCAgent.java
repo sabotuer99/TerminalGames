@@ -5,9 +5,19 @@ import whorten.termgames.entity.EntityBoard;
 
 public class NPCAgent {
 
-	public EntityBoard eb;
-	public NPC npc;
-
+	private NPCAgent(){}
+	
+	private EntityBoard eb;
+	private NPC npc;
+	private int timeLastTick;
+    
+	// on each call to tick, check if the time elapsed since the last
+	// tick is more than the npc's speed. If yes, try to move next direction in path
+	// if path is blocked, recalculate path. If path is empty, check if table needs 
+	// unflipped, then calculate new path to random location
+	public void tick(long time){
+		
+	}
 	
 	
 	public static class Builder{

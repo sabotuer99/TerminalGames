@@ -121,4 +121,10 @@ public class NPCState extends AbstractEntityState<NPCState> {
 		     && this.getBaseGlyph().equals(other.getBaseGlyph()));
 	}
 
+	public NPCState stand() {
+		NPCState right = new NPCState(NPCStrings.RESTORE_RIGHT);
+		right.coords = new TreeSet<>(this.coords);
+		return right;
+	}
+
 }
