@@ -30,4 +30,14 @@ public class Table extends AbstractEntity<Table, TableState, Table.Builder>  {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public Table unflip() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Table flip() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

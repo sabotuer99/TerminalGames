@@ -87,6 +87,13 @@ public class EntityBoard {
 		return false;
 	}
 	
+	public void move(Entity from, Entity to){
+		if(canMove(from, to)){
+			removeEntity(from);
+			addEntity(to);
+		}
+	}
+	
 	public static class Builder{
 
 		private int width;

@@ -31,6 +31,10 @@ public class NPC extends AbstractEntity<NPC, NPCState, NPC.Builder> {
 		return this.toBuilder().withState(state.stand()).build();
 	}
 	
+	public Coord getLocation(){
+		return state.getBaseCoord();
+	}
+	
 	@Override
 	public Builder toBuilder() {
 		return new Builder(this);
