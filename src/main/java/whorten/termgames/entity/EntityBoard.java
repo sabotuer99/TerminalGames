@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 
@@ -74,6 +75,18 @@ public class EntityBoard {
 		return entity != null && !isOverlapping(entity) && !isOutOfBounds(entity);
 	}
 	
+	public boolean canMove(Entity from, Entity to){
+		if(from != null && to != null){
+			return entities.keySet()
+				.stream()
+				.filter( c -> to.getCoords().contains(c) )
+				.filter( c -> !entityAt(c).equals(from) )
+				.collect(Collectors.toSet())
+				.size() == 0;		
+		}
+		return false;
+	}
+	
 	public static class Builder{
 
 		private int width;
@@ -126,8 +139,8 @@ public class EntityBoard {
 	private Set<Entity> getNeighborsWithLambda(Entity subject, Function<Coord, Coord> lambda) {
 		return subject.getCoords()
 			      .stream()
-			      .map((Coord c) -> entityAt(lambda.apply(c)))				  
-			      .filter((Entity e) -> e != subject)
+			      .map(c -> entityAt(lambda.apply(c)))				  
+			      .filter(e -> e != subject)
 			      .collect(toSet());
 	}
 

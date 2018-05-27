@@ -274,6 +274,39 @@ public class EntityBoardTests {
 		assertThat(n).contains(b);
 		assertThat(n).containsNoneOf(a, c);
 	}
+	
+	@Test
+	public void canMove_validMove_returnsTrue(){
+		EntityBoard sut = getSut();
+		Entity a = getEntity();
+		when(a.getCoords()).thenReturn(Sets.newSet(new Coord(41,13), new Coord(42,13)));
+		Entity b = getEntity();
+		when(b.getCoords()).thenReturn(Sets.newSet(new Coord(42,13), new Coord(43,13)));
+		
+		sut.addEntity(a);
+
+		boolean result = sut.canMove(a, b);
+		
+		assertThat(result).isTrue();		
+	}
+	
+	@Test
+	public void canMove_blockedMove_returnsFalse(){
+		EntityBoard sut = getSut();
+		Entity a = getEntity();
+		when(a.getCoords()).thenReturn(Sets.newSet(new Coord(41,13), new Coord(42,13)));
+		Entity b = getEntity();
+		when(b.getCoords()).thenReturn(Sets.newSet(new Coord(42,13), new Coord(43,13)));
+		Entity c = getEntity();
+		when(c.getCoords()).thenReturn(Sets.newSet(new Coord(43,13), new Coord(44,13)));
+		
+		sut.addEntity(a);
+		sut.addEntity(c);
+
+		boolean result = sut.canMove(a, b);
+		
+		assertThat(result).isFalse();		
+	}
 
 	private Entity getEntity() {
 		return mock(Entity.class);

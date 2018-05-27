@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import whorten.termgames.geometry.Coord;
+import whorten.termgames.geometry.Direction;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 
@@ -34,6 +35,28 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 	@Override
 	public final K moveRight() {
 		return toBuilder().withState(getState().moveRight()).build();
+	}
+	
+	@Override
+	public final K move(Direction direction) {
+		K next = null;
+		switch(direction){
+		case UP:
+			next = moveUp();
+			break;
+		case DOWN:
+			next = moveDown();
+			break;
+		case LEFT:
+			next = moveLeft();
+			break;
+		case RIGHT:
+			next = moveRight();
+			break;
+		default:
+			break;		
+		}
+		return next;
 	}
 	
 	@Override
