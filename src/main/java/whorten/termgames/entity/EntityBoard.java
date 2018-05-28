@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -155,6 +156,45 @@ public class EntityBoard {
 		for(Entity e : entities){
 			addEntity(e);
 		}
+	}
+
+	public Coord leftOf(Entity target, Entity neighbor) {
+		int left = Coord.calculateWidth(neighbor.getCoords());
+		return Coord.left(target.getBaseCoord(), left);
+	}
+
+	public Coord rightOf(Entity target, Entity neighbor) {
+		int right = Coord.calculateWidth(target.getCoords());
+		return Coord.right(target.getBaseCoord(), right);
+	}
+
+	public boolean canAdd(Entity entity, Coord offset) {
+		return canAdd(entity.moveTo(offset));
+	}
+	
+	public Set<Coord> getLegalPositions(Entity entity){
+		boolean[][] legals = getLegalPositionsGrid(entity);
+		Set<Coord> coords = new HashSet<>();
+		for(int row = 0; row < legals.length; row++){
+			for(int col = 0; col < legals[row].length; col++){
+				if(legals[row][col]){
+					coords.add(new Coord(col, row));
+				}
+			}
+		}
+		return coords;
+	}
+	
+	public boolean[][] getLegalPositionsGrid(Entity entity){
+		boolean [][] positions = new boolean[height][width];
+		Entity dummy = entity.moveTo(new Coord(0,0));
+		for(int row = 0; row < positions.length; row++){
+			for(int col = 0; col < positions[row].length; col++){
+				dummy = dummy.moveTo(new Coord(col, row));
+				positions[row][col] = canAdd(dummy);
+			}
+		}
+		return positions;
 	}
 
 }

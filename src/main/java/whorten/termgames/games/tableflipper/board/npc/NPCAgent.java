@@ -2,6 +2,7 @@ package whorten.termgames.games.tableflipper.board.npc;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class NPCAgent {
 	private LinkedList<Direction> path;
 	private GridBuilder gb = new GridBuilder(eb.getHeight(), eb.getWidth());
 	private EventBus eventbus;
-	private List<Table> tables;
+	private LinkedList<Table> tables;
     
 	// on each call to tick, check if the time elapsed since the last
 	// tick is more than the npc's speed. If yes, try to move next direction in path
@@ -55,8 +56,49 @@ public class NPCAgent {
 	}
 
 	private void generateNewPath() {
-		// TODO Auto-generated method stub
-		
+		// if there is a table assigned to this agent, try to get to it
+		if(tables.size() > 0){
+			// loop through tables once looking for valid destination. 
+			// If none, just fall through to random destination
+			for(int i = 0; i < tables.size(); i++){
+				Table table = tables.pop();
+				// if we can move to the right or left, we're done
+				if(moveToLeft(table)){return;}
+				if(moveToRight(table)){return;}
+				// if we got here, we couldn't use this table, put it back
+				tables.addLast(table);
+			}
+		}	
+		// otherwise, pick a random destination
+		setRandomDestination();			
+	}
+
+	private void setRandomDestination() {
+		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
+		Collections.shuffle(coords);
+		destination = coords.get(0);
+	}
+
+	private boolean moveToLeft(Table table) {
+		Coord leftCoord = eb.leftOf(table, npc);
+		NPC left = npc.moveTo(leftCoord);
+		if(eb.canMove(npc, left)){
+			destination = leftCoord;
+			path = getPath(npc.getBaseCoord(), leftCoord);
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean moveToRight(Table table) {
+		Coord rightCoord = eb.rightOf(table, npc);
+		NPC right = npc.moveTo(rightCoord);
+		if(eb.canMove(npc, right)){
+			destination = rightCoord;
+			path = getPath(npc.getBaseCoord(), rightCoord);
+			return true;
+		}
+		return false;
 	}
 
 	private void tryToMove() {
@@ -67,10 +109,13 @@ public class NPCAgent {
 			eventbus.fire(new EntityChangeEvent(npc, next));
 			npc = next;
 		} else {
-			Map<Coord, GridNode> graph = gb.withGrid(getLegalPositions()).build();
-			path = new LinkedList<>(gs.findPath(graph.get(npc.getState().getBaseCoord()),
-					           graph.get(destination)));
+			path = getPath(npc.getState().getBaseCoord(), destination);
 		}
+	}
+
+	private LinkedList<Direction> getPath(Coord from, Coord to) {
+		Map<Coord, GridNode> graph = gb.withGrid(getLegalPositions()).build();
+		return new LinkedList<>(gs.findPath(graph.get(from),graph.get(to)));
 	}
 	
 	private void unflip() {
@@ -100,20 +145,9 @@ public class NPCAgent {
 		
 		return false;
 	}
-
-	public boolean goToCoord(Coord coord){
-		this.destination = coord;
-		return true;
-	}
 	
 	private boolean[][] getLegalPositions(){
-		boolean [][] positions = new boolean[eb.getHeight()][eb.getWidth()];
-		for(int row = 0; row < positions.length; row++){
-			for(int col = 0; col > positions[row].length; col++){
-				positions[row][col] = eb.canAdd(npc);
-			}
-		}
-		return positions;
+		return eb.getLegalPositionsGrid(npc);
 	}
 	
 	public static class Builder{
@@ -122,7 +156,7 @@ public class NPCAgent {
 		private GraphSearch gs = new AStar();
 		private int speed;
 		private EventBus eventbus = new EventBus();
-		private List<Table> tables = new ArrayList<>();
+		private LinkedList<Table> tables = new LinkedList<>();
 		
 		public Builder(EntityBoard eb, NPC npc){
 			this.eb = eb;

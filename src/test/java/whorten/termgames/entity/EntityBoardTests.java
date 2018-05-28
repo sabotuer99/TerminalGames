@@ -14,6 +14,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.geometry.Coord;
 
 public class EntityBoardTests {
@@ -307,6 +308,51 @@ public class EntityBoardTests {
 		
 		assertThat(result).isFalse();		
 	}
+	
+	@Test
+	public void leftOf_validCoord(){
+		EntityBoard sut = getSut();
+		Entity a = getEntity();
+		when(a.getBaseCoord()).thenReturn(new Coord(41,13));
+		Entity b = getEntity();
+		when(b.getCoords()).thenReturn(Sets.newSet(new Coord(42,13), new Coord(43,13)));
+		
+		Coord left = sut.leftOf(a, b);
+		
+		assertThat(left).isEqualTo(new Coord(39,13));
+	}
+	
+	@Test
+	public void rightOf_validCoord(){
+		EntityBoard sut = getSut();
+		Entity a = getEntity();
+		when(a.getCoords()).thenReturn(Sets.newSet(new Coord(41,13), new Coord(42,13)));
+		when(a.getBaseCoord()).thenReturn(new Coord(41,13));
+		Entity b = getEntity();
+		
+		Coord left = sut.rightOf(a, b);
+		
+		assertThat(left).isEqualTo(new Coord(43,13));
+	}
+	
+	@Test
+	public void getLegalPositionsGrid_worksAsExpected(){
+		EntityBoard sut = getSut(3,3);
+		Entity a = NPC.newInstance(new Coord(0,0));
+		
+		boolean[][] result = sut.getLegalPositionsGrid(a);
+		boolean[][] expected = {{true, true, false},
+				                {true, true, false},
+				                {true, true, false}};
+		
+		for(int row = 0; row < 3; row++){
+			for(int col = 0; col < 3; col++){
+				assertThat(result[row][col]).isEqualTo(expected[row][col]);
+			}
+		}
+	}
+	
+	
 
 	private Entity getEntity() {
 		return mock(Entity.class);
@@ -316,6 +362,13 @@ public class EntityBoardTests {
 		return new EntityBoard.Builder()
 				.withHeight(26)
 				.withWidth(80)
+				.build();
+	}
+	
+	private EntityBoard getSut(int height, int width) {
+		return new EntityBoard.Builder()
+				.withHeight(height)
+				.withWidth(width)
 				.build();
 	}
 }

@@ -1,5 +1,9 @@
 package whorten.termgames.games.tableflipper;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,10 +12,12 @@ import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
+import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Keys;
 
 
@@ -57,6 +63,7 @@ public class TableFlipper extends Game {
 		super.resetGameState(console);		
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
+		board.addRandomNpc();
 	}
 	
 	public void renderBoard(){

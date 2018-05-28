@@ -39,7 +39,7 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 	
 	@Override
 	public final K move(Direction direction) {
-		K next = null;
+		K next = toBuilder().build();
 		switch(direction){
 		case UP:
 			next = moveUp();
@@ -57,6 +57,24 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 			break;		
 		}
 		return next;
+	}	
+	
+	@Override
+	public final K moveTo(Coord offset) {
+		K next = toBuilder().build();
+		Coord base = getState().getBaseCoord();
+		int dx = offset.getCol() - base.getCol();
+		int dy = offset.getRow() - base.getRow();
+		Direction dirx = dx > 0 ? Direction.RIGHT : Direction.LEFT;
+		Direction diry = dy > 0 ? Direction.DOWN : Direction.UP;
+		for(int i = 0; i < Math.abs(dx); i++){
+			next = next.move(dirx);
+		}
+		for(int i = 0; i < Math.abs(dy); i++){
+			next = next.move(diry);
+		}
+		
+		return next;
 	}
 	
 	@Override
@@ -64,6 +82,11 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 		GlyphString gs = new GlyphString.Builder(getState().getBaseGlyph())
 				.withBaseString(getState().getBaseString()).build();
 		return new GlyphStringCoord(getState().getBaseCoord(), gs);
+	}
+	
+	@Override
+	public Coord getBaseCoord() {
+		return getState().getBaseCoord();
 	}
 	
 	public abstract B toBuilder();

@@ -94,6 +94,28 @@ public final class Coord implements Comparable<Coord>{
 		return new Coord(a.getCol() + b.getCol(), a.getRow() + b.getRow());
 	}
 	
+	public static int calculateWidth(Collection<Coord> set){
+
+		int mincol = Integer.MAX_VALUE;
+		int maxcol = Integer.MIN_VALUE;
+		for(Coord offset : set){
+			mincol = Math.min(mincol, offset.getCol());
+			maxcol = Math.max(maxcol, offset.getCol());
+		}
+		return maxcol - mincol + 1;
+	}
+	
+	public static int calculateHeight(Collection<Coord> set){
+		//determine the limits and offsets
+		int minrow = Integer.MAX_VALUE;
+		int maxrow = Integer.MIN_VALUE;
+		for(Coord offset : set){
+			minrow = Math.min(minrow, offset.getRow());
+			maxrow = Math.max(maxrow, offset.getRow());
+		}
+		return maxrow - minrow + 1;
+	}
+	
 	public static String toAsciiString(Collection<Coord> set){
 		//determine the limits and offsets
 		int minrow = Integer.MAX_VALUE;

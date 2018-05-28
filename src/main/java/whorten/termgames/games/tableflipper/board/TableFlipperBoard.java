@@ -1,17 +1,19 @@
 package whorten.termgames.games.tableflipper.board;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
 import whorten.termgames.events.EventBus;
-import whorten.termgames.games.tableflipper.TableFlipper;
 import whorten.termgames.games.tableflipper.board.npc.NPC;
+import whorten.termgames.games.tableflipper.board.npc.NPCAgent;
 import whorten.termgames.games.tableflipper.board.player.Player;
 import whorten.termgames.games.tableflipper.board.table.Table;
 import whorten.termgames.games.tableflipper.board.wall.Wall;
@@ -21,12 +23,11 @@ import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
 
-	private final static Logger logger = LogManager.getLogger(TableFlipper.class);
+	//private final static Logger logger = LogManager.getLogger(TableFlipper.class);
 	private EntityBoard board;
 	private Player player;
 	private List<Table> tables;
-	private List<NPC> npcs;
-	private List<Wall> walls;
+	private List<NPCAgent> agents;
 	private EventBus eventbus;
 	long lastPlayerMove;
 	
@@ -79,6 +80,9 @@ public class TableFlipperBoard {
 			Player next = player.stand();
 			safeMovePlayer(next, false);
 		}
+		for(NPCAgent agent : agents){
+			agent.tick(time);
+		}
 	}
 
 	private void safeMovePlayer(Player next, boolean playermove) {
@@ -95,6 +99,26 @@ public class TableFlipperBoard {
 		}
 	}
 	
+	public Entity getPlayer() {
+		return player;
+	}
+
+	public void addNpc(NPC npc) {
+		board.addEntity(npc);
+		agents.add(new NPCAgent.Builder(board, npc).build());
+	}
+
+	public void addRandomNpc() {
+		NPC start = NPC.newInstance(new Coord(0,0));
+		List<Coord> coords = new ArrayList<>(board.getLegalPositions(start));
+		Collections.shuffle(coords);
+		Coord base = coords.get(0);
+		int speed = 500 + new Random().nextInt(250);
+		
+		NPC npc = start.moveTo(base).toBuilder().withSpeed(speed).build();
+		addNpc(npc);
+	}
+	
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
 							.withHeight(22)
@@ -103,6 +127,7 @@ public class TableFlipperBoard {
 		Player player = Player.newInstance(new Coord(1,1));
 		List<Table> tables = new ArrayList<>();
 		List<NPC> npcs = new ArrayList<>();
+		List<NPCAgent> agents = new ArrayList<>();
 		List<Wall> walls = new ArrayList<>();
 		EventBus eventbus;
 		
@@ -110,14 +135,19 @@ public class TableFlipperBoard {
 			this.eventbus = eventbus;
 		}
 		
+		public Builder addNpc(NPC npc){
+			npcs.add(npc);
+			agents.add(new NPCAgent.Builder(board, npc).build());
+			return this;
+		}
+		
 		public TableFlipperBoard build(){
 			TableFlipperBoard tfb = new TableFlipperBoard();
 			tfb.board = board;
 			tfb.player = player;
 			tfb.tables = tables;
-			tfb.walls = walls;
-			tfb.npcs = npcs;
 			tfb.eventbus = eventbus;
+			tfb.agents = agents;
 			
 			tfb.board.addEntity(player);
 			tfb.board.addAll(tables);
@@ -128,7 +158,4 @@ public class TableFlipperBoard {
 		}
 	}
 
-	public Entity getPlayer() {
-		return player;
-	}
 }
