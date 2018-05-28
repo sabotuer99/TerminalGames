@@ -1,23 +1,18 @@
 package whorten.termgames.games.tableflipper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
+import whorten.termgames.entity.Entity;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
-import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
-import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Keys;
 
 
@@ -50,6 +45,9 @@ public class TableFlipper extends Game {
 	private void run() {
 		playMusic(MUSIC_FILE);
 		tfr.drawEntity(board.getPlayer());
+		for(Entity npc : board.getNPCs()){
+			tfr.drawEntity(npc);
+		}
 		while (running) {				
 			console.pause(20);
 			board.tick(console.getTimeMillis());	

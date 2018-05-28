@@ -33,7 +33,7 @@ public class NPCAgent {
 	private GraphSearch gs;
 	private Coord destination;
 	private LinkedList<Direction> path;
-	private GridBuilder gb = new GridBuilder(eb.getHeight(), eb.getWidth());
+	private GridBuilder gb;
 	private EventBus eventbus;
 	private LinkedList<Table> tables;
     
@@ -176,6 +176,8 @@ public class NPCAgent {
 			n.speed = this.speed;
 			n.eventbus = this.eventbus;
 			n.tables = this.tables;
+			n.gb = new GridBuilder(eb.getHeight(), eb.getWidth());
+			n.path = new LinkedList<>();
 			return n;
 		}
 	}

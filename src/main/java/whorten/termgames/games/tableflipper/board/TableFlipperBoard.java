@@ -28,6 +28,7 @@ public class TableFlipperBoard {
 	private Player player;
 	private List<Table> tables;
 	private List<NPCAgent> agents;
+	private List<NPC> npcs;
 	private EventBus eventbus;
 	long lastPlayerMove;
 	
@@ -102,8 +103,13 @@ public class TableFlipperBoard {
 	public Entity getPlayer() {
 		return player;
 	}
+	
+	public List<Entity> getNPCs() {
+		return new ArrayList<>(npcs);
+	}
 
 	public void addNpc(NPC npc) {
+		npcs.add(npc);
 		board.addEntity(npc);
 		agents.add(new NPCAgent.Builder(board, npc).build());
 	}
@@ -148,6 +154,7 @@ public class TableFlipperBoard {
 			tfb.tables = tables;
 			tfb.eventbus = eventbus;
 			tfb.agents = agents;
+			tfb.npcs = npcs;
 			
 			tfb.board.addEntity(player);
 			tfb.board.addAll(tables);
