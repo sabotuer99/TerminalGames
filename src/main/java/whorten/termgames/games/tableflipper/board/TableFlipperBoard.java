@@ -23,7 +23,7 @@ import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
 
-	//private final static Logger logger = LogManager.getLogger(TableFlipper.class);
+	//private final static Logger logger = LogManager.getLogger(TableFlipperBoard.class);
 	private EntityBoard board;
 	private Player player;
 	private List<Table> tables;
@@ -108,13 +108,13 @@ public class TableFlipperBoard {
 		return new ArrayList<>(npcs);
 	}
 
-	public void addNpc(NPC npc) {
+	public synchronized void addNpc(NPC npc) {
 		npcs.add(npc);
 		board.addEntity(npc);
 		agents.add(new NPCAgent.Builder(board, npc).build());
 	}
 
-	public void addRandomNpc() {
+	public synchronized void addRandomNpc() {
 		NPC start = NPC.newInstance(new Coord(0,0));
 		List<Coord> coords = new ArrayList<>(board.getLegalPositions(start));
 		Collections.shuffle(coords);

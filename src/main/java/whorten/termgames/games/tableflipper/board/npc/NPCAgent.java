@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
 import whorten.termgames.events.EventBus;
@@ -25,7 +28,7 @@ import whorten.termgames.utils.graphs.GridNode;
 public class NPCAgent {
 
 	private NPCAgent(){}
-	
+	private final static Logger logger = LogManager.getLogger(NPCAgent.class);
 	private EntityBoard eb;
 	private NPC npc;
 	private long timeLastTick;
@@ -42,22 +45,25 @@ public class NPCAgent {
 	// if path is blocked, recalculate path. If path is empty, check if table needs 
 	// unflipped, then calculate new path to random location
 	public void tick(long time){
-		if(timeLastTick + speed <= time && path.size() > 0){			
+		if(timeLastTick + speed <= time){			
 			if(tables.size() > 0 && npc.getLocation().equals(destination)){
 				unflip();
 			} else {
 				if(path == null || path.size() == 0){	
 					generateNewPath();
+				} else {					
+					tryToMove();
 				}
-				tryToMove();
 			}
 		}
 		timeLastTick = time;
 	}
 
 	private void generateNewPath() {
+		logger.info("Generating new path.");
 		// if there is a table assigned to this agent, try to get to it
 		if(tables.size() > 0){
+			logger.info("Table assigned, looking for path to unflip.");
 			// loop through tables once looking for valid destination. 
 			// If none, just fall through to random destination
 			for(int i = 0; i < tables.size(); i++){
@@ -74,41 +80,54 @@ public class NPCAgent {
 	}
 
 	private void setRandomDestination() {
+		logger.info("Generating a random destination.");
 		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
-		Collections.shuffle(coords);
-		destination = coords.get(0);
+		if(coords != null && coords.size() > 0){
+			Collections.shuffle(coords);
+			destination = coords.get(0);
+			path = getPath(npc.getBaseCoord(), destination);
+		}
 	}
 
 	private boolean moveToLeft(Table table) {
+		logger.info("Checking if left side of table is valid destination...");
 		Coord leftCoord = eb.leftOf(table, npc);
 		NPC left = npc.moveTo(leftCoord);
 		if(eb.canMove(npc, left)){
+			logger.info("Setting left side (%s) as destination", leftCoord);
 			destination = leftCoord;
 			path = getPath(npc.getBaseCoord(), leftCoord);
 			return true;
 		}
+		logger.info("Left side blocked.");
 		return false;
 	}
 	
-	private boolean moveToRight(Table table) {
+	private boolean moveToRight(Table table) {		
+		logger.info("Checking if right side of table is valid destination...");
 		Coord rightCoord = eb.rightOf(table, npc);
 		NPC right = npc.moveTo(rightCoord);
 		if(eb.canMove(npc, right)){
+			logger.info("Setting right side (%s) as destination", rightCoord);
 			destination = rightCoord;
 			path = getPath(npc.getBaseCoord(), rightCoord);
 			return true;
-		}
+		}		
+		logger.info("Right side blocked.");
 		return false;
 	}
 
 	private void tryToMove() {
 		Direction direction = path.pop();
 		NPC next = npc.move(direction);
+		logger.info("NPC trying to move %s to %s", direction, next.getBaseCoord());
 		if(eb.canMove(npc, next)){
+			logger.info("NPC moving to %s...", next.getBaseCoord());
 			eb.move(npc, next);
 			eventbus.fire(new EntityChangeEvent(npc, next));
 			npc = next;
 		} else {
+			logger.info("Could not move to %s, calculating new path...", next.getBaseCoord());
 			path = getPath(npc.getState().getBaseCoord(), destination);
 		}
 	}

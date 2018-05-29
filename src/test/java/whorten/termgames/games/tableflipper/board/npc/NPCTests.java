@@ -16,4 +16,14 @@ public class NPCTests {
 		
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(20,20));
 	}
+	
+	@Test
+	public void getBaseCoord_notNull(){
+		NPC sut = NPC.newInstance(new Coord(0,0));
+		
+		Coord base = sut.getBaseCoord();
+		
+		assertThat(base).isNotNull();
+		assertThat(base).isEqualTo(new Coord(0,0));
+	}
 }

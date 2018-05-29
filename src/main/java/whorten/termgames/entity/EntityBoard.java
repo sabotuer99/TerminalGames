@@ -191,7 +191,7 @@ public class EntityBoard {
 		for(int row = 0; row < positions.length; row++){
 			for(int col = 0; col < positions[row].length; col++){
 				dummy = dummy.moveTo(new Coord(col, row));
-				positions[row][col] = canAdd(dummy);
+				positions[row][col] = canMove(entity, dummy);
 			}
 		}
 		return positions;

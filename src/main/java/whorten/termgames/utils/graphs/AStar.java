@@ -10,14 +10,25 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.geometry.Direction;
 
 public class AStar implements GraphSearch {
 
+	private final static Logger logger = LogManager.getLogger(AStar.class);
+
+	
 	@Override
 	public List<Direction> findPath(GridNode start, GridNode end) {
 		List<Direction> path = new ArrayList<>();
+		if(start == null || end == null){
+			if(start == null){logger.warn("Start node was null, wtf?");}
+			if(end == null){logger.warn("End node was null, wtf?");}
+			return path;
+		}
 		Set<GridNode> seen = new HashSet<>();
 		Queue<PathNode> queue = new PriorityQueue<>(new Comparator<PathNode>(){
 			@Override
