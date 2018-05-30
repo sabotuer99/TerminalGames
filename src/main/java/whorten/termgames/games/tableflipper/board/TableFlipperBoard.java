@@ -121,7 +121,7 @@ public class TableFlipperBoard {
 		Coord base = coords.get(0);
 		int speed = 500 + new Random().nextInt(250);
 		
-		NPC npc = start.moveTo(base).toBuilder().withSpeed(speed).build();
+		NPC npc = start.moveTo(base).stand().toBuilder().withSpeed(speed).build();
 		addNpc(npc);
 	}
 	

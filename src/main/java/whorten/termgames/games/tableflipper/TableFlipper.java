@@ -66,7 +66,7 @@ public class TableFlipper extends Game {
 		super.resetGameState(console);		
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
-		//board.addRandomNpc();
+		board.addRandomNpc();
 		musicControl = new MusicControl(this, new Coord(74, 19));
 		soundControl = new SoundControl(this, new Coord(74, 20));
 	}

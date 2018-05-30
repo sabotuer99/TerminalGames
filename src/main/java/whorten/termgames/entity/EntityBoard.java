@@ -72,11 +72,11 @@ public class EntityBoard {
 		}
 	}
 	
-	public boolean canAdd(Entity entity) {
+	public synchronized boolean canAdd(Entity entity) {
 		return entity != null && !isOverlapping(entity) && !isOutOfBounds(entity);
 	}
 	
-	public boolean canMove(Entity from, Entity to){
+	public synchronized boolean canMove(Entity from, Entity to){
 		if(from != null && to != null && !isOutOfBounds(to)){
 			return entities.keySet()
 				.stream()
@@ -88,7 +88,7 @@ public class EntityBoard {
 		return false;
 	}
 	
-	public void move(Entity from, Entity to){
+	public synchronized void move(Entity from, Entity to){
 		if(canMove(from, to)){
 			removeEntity(from);
 			addEntity(to);
@@ -152,27 +152,27 @@ public class EntityBoard {
 			      .collect(toSet());
 	}
 
-	public void addAll(Collection<? extends Entity> entities) {
+	public synchronized void addAll(Collection<? extends Entity> entities) {
 		for(Entity e : entities){
 			addEntity(e);
 		}
 	}
 
-	public Coord leftOf(Entity target, Entity neighbor) {
+	public synchronized Coord leftOf(Entity target, Entity neighbor) {
 		int left = Coord.calculateWidth(neighbor.getCoords());
 		return Coord.left(target.getBaseCoord(), left);
 	}
 
-	public Coord rightOf(Entity target, Entity neighbor) {
+	public synchronized Coord rightOf(Entity target, Entity neighbor) {
 		int right = Coord.calculateWidth(target.getCoords());
 		return Coord.right(target.getBaseCoord(), right);
 	}
 
-	public boolean canAdd(Entity entity, Coord offset) {
+	public synchronized boolean canAdd(Entity entity, Coord offset) {
 		return canAdd(entity.moveTo(offset));
 	}
 	
-	public Set<Coord> getLegalPositions(Entity entity){
+	public synchronized Set<Coord> getLegalPositions(Entity entity){
 		boolean[][] legals = getLegalPositionsGrid(entity);
 		Set<Coord> coords = new HashSet<>();
 		for(int row = 0; row < legals.length; row++){
@@ -185,7 +185,7 @@ public class EntityBoard {
 		return coords;
 	}
 	
-	public boolean[][] getLegalPositionsGrid(Entity entity){
+	public synchronized boolean[][] getLegalPositionsGrid(Entity entity){
 		boolean [][] positions = new boolean[height][width];
 		Entity dummy = entity.moveTo(new Coord(0,0));
 		for(int row = 0; row < positions.length; row++){

@@ -25,7 +25,7 @@ public class GridNode {
 	
 	public void addNeighborWithCost(GridNode node, Direction direction, Integer cost){
 		neighbors.put(direction, node);
-		costs.put(node, 1);
+		costs.put(node, cost);
 	}
 	
 	public void removeNeighbor(Direction direction){
@@ -70,6 +70,19 @@ public class GridNode {
 		} else if (!coord.equals(other.coord))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("GridNode: location:[%s] ", getLocation()));
+		sb.append("neighbors: [ ");
+		for(Direction key : neighbors.keySet()){
+			sb.append(String.format(" %s (Cost %s),", key, costs.get(neighbors.get(key))));
+		}
+		sb.setLength(sb.length() - 1);
+		sb.append(" ]");
+		return sb.toString();
 	}
 
 	public Set<Entry<Direction, GridNode>> getNeighbors() {

@@ -4,7 +4,6 @@ import java.util.TreeSet;
 
 import whorten.termgames.entity.AbstractEntityState;
 import whorten.termgames.geometry.Coord;
-import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 
 public class NPCState extends AbstractEntityState<NPCState> {
@@ -13,7 +12,7 @@ public class NPCState extends AbstractEntityState<NPCState> {
 	private Glyph baseGlyph;
 
 	private NPCState(String baseString) {
-		this.baseGlyph = new Glyph.Builder(" ").withForegroundColor(FgColor.LIGHT_YELLOW).build();
+		this.baseGlyph = new Glyph.Builder(" ").withForegroundColor(125,255,255).build(); //bright pale blue
 		this.baseString = baseString;
 		this.coords = new TreeSet<>();
 	}
@@ -122,7 +121,7 @@ public class NPCState extends AbstractEntityState<NPCState> {
 	}
 
 	public NPCState stand() {
-		NPCState right = new NPCState(NPCStrings.RESTORE_RIGHT);
+		NPCState right = new NPCState(NPCStrings.STAND_STILL);
 		right.coords = new TreeSet<>(this.coords);
 		return right;
 	}

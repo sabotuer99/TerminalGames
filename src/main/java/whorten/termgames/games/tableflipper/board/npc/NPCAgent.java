@@ -83,9 +83,12 @@ public class NPCAgent {
 		logger.info("Generating a random destination.");
 		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
 		if(coords != null && coords.size() > 0){
+			logger.info("Picking randomly from coords");
 			Collections.shuffle(coords);
 			destination = coords.get(0);
+			logger.info(String.format("Set destination to %s", destination));
 			path = getPath(npc.getBaseCoord(), destination);
+			logger.info(String.format("New path is %d steps", path.size()));
 		}
 	}
 
@@ -134,8 +137,21 @@ public class NPCAgent {
 	}
 
 	private LinkedList<Direction> getPath(Coord from, Coord to) {
-		Map<Coord, GridNode> graph = gb.withGrid(getLegalPositions()).build();
-		return new LinkedList<>(gs.findPath(graph.get(from),graph.get(to)));
+		if(from.equals(to)){
+			return new LinkedList<Direction>();
+		}
+		
+		logger.info(String.format("Calculating grid of legal positions"));
+		boolean[][] legals = eb.getLegalPositionsGrid(npc);
+		logger.info(String.format("Calculating graph across legal positions"));
+		Map<Coord, GridNode> graph = gb.withGrid(legals).build();
+		GridNode fromNode = graph.get(from);
+		logger.info(String.format("From node: %s", fromNode));
+		GridNode toNode = graph.get(to);
+		logger.info(String.format("To node: %s", toNode));
+		List<Direction> newpath = gs.findPath(fromNode, toNode);
+		logger.info(String.format("Size of new path: %d", newpath.size()));
+		return new LinkedList<>(newpath);
 	}
 	
 	private void unflip() {
@@ -164,10 +180,6 @@ public class NPCAgent {
 		}
 		
 		return false;
-	}
-	
-	private boolean[][] getLegalPositions(){
-		return eb.getLegalPositionsGrid(npc);
 	}
 	
 	public static class Builder{
