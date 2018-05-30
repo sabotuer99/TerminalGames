@@ -108,10 +108,15 @@ public class TableFlipperBoard {
 		return new ArrayList<>(npcs);
 	}
 
-	public synchronized void addNpc(NPC npc) {
+	public synchronized void addNpc(NPC npc, int speed) {
 		npcs.add(npc);
 		board.addEntity(npc);
-		agents.add(new NPCAgent.Builder(board, npc).build());
+		NPCAgent agent = new NPCAgent.Builder(board, npc)
+				.withSpeed(speed)
+				.withEventBus(eventbus)
+				.build();
+		agent.tick(speed); //initialize
+		agents.add(agent);
 	}
 
 	public synchronized void addRandomNpc() {
@@ -121,8 +126,8 @@ public class TableFlipperBoard {
 		Coord base = coords.get(0);
 		int speed = 500 + new Random().nextInt(250);
 		
-		NPC npc = start.moveTo(base).stand().toBuilder().withSpeed(speed).build();
-		addNpc(npc);
+		NPC npc = start.moveTo(base).stand().toBuilder().build();
+		addNpc(npc, speed);
 	}
 	
 	public static class Builder{

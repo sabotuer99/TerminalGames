@@ -31,7 +31,7 @@ public class NPCAgent {
 	private final static Logger logger = LogManager.getLogger(NPCAgent.class);
 	private EntityBoard eb;
 	private NPC npc;
-	private long timeLastTick;
+	private volatile long timeLastTick;
 	private int speed;
 	private GraphSearch gs;
 	private Coord destination;
@@ -45,7 +45,8 @@ public class NPCAgent {
 	// if path is blocked, recalculate path. If path is empty, check if table needs 
 	// unflipped, then calculate new path to random location
 	public void tick(long time){
-		if(timeLastTick + speed <= time){			
+		if(timeLastTick + speed <= time){	
+			logger.info(String.format("Agent taking action: %d + %d <= %d", timeLastTick, speed, time));
 			if(tables.size() > 0 && npc.getLocation().equals(destination)){
 				unflip();
 			} else {
@@ -55,8 +56,10 @@ public class NPCAgent {
 					tryToMove();
 				}
 			}
+			timeLastTick = time;
+		} else {
+			logger.info(String.format("Agent waiting: %d + %d > %d", timeLastTick, speed, time));
 		}
-		timeLastTick = time;
 	}
 
 	private void generateNewPath() {
@@ -187,7 +190,7 @@ public class NPCAgent {
 		private NPC npc;
 		private GraphSearch gs = new AStar();
 		private int speed;
-		private EventBus eventbus = new EventBus();
+		private EventBus eventbus;
 		private LinkedList<Table> tables = new LinkedList<>();
 		
 		public Builder(EntityBoard eb, NPC npc){
@@ -197,6 +200,11 @@ public class NPCAgent {
 		
 		public Builder withEventBus(EventBus eventbus){
 			this.eventbus = eventbus;
+			return this;
+		}
+		
+		public Builder withSpeed(int speed){
+			this.speed = speed;
 			return this;
 		}
 		

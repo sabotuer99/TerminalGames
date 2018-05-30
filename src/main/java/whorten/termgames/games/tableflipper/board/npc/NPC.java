@@ -62,11 +62,6 @@ public class NPC extends AbstractEntity<NPC, NPCState, NPC.Builder> {
 			this.state = state;
 			return this;
 		}
-		
-		public Builder withSpeed(int speed){
-			this.speed = speed;
-			return this;
-		}
 
 		@Override
 		public NPC build() {
