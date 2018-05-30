@@ -66,15 +66,15 @@ public class Quadtris extends Game {
 	@Override
 	protected void resetGameState(GameConsole console) {
 		super.resetGameState(console);
-		this.musicControl = new MusicControl(this, new Coord(74, 19));
-		this.soundControl = new SoundControl(this, new Coord(74, 20));
-		this.quadtrisBoard = new QuadtrisBoard.Builder(eventBus).build();
-		this.wellOrigin = new Coord(7,3);
-		this.wellRenderer = new WellRenderer.Builder(renderer)
+		musicControl = new MusicControl(this, new Coord(74, 19));
+		soundControl = new SoundControl(this, new Coord(74, 20));
+		quadtrisBoard = new QuadtrisBoard.Builder(eventBus).build();
+		wellOrigin = new Coord(7,3);
+		wellRenderer = new WellRenderer.Builder(renderer)
 				.withOriginOffset(wellOrigin).build();
-		this.score = 0;
-		this.level = 0;
-		this.lines = 0;
+		score = 0;
+		level = 0;
+		lines = 0;
 				
 	}
 

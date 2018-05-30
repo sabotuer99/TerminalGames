@@ -66,8 +66,8 @@ public class SnakeGame extends Game {
 		super.resetGameState(console);
 		direction = Direction.DOWN;
 		fruits = new HashMap<>();
-		this.musicControl = new MusicControl(this, new Coord(74, 19));
-		this.soundControl = new SoundControl(this, new Coord(74, 20));
+		musicControl = new MusicControl(this, new Coord(74, 19));
+		soundControl = new SoundControl(this, new Coord(74, 20));
 	}
 	
 	@Override

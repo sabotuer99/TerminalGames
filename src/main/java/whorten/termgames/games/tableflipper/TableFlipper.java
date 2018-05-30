@@ -13,7 +13,10 @@ import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
+import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Keys;
+import whorten.termgames.widgets.MusicControl;
+import whorten.termgames.widgets.SoundControl;
 
 
 public class TableFlipper extends Game {
@@ -24,6 +27,8 @@ public class TableFlipper extends Game {
 	private static final String AH_SOUND = "sounds/girl-ah.wav";
 	private TableFlipperBoard board;
 	private TableFlipperRenderer tfr;
+	private MusicControl musicControl;
+	private SoundControl soundControl;
 	
 	@Override
 	public void plugIn(GameConsole console) {
@@ -62,10 +67,14 @@ public class TableFlipper extends Game {
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
 		//board.addRandomNpc();
+		musicControl = new MusicControl(this, new Coord(74, 19));
+		soundControl = new SoundControl(this, new Coord(74, 20));
 	}
 	
 	public void renderBoard(){
-		tfr.drawBoard();		
+		tfr.drawBoard();	
+		soundControl.update();
+		musicControl.update();
 	}
 
 	@Override
