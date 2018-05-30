@@ -7,6 +7,30 @@ import whorten.termgames.glyphs.Glyph;
 public class TableState extends AbstractEntityState<TableState>{
 
 	@Override
+	public TableState moveUp(int distance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TableState moveDown(int distance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TableState moveLeft(int distance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TableState moveRight(int distance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public String getBaseString() {
 		// TODO Auto-generated method stub
 		return null;
@@ -19,33 +43,10 @@ public class TableState extends AbstractEntityState<TableState>{
 	}
 
 	@Override
-	public TableState moveUp() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TableState moveDown() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TableState moveLeft() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TableState moveRight() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Glyph getBaseGlyph() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

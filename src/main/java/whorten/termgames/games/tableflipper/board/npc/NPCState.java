@@ -45,30 +45,30 @@ public class NPCState extends AbstractEntityState<NPCState> {
 	}
 
 	@Override
-	public NPCState moveUp() {
+	public NPCState moveUp(int distance) {
 		NPCState up = new NPCState(NPCStrings.WALK_UP);
-		up.coords = new TreeSet<>(Coord.allUp(this.coords, 1));
+		up.coords = new TreeSet<>(Coord.allUp(this.coords, distance));
 		return up;
 	}
 
 	@Override
-	public NPCState moveDown() {
+	public NPCState moveDown(int distance) {
 		NPCState down = new NPCState(NPCStrings.WALK_DOWN);
-		down.coords = new TreeSet<>(Coord.allDown(this.coords, 1));
+		down.coords = new TreeSet<>(Coord.allDown(this.coords, distance));
 		return down;
 	}
 
 	@Override
-	public NPCState moveLeft() {
+	public NPCState moveLeft(int distance) {
 		NPCState left = new NPCState(NPCStrings.WALK_LEFT);
-		left.coords = new TreeSet<>(Coord.allLeft(this.coords, 1));
+		left.coords = new TreeSet<>(Coord.allLeft(this.coords, distance));
 		return left;
 	}
 
 	@Override
-	public NPCState moveRight() {
+	public NPCState moveRight(int distance) {
 		NPCState right = new NPCState(NPCStrings.WALK_RIGHT);
-		right.coords = new TreeSet<>(Coord.allRight(this.coords, 1));
+		right.coords = new TreeSet<>(Coord.allRight(this.coords, distance));
 		return right;
 	}
 	

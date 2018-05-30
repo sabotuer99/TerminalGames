@@ -10,11 +10,11 @@ public interface Entity {
 
 	Coord getBaseCoord();
 	Set<Coord> getCoords();
-	Entity moveUp();
-	Entity moveDown();
-	Entity moveLeft();
-	Entity moveRight();
-	Entity move(Direction direction);
+	Entity moveUp(int distance);
+	Entity moveDown(int distance);
+	Entity moveLeft(int distance);
+	Entity moveRight(int distance);
+	Entity move(Direction direction, int distance);
 	Entity moveTo(Coord offset);
 	GlyphStringCoord getGlyphStringCoord();
 }

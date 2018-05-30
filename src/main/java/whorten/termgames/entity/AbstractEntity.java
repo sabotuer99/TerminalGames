@@ -18,40 +18,40 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 	}
 
 	@Override
-	public final K moveUp() {
-		return toBuilder().withState(getState().moveUp()).build();
+	public final K moveUp(int distance) {
+		return toBuilder().withState(getState().moveUp(distance)).build();
 	}
 
 	@Override
-	public final K moveDown() {
-		return toBuilder().withState(getState().moveDown()).build();
+	public final K moveDown(int distance) {
+		return toBuilder().withState(getState().moveDown(distance)).build();
 	}
 
 	@Override
-	public final K moveLeft() {
-		return toBuilder().withState(getState().moveLeft()).build();
+	public final K moveLeft(int distance) {
+		return toBuilder().withState(getState().moveLeft(distance)).build();
 	}
 
 	@Override
-	public final K moveRight() {
-		return toBuilder().withState(getState().moveRight()).build();
+	public final K moveRight(int distance) {
+		return toBuilder().withState(getState().moveRight(distance)).build();
 	}
 	
 	@Override
-	public final K move(Direction direction) {
+	public final K move(Direction direction, int distance) {
 		K next = toBuilder().build();
 		switch(direction){
 		case UP:
-			next = moveUp();
+			next = moveUp(distance);
 			break;
 		case DOWN:
-			next = moveDown();
+			next = moveDown(distance);
 			break;
 		case LEFT:
-			next = moveLeft();
+			next = moveLeft(distance);
 			break;
 		case RIGHT:
-			next = moveRight();
+			next = moveRight(distance);
 			break;
 		default:
 			break;		
@@ -67,13 +67,8 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 		int dy = offset.getRow() - base.getRow();
 		Direction dirx = dx > 0 ? Direction.RIGHT : Direction.LEFT;
 		Direction diry = dy > 0 ? Direction.DOWN : Direction.UP;
-		for(int i = 0; i < Math.abs(dx); i++){
-			next = next.move(dirx);
-		}
-		for(int i = 0; i < Math.abs(dy); i++){
-			next = next.move(diry);
-		}
-		
+		next = next.move(dirx, Math.abs(dx));
+		next = next.move(diry, Math.abs(dy));		
 		return next;
 	}
 	

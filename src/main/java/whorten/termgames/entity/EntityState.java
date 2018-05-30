@@ -6,10 +6,10 @@ import whorten.termgames.geometry.Coord;
 import whorten.termgames.glyphs.Glyph;
 
 public interface EntityState<K extends EntityState<K>> {
-	K moveUp();
-	K moveDown();
-	K moveLeft();
-	K moveRight();
+	K moveUp(int distance);
+	K moveDown(int distance);
+	K moveLeft(int distance);
+	K moveRight(int distance);
 	Set<Coord> getCoords();
 	String getBaseString();
 	Coord getBaseCoord();

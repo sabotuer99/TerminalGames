@@ -17,7 +17,7 @@ public class PlayerStateTests {
 	public void moveUp_returnsUpState(){		
 		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
 		
-		EntityState<?> moved = sut.moveUp();
+		EntityState<?> moved = sut.moveUp(1);
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_UP);
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(0,-1));
@@ -27,7 +27,7 @@ public class PlayerStateTests {
 	public void moveLeft_returnsLeftState(){		
 		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
 		
-		EntityState<?> moved = sut.moveLeft();
+		EntityState<?> moved = sut.moveLeft(2);
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_LEFT);
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(-2,0));
@@ -38,7 +38,7 @@ public class PlayerStateTests {
 	public void moveRight_returnsRightState(){		
 		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
 		
-		EntityState<?> moved = sut.moveRight();
+		EntityState<?> moved = sut.moveRight(2);
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_RIGHT);
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(2,0));
@@ -49,7 +49,7 @@ public class PlayerStateTests {
 	public void moveDown_returnsDownState(){		
 		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
 		
-		EntityState<?> moved = sut.moveDown();
+		EntityState<?> moved = sut.moveDown(1);
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.WALK_DOWN);
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(0,1));
@@ -59,7 +59,7 @@ public class PlayerStateTests {
 	public void moveRightFlip_returnsFlipRightState(){		
 		PlayerState sut = PlayerState.getStartState(new Coord(0,0));
 		
-		EntityState<?> moved = sut.moveRight().flipNothing();
+		EntityState<?> moved = sut.moveRight(2).flipNothing();
 		
 		assertThat(moved.getBaseString()).isEqualTo(PlayerStrings.THROW_RIGHT);
 		assertThat(moved.getBaseCoord()).isEqualTo(new Coord(2,0));

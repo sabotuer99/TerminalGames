@@ -49,7 +49,7 @@ public class TableFlipper extends Game {
 			tfr.drawEntity(npc);
 		}
 		while (running) {				
-			console.pause(20);
+			console.pause(40);
 			board.tick(console.getTimeMillis());	
 		}
 		stopMusic();

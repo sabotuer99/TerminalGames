@@ -119,15 +119,16 @@ public class NPCAgent {
 
 	private void tryToMove() {
 		Direction direction = path.pop();
-		NPC next = npc.move(direction);
-		logger.info("NPC trying to move %s to %s", direction, next.getBaseCoord());
+		NPC next = npc.move(direction, 1);
+		logger.info(String.format("NPC trying to move %s to %s from %s", 
+				direction, next.getBaseCoord(), npc.getBaseCoord()));
 		if(eb.canMove(npc, next)){
-			logger.info("NPC moving to %s...", next.getBaseCoord());
+			logger.info(String.format("NPC moving to %s...", next.getBaseCoord()));
 			eb.move(npc, next);
 			eventbus.fire(new EntityChangeEvent(npc, next));
 			npc = next;
 		} else {
-			logger.info("Could not move to %s, calculating new path...", next.getBaseCoord());
+			logger.info(String.format("Could not move to %s, calculating new path...", next.getBaseCoord()));
 			path = getPath(npc.getState().getBaseCoord(), destination);
 		}
 	}

@@ -25,7 +25,7 @@ public class PlayerTests {
 	public void movePlayer_newPlayerInstanceValid(){
 		Entity sut = Player.newInstance(new Coord(0,0));
 		
-		Entity moved = sut.moveDown();
+		Entity moved = sut.moveDown(1);
 		Set<Coord> coords = moved.getCoords();
 		
 		assertThat(coords).isNotEmpty();
@@ -47,7 +47,7 @@ public class PlayerTests {
 	public void moveThenstand_newPlayerInstanceValid(){
 		Player sut = Player.newInstance(new Coord(0,0));
 		
-		Entity moved = sut.moveDown().stand();
+		Entity moved = sut.moveDown(1).stand();
 		Set<Coord> coords = moved.getCoords();
 		
 		assertThat(coords).isNotEmpty();

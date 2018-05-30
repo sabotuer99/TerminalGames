@@ -85,33 +85,33 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	private PlayerState flipNothing;
 
 	@Override
-	public PlayerState moveUp() {
+	public PlayerState moveUp(int distance) {
 		PlayerState up = new PlayerState(this.up);
-		up.coords = new TreeSet<>(Coord.allUp(this.coords, 1));
+		up.coords = new TreeSet<>(Coord.allUp(this.coords, distance));
 		up.stand = base_stand;
 		return up;
 	}
 
 	@Override
-	public PlayerState moveDown() {
+	public PlayerState moveDown(int distance) {
 		PlayerState down = new PlayerState(this.down);
-		down.coords = new TreeSet<>(Coord.allDown(this.coords, 1));
+		down.coords = new TreeSet<>(Coord.allDown(this.coords, distance));
 		down.stand = base_stand;
 		return down;
 	}
 
 	@Override
-	public PlayerState moveLeft() {
+	public PlayerState moveLeft(int distance) {
 		PlayerState left = new PlayerState(this.left);
-		left.coords = new TreeSet<>(Coord.allLeft(this.coords, 2));
+		left.coords = new TreeSet<>(Coord.allLeft(this.coords, distance));
 		left.stand = base_left;
 		return left;
 	}
 
 	@Override
-	public PlayerState moveRight() {
+	public PlayerState moveRight(int distance) {
 		PlayerState right = new PlayerState(this.right);
-		right.coords = new TreeSet<>(Coord.allRight(this.coords, 2));
+		right.coords = new TreeSet<>(Coord.allRight(this.coords, distance));
 		right.stand = base_right;
 		return right;
 	}

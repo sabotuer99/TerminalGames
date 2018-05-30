@@ -36,25 +36,25 @@ public class TableFlipperBoard {
 	
 	public synchronized void movePlayerUp(long time){
 		lastPlayerMove = time;
-		Player next = player.moveUp();
+		Player next = player.moveUp(1);
 		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerDown(long time){
 		lastPlayerMove = time;
-		Player next = player.moveDown();
+		Player next = player.moveDown(1);
 		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerLeft(long time){
 		lastPlayerMove = time;
-		Player next = player.moveLeft();
+		Player next = player.moveLeft(2);
 		safeMovePlayer(next, true);
 	}
 	
 	public synchronized void movePlayerRight(long time){
 		lastPlayerMove = time;
-		Player next = player.moveRight();
+		Player next = player.moveRight(2);
 		safeMovePlayer(next, true);
 	}
 	

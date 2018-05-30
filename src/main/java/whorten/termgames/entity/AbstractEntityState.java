@@ -11,16 +11,16 @@ public abstract class AbstractEntityState<K extends EntityState<K>>
 	protected Set<Coord> coords = new TreeSet<>();
 	
 	@Override
-	public abstract K moveUp();
+	public abstract K moveUp(int distance);
 
 	@Override
-	public abstract K moveDown();
+	public abstract K moveDown(int distance);
 
 	@Override
-	public abstract K moveLeft();
+	public abstract K moveLeft(int distance);
 
 	@Override
-	public abstract K moveRight();
+	public abstract K moveRight(int distance);
 
 	@Override
 	public Set<Coord> getCoords() {
