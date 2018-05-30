@@ -20,11 +20,9 @@ import whorten.termgames.glyphs.FgColor;
 import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
-//import whorten.termgames.render.GameBorder;
-//import whorten.termgames.render.Renderer;
-import whorten.termgames.sounds.events.ToggleMusicEvent;
-import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Keys;
+import whorten.termgames.widgets.MusicControl;
+import whorten.termgames.widgets.SoundControl;
 
 public class SnakeGame extends Game {
 
@@ -40,7 +38,6 @@ public class SnakeGame extends Game {
 	private Snake snake;
 	private Glyph gfGlyph = defaultGoodFruitGlyph();
 	private Glyph badGlyph = defaultBadFruitGlyph();
-	//private GameBorder gb;
 	private Map<Coord, Fruit> fruits;
 	private Glyph bodyGlyph =  defaultBodyGlyph();
 	private Glyph headUpGlyph = headSegment("^"); //"▲")
@@ -48,6 +45,8 @@ public class SnakeGame extends Game {
 	private Glyph headRightGlyph = headSegment(">"); //"▶")
 	private Glyph headLeftGlyph = headSegment("<"); //"◀")
 	private int speed = 5;
+	private MusicControl musicControl;
+	private SoundControl soundControl;
 	
 	
 	@Override
@@ -66,7 +65,9 @@ public class SnakeGame extends Game {
 	protected void resetGameState(GameConsole console) {
 		super.resetGameState(console);
 		direction = Direction.DOWN;
-		fruits = new HashMap<>();	
+		fruits = new HashMap<>();
+		this.musicControl = new MusicControl(this, new Coord(74, 19));
+		this.soundControl = new SoundControl(this, new Coord(74, 20));
 	}
 	
 	@Override
@@ -92,24 +93,10 @@ public class SnakeGame extends Game {
 		renderer.clearScreen();
 		Set<GlyphStringCoord> background = console.loadFromFile(SNAKE_BACKGROUND_FILE);
 		renderer.drawGlyphStringCollection(background);
-
+		soundControl.update();
+		musicControl.update();
 		updateScore(1);
 		updateSpeed();
-		updateSound();
-	}
-	
-	private void updateSound() {
-		GlyphString sound_off = new GlyphString.Builder("<X ")
-				.withFgColor(255,0,0).build();
-		GlyphString sound_on = new GlyphString.Builder("<((") 
-				.withFgColor(0,255,0).build();
-		GlyphString music_off = new GlyphString.Builder("dXb")
-				.withFgColor(255,0,0).build();
-		GlyphString music_on = new GlyphString.Builder("d⎺b")
-				.withFgColor(0,255,0).build();
-		
-		renderer.drawAt(19, 74, console.isMusicOn() ? music_on : music_off);
-		renderer.drawAt(20, 74, console.isSoundOn() ? sound_on : sound_off);	
 	}
 
 	private void updateScore(int score) {
@@ -207,16 +194,6 @@ public class SnakeGame extends Game {
 		case ",":
 			speed = Math.max(speed - 1, 1);
 			updateSpeed();
-			break;
-		case "m":
-		case "M":
-			eventBus.fire(new ToggleMusicEvent());
-			updateSound();
-			break;
-		case "s":
-		case "S":
-			eventBus.fire(new ToggleSoundEvent());
-			updateSound();
 			break;
 		default:
 			break;
