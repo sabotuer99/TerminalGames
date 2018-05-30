@@ -62,4 +62,41 @@ public class AStarTests {
 				DOWN, DOWN, RIGHT, DOWN, DOWN, DOWN);
 	}
 	
+	@Test
+	public void destinationHasZeroValue_calculatesCorrectly(){
+		GraphSearch sut = new AStar();
+		String[] grid   = {"       ",  //should go around to the left
+				           " XXXXX ",
+				           "     X ",  //then straight down
+						   "x X  X ", 
+						   "x X  X ",
+						   "x x    "};
+		Map<Coord,GridNode> graph = new GridBuilder(6,7).withGrid(grid, " ").build();
+		
+		GridNode start = graph.get(new Coord(1,4));
+		GridNode end = graph.get(new Coord(0,0));
+		List<Direction> path = sut.findPath(start, end);
+		
+		assertThat(path).containsExactly(UP, UP, LEFT, UP, UP);
+	}
+	
+	@Test
+	public void destinationHasZeroValue_BlankGrid_calculatesCorrectly(){
+		GraphSearch sut = new AStar();
+		String[] grid   = {"       ",  //should go around to the left
+				           "       ",
+				           "       ",  //then straight down
+						   "       ", 
+						   "       ",
+						   "       "};
+		Map<Coord,GridNode> graph = new GridBuilder(6,7).withGrid(grid, " ").build();
+		
+		GridNode start = graph.get(new Coord(1,4));
+		GridNode end = graph.get(new Coord(0,0));
+		List<Direction> path = sut.findPath(start, end);
+		
+		assertThat(path).containsExactly(UP, UP, LEFT, UP, UP);
+	}
+	
+	
 }

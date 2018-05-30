@@ -46,6 +46,7 @@ public class AStar implements GraphSearch {
 				path = extractPath(here);
 				break;
 			}
+			logger.info(String.format("AStar looked at %s", here.node.getLocation()));
 			seen.add(here.node);
 			for(Entry<Direction,GridNode> neighbor : here.node.getNeighbors()){
 				GridNode n = neighbor.getValue();

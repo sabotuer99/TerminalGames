@@ -15,6 +15,9 @@ public class GridNode {
 	private Map<GridNode, Integer> costs = new HashMap<>();
 	
 	public GridNode(Coord coord){
+		if(coord == null){
+			throw new IllegalArgumentException("Location coordinate cannot be null!");
+		}
 		this.coord = coord;
 	}
 	

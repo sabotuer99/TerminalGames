@@ -155,19 +155,30 @@ public final class Coord implements Comparable<Coord>{
 	public String toString() {
 		return String.format("Coord: col: [%d], row: [%d]", col, row);
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return col + (row << 16);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + col;
+		result = prime * result + row;
+		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof Coord){
-			Coord o = (Coord) obj;
-			return o.col == this.col && o.row == this.row;
-		}
-		return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Coord other = (Coord) obj;
+		if (col != other.col)
+			return false;
+		if (row != other.row)
+			return false;
+		return true;
 	}
 
 	@Override
