@@ -128,9 +128,9 @@ public class TableFlipperBoard {
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
 							.withHeight(22)
-							.withWidth(57)
+							.withWidth(58)
 							.build();
-		Player player = Player.newInstance(new Coord(1,1));
+		Player player = Player.newInstance(new Coord(0,0));
 		List<Table> tables = new ArrayList<>();
 		List<NPC> npcs = new ArrayList<>();
 		List<NPCAgent> agents = new ArrayList<>();

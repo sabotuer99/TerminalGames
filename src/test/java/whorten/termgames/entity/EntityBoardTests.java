@@ -337,13 +337,15 @@ public class EntityBoardTests {
 	
 	@Test
 	public void getLegalPositionsGrid_worksAsExpected(){
-		EntityBoard sut = getSut(3,3);
+		EntityBoard sut = getSut(3,7);
 		Entity a = NPC.newInstance(new Coord(0,0));
 		
 		boolean[][] result = sut.getLegalPositionsGrid(a);
-		boolean[][] expected = {{true, true, false},
-				                {true, true, false},
-				                {true, true, false}};
+		boolean[][] expected = {{true, false, false, false, false, false, false},
+				                {true, false, false, false, false, false, false},
+				                {true, false, false, false, false, false, false}};
+		
+		drawGrid(result);
 		
 		for(int row = 0; row < 3; row++){
 			for(int col = 0; col < 3; col++){
@@ -352,7 +354,38 @@ public class EntityBoardTests {
 		}
 	}
 	
+	@Test
+	public void getLegalPositionsGrid_LargeBoard_DoesNotFreakOut(){
+		EntityBoard sut = getSut(30,80);
+		Entity a = NPC.newInstance(new Coord(0,0));
+		
+		boolean[][] result = sut.getLegalPositionsGrid(a);
+		
+		drawGrid(result);
+		
+		for(int row = 0; row < 30; row++){
+			for(int col = 0; col < 80; col++){
+				if(col <= 73){
+					assertThat(result[row][col]).isTrue();					
+				} else {
+					assertThat(result[row][col]).isFalse();
+				}
+			}
+		}
+	}
 	
+	
+
+	private void drawGrid(boolean[][] result) {
+		StringBuilder sb = new StringBuilder();
+		for(int row = 0; row < result.length; row++){
+			for(int col = 0; col < result[row].length; col++){
+				sb.append(result[row][col] ? '.' : 'X');
+			}
+			sb.append('\n');
+		}
+		System.out.println(sb);
+	}
 
 	private Entity getEntity() {
 		return mock(Entity.class);

@@ -26,9 +26,9 @@ import whorten.termgames.glyphs.Glyph;
 import whorten.termgames.glyphs.GlyphString;
 import whorten.termgames.glyphs.collate.GlyphStringCoord;
 import whorten.termgames.sounds.events.PlaySoundEvent;
-import whorten.termgames.sounds.events.ToggleMusicEvent;
-import whorten.termgames.sounds.events.ToggleSoundEvent;
 import whorten.termgames.utils.Keys;
+import whorten.termgames.widgets.MusicControl;
+import whorten.termgames.widgets.SoundControl;
 
 public class Quadtris extends Game {
 
@@ -43,13 +43,14 @@ public class Quadtris extends Game {
 	private static final String QUADTRIS_BACKGROUND_FILE = 
 			"gspecs/quadtris_background.gstxt";
 	private WellRenderer wellRenderer;
-	//private GameBorder gb;
 	private Coord wellOrigin;
 	private int level = 0;
 	private int score;
 	private int lines;
 	private Map<String, Glyph> minis = PieceFactory.getNameMiniMap();
 	private QuadtrisBoard quadtrisBoard;
+	private MusicControl musicControl;
+	private SoundControl soundControl;
 	
 	@Override
 	public void plugIn(GameConsole console) {
@@ -65,11 +66,15 @@ public class Quadtris extends Game {
 	@Override
 	protected void resetGameState(GameConsole console) {
 		super.resetGameState(console);
+		this.musicControl = new MusicControl(this, new Coord(74, 19));
+		this.soundControl = new SoundControl(this, new Coord(74, 20));
 		this.quadtrisBoard = new QuadtrisBoard.Builder(eventBus).build();
 		this.wellOrigin = new Coord(7,3);
 		this.wellRenderer = new WellRenderer.Builder(renderer)
 				.withOriginOffset(wellOrigin).build();
 		this.score = 0;
+		this.level = 0;
+		this.lines = 0;
 				
 	}
 
@@ -107,8 +112,9 @@ public class Quadtris extends Game {
 		renderer.clearScreen();
 		Set<GlyphStringCoord> background = console.loadFromFile(QUADTRIS_BACKGROUND_FILE);
 		renderer.drawGlyphStringCollection(background);	
+		soundControl.update();
+		musicControl.update();
 		updateScore(0);
-		updateSound();
 		updateTheme();		
 		wellRenderer.drawBlockWell();
 	}
@@ -125,7 +131,6 @@ public class Quadtris extends Game {
 	
 	private void handleSpawnPieceEvent(SpawnPieceEvent spe) {
 		wellRenderer.previewPiece(quadtrisBoard.getNextPiece());
-		//wellRenderer.drawWellCells(quadtrisBoard.getWell());
 		wellRenderer.drawPiece(quadtrisBoard.getCurrentPiece());
 		updateStats();
 	}
@@ -196,16 +201,6 @@ public class Quadtris extends Game {
 			// ROTATE CW
 			quadtrisBoard.rotatePieceClockwise();
 			break;
-		case "m":
-		case "M":
-			eventBus.fire(new ToggleMusicEvent());
-			updateSound();
-			break;
-		case "s":
-		case "S":
-			eventBus.fire(new ToggleSoundEvent());
-			updateSound();
-			break;
 		case "t":
 		case "T":
 			eventBus.fire(new ToggleThemeEvent());
@@ -267,19 +262,5 @@ public class Quadtris extends Game {
 			renderer.drawAt(15 + index, 32, statLine);
 			index++;
 		}	
-	}
-
-	private void updateSound() {
-		GlyphString sound_off = new GlyphString.Builder("<X ")
-				.withFgColor(255,0,0).build();
-		GlyphString sound_on = new GlyphString.Builder("<((") 
-				.withFgColor(0,255,0).build();
-		GlyphString music_off = new GlyphString.Builder("dXb")
-				.withFgColor(255,0,0).build();
-		GlyphString music_on = new GlyphString.Builder("d⎺b")
-				.withFgColor(0,255,0).build();
-		
-		renderer.drawAt(19, 74, console.isMusicOn() ? music_on : music_off);
-		renderer.drawAt(20, 74, console.isSoundOn() ? sound_on : sound_off);	
 	}
 }

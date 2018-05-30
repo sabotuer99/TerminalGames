@@ -77,7 +77,7 @@ public class EntityBoard {
 	}
 	
 	public boolean canMove(Entity from, Entity to){
-		if(from != null && to != null){
+		if(from != null && to != null && !isOutOfBounds(to)){
 			return entities.keySet()
 				.stream()
 				.filter( c -> to.getCoords().contains(c) )
@@ -99,8 +99,8 @@ public class EntityBoard {
 
 		private int width;
 		private int height;
-		private int minCol = 1;
-		private int minRow = 1;
+		private int minCol = 0;
+		private int minRow = 0;
 		
 		public EntityBoard build() {
 			EntityBoard b = new EntityBoard();
@@ -140,8 +140,8 @@ public class EntityBoard {
 	}
 
 	private boolean isOutOfBounds(Entity test) {
-		return test.getCoords().stream().anyMatch((Coord c) -> c.getCol() < minCol || c.getCol() > width || 
-						                                    c.getRow() < minRow || c.getRow() > height);
+		return test.getCoords().stream().anyMatch((Coord c) -> c.getCol() < minCol || c.getCol() >= width || 
+						                                    c.getRow() < minRow || c.getRow() >= height);
 	}
 		
 	private Set<Entity> getNeighborsWithLambda(Entity subject, Function<Coord, Coord> lambda) {

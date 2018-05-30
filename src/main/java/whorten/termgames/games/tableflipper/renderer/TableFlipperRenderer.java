@@ -23,12 +23,12 @@ public class TableFlipperRenderer {
 	}
 	
 	public void drawEntity(Entity e){
-		GlyphStringCoord gsc = e.getGlyphStringCoord().offset(new Coord(1,1));
+		GlyphStringCoord gsc = e.getGlyphStringCoord().offset(new Coord(2,2));
 		console.getRenderer().drawAt(gsc.getRow(), gsc.getCol(), gsc.getGlyphString());
 	}
 
 	public void clearEntity(Entity e) {
-		GlyphStringCoord g = e.getGlyphStringCoord().offset(new Coord(1,1));;
+		GlyphStringCoord g = e.getGlyphStringCoord().offset(new Coord(2,2));;
 		console.getRenderer().clearRowRange(g.getRow(), g.getCol(), 
 				g.getGlyphString().getGlyphs().size());
 	}

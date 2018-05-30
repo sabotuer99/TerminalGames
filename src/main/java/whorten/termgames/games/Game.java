@@ -68,4 +68,8 @@ public abstract class Game {
 		}
 		listenerRemovers.clear();
 	}
+	
+	final public GameConsole getConsole(){
+		return console;
+	}
 }

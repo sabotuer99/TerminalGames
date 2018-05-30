@@ -61,7 +61,7 @@ public class TableFlipper extends Game {
 		super.resetGameState(console);		
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
-		board.addRandomNpc();
+		//board.addRandomNpc();
 	}
 	
 	public void renderBoard(){
