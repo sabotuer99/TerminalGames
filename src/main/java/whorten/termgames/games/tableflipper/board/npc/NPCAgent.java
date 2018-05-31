@@ -46,7 +46,7 @@ public class NPCAgent {
 	// unflipped, then calculate new path to random location
 	public void tick(long time){
 		if(timeLastTick + speed <= time){	
-			logger.info(String.format("Agent taking action: %d + %d <= %d", timeLastTick, speed, time));
+			//logger.info(String.format("Agent taking action: %d + %d <= %d", timeLastTick, speed, time));
 			if(tables.size() > 0 && npc.getLocation().equals(destination)){
 				unflip();
 			} else {
@@ -58,7 +58,7 @@ public class NPCAgent {
 			}
 			timeLastTick = time;
 		} else {
-			logger.info(String.format("Agent waiting: %d + %d > %d", timeLastTick, speed, time));
+			//logger.info(String.format("Agent waiting: %d + %d > %d", timeLastTick, speed, time));
 		}
 	}
 

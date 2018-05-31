@@ -29,6 +29,12 @@ public final class Coord implements Comparable<Coord>{
 		return Math.sqrt(rise * rise + run * run);
 	}
 	
+	public static int gridDistance(Coord a, Coord b){
+		int rise = a.getRow() - b.getRow();
+		int run = a.getCol() - b.getCol();
+		return Math.abs(rise) + Math.abs(run);
+	}
+	
 	public static Set<Coord> allUp(Set<Coord> coords, int up){
 		Set<Coord> moved = new HashSet<>();
 		for(Coord coord : coords){

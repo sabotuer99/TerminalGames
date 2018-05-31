@@ -19,7 +19,7 @@ import whorten.termgames.geometry.Direction;
 public class AStar implements GraphSearch {
 
 	private final static Logger logger = LogManager.getLogger(AStar.class);
-
+	private Set<GridNode> lastSeen;
 	
 	@Override
 	public List<Direction> findPath(GridNode start, GridNode end) {
@@ -33,12 +33,11 @@ public class AStar implements GraphSearch {
 		Queue<PathNode> queue = new PriorityQueue<>(new Comparator<PathNode>(){
 			@Override
 			public int compare(PathNode o1, PathNode o2) {
-				double d1 = Coord.distance(o1.node.getLocation(), end.getLocation()) + o1.length;
-				double d2 = Coord.distance(o2.node.getLocation(), end.getLocation()) + o2.length;
-				return Double.compare(d1, d2);
+				int d1 = (int) (Coord.gridDistance(o1.node.getLocation(), end.getLocation()) * 1.5 + o1.length);
+				int d2 = (int) (Coord.gridDistance(o2.node.getLocation(), end.getLocation()) * 1.5 + o2.length);
+				return Integer.compare(d1, d2);
 			}		
 		});
-		
 		queue.offer(new PathNode(start, null, null));
 		while(queue.size() > 0){
 			PathNode here = queue.poll();
@@ -46,7 +45,7 @@ public class AStar implements GraphSearch {
 				path = extractPath(here);
 				break;
 			}
-			logger.info(String.format("AStar looked at %s", here.node.getLocation()));
+			//logger.info(String.format("AStar looked at %s", here.node.getLocation()));
 			seen.add(here.node);
 			for(Entry<Direction,GridNode> neighbor : here.node.getNeighbors()){
 				GridNode n = neighbor.getValue();
@@ -56,10 +55,14 @@ public class AStar implements GraphSearch {
 				}				
 			}		
 		}
-		
+		lastSeen = seen;
 		return path;
 	}
 
+	public Set<GridNode> getLastSeenSet(){
+		return new HashSet<>(lastSeen);
+	}
+	
 	private List<Direction> extractPath(PathNode end) {
 		LinkedList<Direction> path = new LinkedList<>();
 		PathNode here = end;
@@ -70,7 +73,7 @@ public class AStar implements GraphSearch {
 		return path;
 	}
 
-	private class PathNode{
+	class PathNode{
 		GridNode node;
 		PathNode parent;
 		Direction incoming;

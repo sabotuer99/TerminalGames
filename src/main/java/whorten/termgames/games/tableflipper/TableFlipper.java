@@ -68,6 +68,10 @@ public class TableFlipper extends Game {
 		board = new TableFlipperBoard.Builder(eventBus).build();
 		board.addRandomNpc();
 		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
 		musicControl = new MusicControl(this, new Coord(74, 19));
 		soundControl = new SoundControl(this, new Coord(74, 20));
 	}
@@ -113,7 +117,7 @@ public class TableFlipper extends Game {
 	private void handleEntityChangeEvent(EntityChangeEvent eme){
 		//erase from entity
 		//draw to entity
-		logger.info(String.format("Changing entity from %s to %s", eme.getFrom(), eme.getTo()));
+		//logger.info(String.format("Changing entity from %s to %s", eme.getFrom(), eme.getTo()));
 		tfr.clearEntity(eme.getFrom());
 		tfr.drawEntity(eme.getTo());
 	}

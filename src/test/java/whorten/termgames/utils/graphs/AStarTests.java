@@ -1,10 +1,14 @@
 package whorten.termgames.utils.graphs;
 
-import static com.google.common.truth.Truth.*;
-import static whorten.termgames.geometry.Direction.*;
+import static com.google.common.truth.Truth.assertThat;
+import static whorten.termgames.geometry.Direction.DOWN;
+import static whorten.termgames.geometry.Direction.LEFT;
+import static whorten.termgames.geometry.Direction.RIGHT;
+import static whorten.termgames.geometry.Direction.UP;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -82,20 +86,54 @@ public class AStarTests {
 	
 	@Test
 	public void destinationHasZeroValue_BlankGrid_calculatesCorrectly(){
-		GraphSearch sut = new AStar();
-		String[] grid   = {"       ",  //should go around to the left
-				           "       ",
-				           "       ",  //then straight down
-						   "       ", 
-						   "       ",
-						   "       "};
-		Map<Coord,GridNode> graph = new GridBuilder(6,7).withGrid(grid, " ").build();
+		AStar sut = new AStar();
+		String[] grid   = {"                 ",  
+				           "                 ",
+				           "                 ",
+						   "                 ", 
+						   "                 ",
+						   "                 "};
+		Map<Coord,GridNode> graph = new GridBuilder(6,17).withGrid(grid, " ").build();
 		
-		GridNode start = graph.get(new Coord(1,4));
+		GridNode start = graph.get(new Coord(16,5));
 		GridNode end = graph.get(new Coord(0,0));
 		List<Direction> path = sut.findPath(start, end);
 		
-		assertThat(path).containsExactly(UP, UP, LEFT, UP, UP);
+		assertThat(path).containsExactly(UP, UP, UP, UP, UP, LEFT, LEFT, LEFT, 
+				                         LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, 
+				                         LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, LEFT);
+		
+		System.out.println(Coord.toAsciiString(
+				sut.getLastSeenSet()
+				   .stream()
+				   .map(gn -> gn.getLocation())
+				   .collect(Collectors.toSet())));
+	}
+	
+	@Test
+	public void destinationHasZeroValue_WallInGrid_calculatesCorrectly(){
+		AStar sut = new AStar();
+		String[] grid   = {"                 ",  
+				           "         xxxxx   ",
+				           "         xxxxx   ",
+						   "         xxxxx   ", 
+						   "         xxxxx   ",
+						   "         xxxxx   "};
+		Map<Coord,GridNode> graph = new GridBuilder(6,17).withGrid(grid, " ").build();
+		
+		GridNode start = graph.get(new Coord(16,5));
+		GridNode end = graph.get(new Coord(0,0));
+		List<Direction> path = sut.findPath(start, end);
+		
+		assertThat(path).containsExactly(UP, UP, UP, UP, UP, LEFT, LEFT, LEFT, 
+				                         LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, 
+				                         LEFT, LEFT, LEFT, LEFT, LEFT, LEFT, LEFT);
+		
+		System.out.println(Coord.toAsciiString(
+				sut.getLastSeenSet()
+				   .stream()
+				   .map(gn -> gn.getLocation())
+				   .collect(Collectors.toSet())));
 	}
 	
 	
