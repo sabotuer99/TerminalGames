@@ -20,6 +20,15 @@ public class AStar implements GraphSearch {
 
 	private final static Logger logger = LogManager.getLogger(AStar.class);
 	private Set<GridNode> lastSeen;
+	private int limit;
+	
+	public AStar(){
+		this(400);
+	}
+	
+	public AStar(int limit){
+		this.limit = limit;
+	}
 	
 	@Override
 	public List<Direction> findPath(GridNode start, GridNode end) {
@@ -39,7 +48,7 @@ public class AStar implements GraphSearch {
 			}		
 		});
 		queue.offer(new PathNode(start, null, null));
-		while(queue.size() > 0){
+		while(queue.size() > 0 && queue.size() < limit){
 			PathNode here = queue.poll();
 			if(here.node.equals(end)){
 				path = extractPath(here);
@@ -56,6 +65,15 @@ public class AStar implements GraphSearch {
 			}		
 		}
 		lastSeen = seen;
+		
+		//if the queue size hit the limit, return the best available path
+		if(queue.size() == limit){
+			PathNode bestAvailable = queue.poll();
+			path = extractPath(bestAvailable); 
+			logger.info(String.format("AStar did not finish, took the best available"));
+		}
+		
+		
 		return path;
 	}
 

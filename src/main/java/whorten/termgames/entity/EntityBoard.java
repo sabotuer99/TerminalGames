@@ -48,22 +48,22 @@ public class EntityBoard {
 	}
 	
 	public synchronized Set<Entity> getUpNeighbors(Entity subject) {
-		return getNeighborsWithLambda(subject, (Coord c) -> Coord.up(c,1));
+		return getNeighborsWithLambda(subject, c -> Coord.up(c,1));
 	}
 	
 	public synchronized Set<Entity> getDownNeighbors(Entity subject) {
-		return getNeighborsWithLambda(subject, (Coord c) -> Coord.down(c,1));
+		return getNeighborsWithLambda(subject, c -> Coord.down(c,1));
 	}
 	
 	public synchronized Set<Entity> getRightNeighbors(Entity subject) {
-		return getNeighborsWithLambda(subject, (Coord c) -> Coord.right(c,1));
+		return getNeighborsWithLambda(subject, c -> Coord.right(c,1));
 	}
 	
 	public synchronized Set<Entity> getLeftNeighbors(Entity subject) {
-		return getNeighborsWithLambda(subject, (Coord c) -> Coord.left(c,1));
+		return getNeighborsWithLambda(subject, c -> Coord.left(c,1));
 	}
 	
-	public void removeEntity(Entity entity) {
+	public synchronized void removeEntity(Entity entity) {
 		if(entity == null){ return; }
 		for(Coord coord : entity.getCoords()){
 			if(entities.get(coord) == entity){
@@ -94,34 +94,6 @@ public class EntityBoard {
 			addEntity(to);
 		}
 	}
-	
-	public static class Builder{
-
-		private int width;
-		private int height;
-		private int minCol = 0;
-		private int minRow = 0;
-		
-		public EntityBoard build() {
-			EntityBoard b = new EntityBoard();
-			b.width = this.width;
-			b.height = this.height;
-			b.minCol = this.minCol;
-			b.minRow = this.minRow;
-			return b;
-		}
-
-		public Builder withHeight(int height) {
-			this.height = height;
-			return this;
-		}
-
-		public Builder withWidth(int width) {
-			this.width = width;
-			return this;
-		}
-		
-	}
 
 	private void checkOverlapsOccupied(Entity test) {
 		if (isOverlapping(test)){
@@ -140,8 +112,8 @@ public class EntityBoard {
 	}
 
 	private boolean isOutOfBounds(Entity test) {
-		return test.getCoords().stream().anyMatch((Coord c) -> c.getCol() < minCol || c.getCol() >= width || 
-						                                    c.getRow() < minRow || c.getRow() >= height);
+		return test.getCoords().stream().anyMatch(c -> c.getCol() < minCol || c.getCol() >= width || 
+						                               c.getRow() < minRow || c.getRow() >= height);
 	}
 		
 	private Set<Entity> getNeighborsWithLambda(Entity subject, Function<Coord, Coord> lambda) {
@@ -196,5 +168,32 @@ public class EntityBoard {
 		}
 		return positions;
 	}
+	
+	public static class Builder{
 
+		private int width;
+		private int height;
+		private int minCol = 0;
+		private int minRow = 0;
+		
+		public EntityBoard build() {
+			EntityBoard b = new EntityBoard();
+			b.width = this.width;
+			b.height = this.height;
+			b.minCol = this.minCol;
+			b.minRow = this.minRow;
+			return b;
+		}
+
+		public Builder withHeight(int height) {
+			this.height = height;
+			return this;
+		}
+
+		public Builder withWidth(int width) {
+			this.width = width;
+			return this;
+		}
+		
+	}
 }

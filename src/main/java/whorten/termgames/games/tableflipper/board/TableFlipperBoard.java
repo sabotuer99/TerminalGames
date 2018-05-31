@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 
@@ -23,7 +26,7 @@ import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
 
-	//private final static Logger logger = LogManager.getLogger(TableFlipperBoard.class);
+	private final static Logger logger = LogManager.getLogger(TableFlipperBoard.class);
 	private EntityBoard board;
 	private Player player;
 	private List<Table> tables;
@@ -87,16 +90,14 @@ public class TableFlipperBoard {
 	}
 
 	private void safeMovePlayer(Player next, boolean playermove) {
-		board.removeEntity(player);
-		if(board.canAdd(next) && !player.getState().equals(next.getState())){
-			board.addEntity(next);
+		if(board.canMove(player, next) && !player.getState().equals(next.getState())){
+			board.move(player, next);
 			eventbus.fire(new EntityChangeEvent(player, next));
 			if(playermove){
+				logger.info(String.format("Player moving to %s", next.getBaseCoord()));
 				eventbus.fire(new PlayerMoveEvent());				
 			}
 			player = next;
-		} else {
-			board.addEntity(player);
 		}
 	}
 	
@@ -133,7 +134,7 @@ public class TableFlipperBoard {
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
 							.withHeight(22)
-							.withWidth(58)
+							.withWidth(57)
 							.build();
 		Player player = Player.newInstance(new Coord(0,0));
 		List<Table> tables = new ArrayList<>();

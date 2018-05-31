@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +52,8 @@ public class NPCAgent {
 				unflip();
 			} else {
 				if(path == null || path.size() == 0){	
-					generateNewPath();
+					pickDestination();
+					generateNewPath();												
 				} else {					
 					tryToMove();
 				}
@@ -62,9 +64,14 @@ public class NPCAgent {
 		}
 	}
 
-	private void generateNewPath() {
-		logger.info("Generating new path.");
-		// if there is a table assigned to this agent, try to get to it
+	private void pickDestination() {
+		// if npc has not reached original destination, just keep it
+		if(destination != null && !npc.getLocation().equals(destination)){
+			logger.info("Still not at destination, will try again...");
+			return;
+		}
+		
+		// otherwise, check if a table needs unflipped
 		if(tables.size() > 0){
 			logger.info("Table assigned, looking for path to unflip.");
 			// loop through tables once looking for valid destination. 
@@ -77,12 +84,10 @@ public class NPCAgent {
 				// if we got here, we couldn't use this table, put it back
 				tables.addLast(table);
 			}
-		}	
-		// otherwise, pick a random destination
-		setRandomDestination();			
-	}
-
-	private void setRandomDestination() {
+			logger.info("All tables blocked =(");
+		}
+		
+		// if not tables need unflipped, just wander around
 		logger.info("Generating a random destination.");
 		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
 		if(coords != null && coords.size() > 0){
@@ -90,9 +95,13 @@ public class NPCAgent {
 			Collections.shuffle(coords);
 			destination = coords.get(0);
 			logger.info(String.format("Set destination to %s", destination));
-			path = getPath(npc.getBaseCoord(), destination);
-			logger.info(String.format("New path is %d steps", path.size()));
 		}
+	}
+
+	private void generateNewPath() {
+		logger.info("Generating new path.");
+		path = getPath(npc.getBaseCoord(), destination);
+		logger.info(String.format("New path is %d steps", path.size()));	
 	}
 
 	private boolean moveToLeft(Table table) {
@@ -102,7 +111,6 @@ public class NPCAgent {
 		if(eb.canMove(npc, left)){
 			logger.info("Setting left side (%s) as destination", leftCoord);
 			destination = leftCoord;
-			path = getPath(npc.getBaseCoord(), leftCoord);
 			return true;
 		}
 		logger.info("Left side blocked.");
@@ -116,7 +124,6 @@ public class NPCAgent {
 		if(eb.canMove(npc, right)){
 			logger.info("Setting right side (%s) as destination", rightCoord);
 			destination = rightCoord;
-			path = getPath(npc.getBaseCoord(), rightCoord);
 			return true;
 		}		
 		logger.info("Right side blocked.");
@@ -148,6 +155,10 @@ public class NPCAgent {
 		boolean[][] legals = eb.getLegalPositionsGrid(npc);
 		logger.info(String.format("Calculating graph across legal positions"));
 		Map<Coord, GridNode> graph = gb.withGrid(legals).build();
+		
+		logger.info(String.format("Minimum coord in graph: %s", new TreeSet<>(graph.keySet()).iterator().next()));
+		logger.info("\n" + Coord.toAsciiString(graph.keySet()));
+		
 		GridNode fromNode = graph.get(from);
 		logger.info(String.format("From node: %s", fromNode));
 		GridNode toNode = graph.get(to);

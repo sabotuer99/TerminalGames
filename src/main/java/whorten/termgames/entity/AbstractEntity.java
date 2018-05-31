@@ -62,7 +62,7 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 	@Override
 	public final K moveTo(Coord offset) {
 		K next = toBuilder().build();
-		Coord base = getState().getBaseCoord();
+		Coord base = getBaseCoord();
 		int dx = offset.getCol() - base.getCol();
 		int dy = offset.getRow() - base.getRow();
 		Direction dirx = dx > 0 ? Direction.RIGHT : Direction.LEFT;
@@ -76,7 +76,7 @@ public abstract class AbstractEntity<K extends AbstractEntity<K,S,B>,
 	public GlyphStringCoord getGlyphStringCoord() {
 		GlyphString gs = new GlyphString.Builder(getState().getBaseGlyph())
 				.withBaseString(getState().getBaseString()).build();
-		return new GlyphStringCoord(getState().getBaseCoord(), gs);
+		return new GlyphStringCoord(getBaseCoord(), gs);
 	}
 	
 	@Override

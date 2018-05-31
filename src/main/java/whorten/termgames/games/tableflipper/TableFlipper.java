@@ -72,6 +72,12 @@ public class TableFlipper extends Game {
 		board.addRandomNpc();
 		board.addRandomNpc();
 		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
 		musicControl = new MusicControl(this, new Coord(74, 19));
 		soundControl = new SoundControl(this, new Coord(74, 20));
 	}
