@@ -157,7 +157,7 @@ public class NPCAgent {
 		Map<Coord, GridNode> graph = gb.withGrid(legals).build();
 		
 		logger.info(String.format("Minimum coord in graph: %s", new TreeSet<>(graph.keySet()).iterator().next()));
-		logger.info("\n" + Coord.toAsciiString(graph.keySet()));
+		//logger.info("\n" + Coord.toAsciiString(graph.keySet()));
 		
 		GridNode fromNode = graph.get(from);
 		logger.info(String.format("From node: %s", fromNode));

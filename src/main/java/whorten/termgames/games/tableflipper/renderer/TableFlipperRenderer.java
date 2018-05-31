@@ -22,15 +22,23 @@ public class TableFlipperRenderer {
 		console.getRenderer().drawGlyphStringCollection(g);
 	}
 	
-	public void drawEntity(Entity e){
+	public synchronized void drawEntity(Entity e){
 		GlyphStringCoord gsc = e.getGlyphStringCoord().offset(new Coord(2,2));
 		console.getRenderer().drawAt(gsc.getRow(), gsc.getCol(), gsc.getGlyphString());
 	}
 
-	public void clearEntity(Entity e) {
-		GlyphStringCoord g = e.getGlyphStringCoord().offset(new Coord(2,2));;
+	public synchronized void clearEntity(Entity e) {
+		GlyphStringCoord g = e.getGlyphStringCoord().offset(new Coord(2,2));
 		console.getRenderer().clearRowRange(g.getRow(), g.getCol(), 
 				g.getGlyphString().getGlyphs().size());
+	}
+
+	public synchronized void moveEntity(Entity from, Entity to) {
+		GlyphStringCoord draw = to.getGlyphStringCoord().offset(new Coord(2,2));
+		GlyphStringCoord clear = from.getGlyphStringCoord().offset(new Coord(2,2));
+		console.getRenderer().clearRowRange(clear.getRow(), clear.getCol(), 
+				clear.getGlyphString().getBaseString().length());
+		console.getRenderer().drawAt(draw.getRow(), draw.getCol(), draw.getGlyphString());
 	}
 	
 }

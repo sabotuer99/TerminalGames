@@ -54,8 +54,13 @@ public class TableFlipper extends Game {
 			tfr.drawEntity(npc);
 		}
 		while (running) {				
-			console.pause(40);
-			board.tick(console.getTimeMillis());	
+			console.runInThreadPool(new Runnable(){
+				@Override
+				public void run() {
+					board.tick(console.getTimeMillis());						
+				}
+			});
+			console.pause(80);
 		}
 		stopMusic();
 		eventBus.fire(new StopAllAnimationEvent());
@@ -66,14 +71,6 @@ public class TableFlipper extends Game {
 		super.resetGameState(console);		
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
 		board.addRandomNpc();
 		board.addRandomNpc();
 		board.addRandomNpc();
@@ -120,12 +117,15 @@ public class TableFlipper extends Game {
 		}
 	}
 	
-	private void handleEntityChangeEvent(EntityChangeEvent eme){
+	private synchronized void handleEntityChangeEvent(EntityChangeEvent eme){
 		//erase from entity
 		//draw to entity
 		//logger.info(String.format("Changing entity from %s to %s", eme.getFrom(), eme.getTo()));
-		tfr.clearEntity(eme.getFrom());
-		tfr.drawEntity(eme.getTo());
+		console.runInThreadPool(new Runnable(){
+			@Override
+			public void run() {
+				tfr.moveEntity(eme.getFrom(), eme.getTo());
+			}});	
 	}
 	
 	private void handleTableFlipEvent(TableFlipEvent tfe){
