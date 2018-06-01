@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
+import whorten.termgames.events.Event;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.games.tableflipper.board.npc.NPCAgent;
@@ -21,7 +22,9 @@ import whorten.termgames.games.tableflipper.board.player.Player;
 import whorten.termgames.games.tableflipper.board.table.Table;
 import whorten.termgames.games.tableflipper.board.wall.Wall;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
+import whorten.termgames.games.tableflipper.events.EntitySpawnEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
+import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.geometry.Coord;
 
 public class TableFlipperBoard {
@@ -52,13 +55,19 @@ public class TableFlipperBoard {
 	public synchronized void movePlayerLeft(long time){
 		lastPlayerMove = time;
 		Player next = player.moveLeft(2);
-		safeMovePlayer(next, true);
+		if(!safeMovePlayer(next, true)){
+			next = player.moveLeft(1);
+			safeMovePlayer(next, true);
+		}
 	}
 	
 	public synchronized void movePlayerRight(long time){
 		lastPlayerMove = time;
 		Player next = player.moveRight(2);
-		safeMovePlayer(next, true);
+		if(!safeMovePlayer(next, true)){
+			next = player.moveRight(1);
+			safeMovePlayer(next, true);
+		}
 	}
 	
 	public synchronized void flip(long time){
@@ -66,9 +75,48 @@ public class TableFlipperBoard {
 		boolean left = tableLeft();
 		boolean right = tableRight();
 		Player next = player.flip(left, right);
+		if(left){ flipLeftTable(); }
+		if(right){ flipRightTable(); }
 		safeMovePlayer(next, false);
 	}
 	
+	private void flipRightTable() {
+		logger.info("Trying to flip right table");
+		Set<Entity> right = board.getRightNeighbors(player);
+		List<Event> events = new ArrayList<>();
+		for(Table table : tables){
+			if(right.contains(table) && !table.isFlipped()){
+				logger.info("Flipping right table");
+				Table flipped = table.flip();
+				board.move(table, flipped);
+				events.add(new EntityChangeEvent(table, flipped));
+				events.add(new TableFlipEvent(flipped));
+			}
+		}
+		for(Event ece : events){
+			eventbus.fire(ece);
+		}
+	}
+
+	private void flipLeftTable() {
+		logger.info("Trying to flip left table");
+		Set<Entity> left = board.getLeftNeighbors(player);
+		List<Event> events = new ArrayList<>();
+		for(Table table : tables){
+			if(left.contains(table) && !table.isFlipped()){
+				logger.info("Flipping left table");
+				Table flipped = table.flip();
+				board.move(table, flipped);
+				events.add(new EntityChangeEvent(table, flipped));
+				events.add(new TableFlipEvent(flipped));
+			}
+		}
+		for(Event ece : events){
+			eventbus.fire(ece);
+		}
+		
+	}
+
 	private boolean tableLeft() {
 		Set<Entity> left = board.getLeftNeighbors(player);
 		return tables.containsAll(left);
@@ -89,7 +137,7 @@ public class TableFlipperBoard {
 		}
 	}
 
-	private void safeMovePlayer(Player next, boolean playermove) {
+	private boolean safeMovePlayer(Player next, boolean playermove) {
 		if(board.canMove(player, next) && !player.getState().equals(next.getState())){
 			board.move(player, next);
 			eventbus.fire(new EntityChangeEvent(player, next));
@@ -98,6 +146,9 @@ public class TableFlipperBoard {
 				eventbus.fire(new PlayerMoveEvent());				
 			}
 			player = next;
+			return true;
+		} else {
+			return false;			
 		}
 	}
 	
@@ -118,6 +169,7 @@ public class TableFlipperBoard {
 				.build();
 		agent.tick(speed); //initialize
 		agents.add(agent);
+		eventbus.fire(new EntitySpawnEvent(npc));
 	}
 
 	public synchronized void addRandomNpc() {
@@ -131,6 +183,26 @@ public class TableFlipperBoard {
 		addNpc(npc, speed);
 	}
 	
+	public synchronized void addRandomTable() {
+		Table start = Table.newInstance(new Coord(0,0));
+		List<Coord> coords = new ArrayList<>(board.getLegalPositions(start));
+		Collections.shuffle(coords);
+		Coord base = coords.get(0);
+		for(int i = 0; i < coords.size() && !checkTableClearance(base); i++){
+			base = coords.get(i);
+		}
+		
+		Table table = Table.newInstance(base);
+		tables.add(table);
+		board.addEntity(table);
+		eventbus.fire(new EntitySpawnEvent(table));
+	}
+	
+	private boolean checkTableClearance(Coord base) {
+		//TODO for now don't bother with clearance
+		return true;
+	}
+
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
 							.withHeight(22)

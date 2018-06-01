@@ -16,6 +16,7 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	private static PlayerState base_left = new PlayerState(PlayerStrings.WALK_LEFT);
 	private static PlayerState base_right = new PlayerState(PlayerStrings.WALK_RIGHT);
 	private static PlayerState base_stand = new PlayerState(PlayerStrings.STAND_STILL);
+	private static final Glyph baseGlyph = new Glyph.Builder(" ").build();
 	static {
 		base_left.flipNothing = base_flipLeft;
 		base_right.flipNothing = base_flipRight;
@@ -157,13 +158,8 @@ public class PlayerState extends AbstractEntityState<PlayerState> {
 	}
 
 	@Override
-	public Coord getBaseCoord() {
-		return coords.iterator().next();
-	}
-
-	@Override
 	public Glyph getBaseGlyph() {
-		return new Glyph.Builder(" ").build();
+		return baseGlyph;
 	}
 	
 	@Override

@@ -39,11 +39,6 @@ public class NPCState extends AbstractEntityState<NPCState> {
 	}
 
 	@Override
-	public Coord getBaseCoord() {
-		return coords.iterator().next();
-	}
-
-	@Override
 	public NPCState moveUp(int distance) {
 		NPCState up = new NPCState(NPCStrings.WALK_UP);
 		up.coords = new TreeSet<>(Coord.allUp(this.coords, distance));

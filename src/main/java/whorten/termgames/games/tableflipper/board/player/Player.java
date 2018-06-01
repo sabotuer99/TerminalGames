@@ -8,7 +8,7 @@ public class Player extends AbstractEntity<Player,PlayerState,Player.Builder> {
 
 	private Player(){}	
 	
-	PlayerState state;
+	private PlayerState state;
 	
 	public static Player newInstance(Coord baseCoord){
 		Player p = new Player();
@@ -20,14 +20,13 @@ public class Player extends AbstractEntity<Player,PlayerState,Player.Builder> {
 		Builder b = this.toBuilder();
 		if(left && right){
 			return b.withState(state.doubleFlip()).build();
-		}
-		if(left){
+		} else if(left){
 			return b.withState(state.flipLeft()).build();
-		}
-		if(right){
+		} else if(right){
 			return b.withState(state.flipRight()).build();
+		} else {
+			return b.withState(state.flipNothing()).build();			
 		}
-		return b.withState(state.flipNothing()).build();
 	}
 	
 	public Player stand() {

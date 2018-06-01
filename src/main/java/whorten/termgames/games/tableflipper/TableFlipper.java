@@ -5,11 +5,11 @@ import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.GameConsole;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
-import whorten.termgames.entity.Entity;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.games.Game;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
+import whorten.termgames.games.tableflipper.events.EntitySpawnEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
@@ -35,24 +35,42 @@ public class TableFlipper extends Game {
 		resetGameState(console);
 		renderBoard();
 		initializeListeners();
+		addEntities();
 		run();
 		removeLocalListeners();
 	}
 	
+	private void addEntities() {
+		eventBus.fire(new EntitySpawnEvent(board.getPlayer()));
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomNpc();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+		board.addRandomTable();
+	}
+
 	private void initializeListeners() {
 		logger.debug("Initializing TableFlipper listeners.");
 		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
 		addListener(EntityChangeEvent.class, this::handleEntityChangeEvent);
 		addListener(TableFlipEvent.class, this::handleTableFlipEvent);
 		addListener(PlayerMoveEvent.class, this::handlePlayerMoveEvent);
+		addListener(EntitySpawnEvent.class, this::handleEntitySpawnEvent);
 	}
 
 	private void run() {
 		playMusic(MUSIC_FILE);
-		tfr.drawEntity(board.getPlayer());
-		for(Entity npc : board.getNPCs()){
-			tfr.drawEntity(npc);
-		}
 		while (running) {				
 			console.runInThreadPool(new Runnable(){
 				@Override
@@ -71,10 +89,6 @@ public class TableFlipper extends Game {
 		super.resetGameState(console);		
 		tfr = new TableFlipperRenderer(console);
 		board = new TableFlipperBoard.Builder(eventBus).build();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
-		board.addRandomNpc();
 		musicControl = new MusicControl(this, new Coord(74, 19));
 		soundControl = new SoundControl(this, new Coord(74, 20));
 	}
@@ -126,6 +140,10 @@ public class TableFlipper extends Game {
 			public void run() {
 				tfr.moveEntity(eme.getFrom(), eme.getTo());
 			}});	
+	}
+	
+	private void handleEntitySpawnEvent(EntitySpawnEvent esw){
+		tfr.drawEntity(esw.getEntity());
 	}
 	
 	private void handleTableFlipEvent(TableFlipEvent tfe){

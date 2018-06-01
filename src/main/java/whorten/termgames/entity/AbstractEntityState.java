@@ -26,6 +26,11 @@ public abstract class AbstractEntityState<K extends EntityState<K>>
 	public Set<Coord> getCoords() {
 		return new TreeSet<>(coords);
 	}
+	
+	@Override
+	public Coord getBaseCoord() {
+		return getCoords().iterator().next();
+	}
 
 	@Override
 	public int hashCode() {
