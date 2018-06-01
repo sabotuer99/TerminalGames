@@ -88,5 +88,9 @@ public class Table extends AbstractEntity<Table, TableState, Table.Builder>  {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Table: state:[%s]", state);
+	}
 
 }

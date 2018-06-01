@@ -12,6 +12,7 @@ import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.EntitySpawnEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
+import whorten.termgames.games.tableflipper.events.TableUnflipEvent;
 import whorten.termgames.games.tableflipper.renderer.TableFlipperRenderer;
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.utils.Keys;
@@ -65,6 +66,7 @@ public class TableFlipper extends Game {
 		addListener(KeyDownEvent.class, this::handleKeyDownEvent);
 		addListener(EntityChangeEvent.class, this::handleEntityChangeEvent);
 		addListener(TableFlipEvent.class, this::handleTableFlipEvent);
+		addListener(TableUnflipEvent.class, this::handleTableUnflipEvent);
 		addListener(PlayerMoveEvent.class, this::handlePlayerMoveEvent);
 		addListener(EntitySpawnEvent.class, this::handleEntitySpawnEvent);
 	}
@@ -147,7 +149,13 @@ public class TableFlipper extends Game {
 	}
 	
 	private void handleTableFlipEvent(TableFlipEvent tfe){
-		
+		board.flipTable(tfe.getUnflipped(), tfe.getFlipped());
+		tfr.moveEntity(tfe.getUnflipped(), tfe.getFlipped());
+	}
+	
+	private void handleTableUnflipEvent(TableUnflipEvent tuf){
+		board.unflipTable(tuf.getFlipped(), tuf.getUnflipped());
+		tfr.moveEntity(tuf.getFlipped(), tuf.getUnflipped());		
 	}
 	
 	private void handlePlayerMoveEvent(PlayerMoveEvent pme){

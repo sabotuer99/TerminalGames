@@ -88,9 +88,7 @@ public class TableFlipperBoard {
 			if(right.contains(table) && !table.isFlipped()){
 				logger.info("Flipping right table");
 				Table flipped = table.flip();
-				board.move(table, flipped);
-				events.add(new EntityChangeEvent(table, flipped));
-				events.add(new TableFlipEvent(flipped));
+				events.add(new TableFlipEvent(table, flipped));
 			}
 		}
 		for(Event ece : events){
@@ -106,9 +104,7 @@ public class TableFlipperBoard {
 			if(left.contains(table) && !table.isFlipped()){
 				logger.info("Flipping left table");
 				Table flipped = table.flip();
-				board.move(table, flipped);
-				events.add(new EntityChangeEvent(table, flipped));
-				events.add(new TableFlipEvent(flipped));
+				events.add(new TableFlipEvent(table, flipped));
 			}
 		}
 		for(Event ece : events){
@@ -202,6 +198,13 @@ public class TableFlipperBoard {
 		//TODO for now don't bother with clearance
 		return true;
 	}
+	
+	private void assignTableToAgent(Table table){
+		if(agents != null && agents.size() > 0){
+			Collections.shuffle(agents);
+			agents.get(0).addTable(table);
+		}
+	}
 
 	public static class Builder{
 		EntityBoard board = new EntityBoard.Builder()
@@ -241,6 +244,19 @@ public class TableFlipperBoard {
 			
 			return tfb;
 		}
+	}
+
+	public void unflipTable(Table flipped, Table unflipped) {
+		board.move(flipped, unflipped);
+		tables.remove(flipped);
+		tables.add(unflipped);		
+	}
+	
+	public void flipTable(Table unflipped, Table flipped){
+		board.move(unflipped, flipped);
+		assignTableToAgent(flipped);
+		tables.remove(unflipped);
+		tables.add(flipped);
 	}
 
 }

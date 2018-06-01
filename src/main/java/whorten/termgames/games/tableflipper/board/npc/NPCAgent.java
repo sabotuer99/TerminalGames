@@ -50,14 +50,15 @@ public class NPCAgent {
 			//logger.info(String.format("Agent taking action: %d + %d <= %d", timeLastTick, speed, time));
 			if(tables.size() > 0 && npc.getLocation().equals(destination)){
 				unflip();
-			} else {
-				if(path == null || path.size() == 0){	
-					pickDestination();
-					generateNewPath();												
-				} else {					
-					tryToMove();
-				}
+			} 
+			
+			if(path == null || path.size() == 0){	
+				pickDestination();
+				generateNewPath();												
+			} else {					
+				tryToMove();
 			}
+
 			timeLastTick = time;
 		} else {
 			//logger.info(String.format("Agent waiting: %d + %d > %d", timeLastTick, speed, time));
@@ -170,27 +171,40 @@ public class NPCAgent {
 	
 	private void unflip() {
 		Set<Entity> left = eb.getLeftNeighbors(npc);
+		logger.info(String.format("Unflip left neighbor count: %d", left.size()));
 		if(!unflipTable(left, Direction.LEFT)){
 			Set<Entity> right = eb.getRightNeighbors(npc);
+			logger.info(String.format("Unflip right neighbor count: %d", left.size()));
 			unflipTable(right, Direction.RIGHT);
 		}
 				
 	}
 
 	private boolean unflipTable(Set<Entity> entities, Direction d) {
-		Set<Table> leftTables = tables.stream()
+		if(entities == null || entities.size() == 0){
+			return false;
+		}
+		for(Entity e : entities){
+			if(e != null){
+				logger.info(String.format("Entity to unflip: %s", e.toString()));				
+			}
+		}
+		Set<Table> ntables = tables.stream()
 				.filter(t -> entities.contains(t))
 				.collect(Collectors.toSet());
-		if(leftTables.size() > 0){
-			Table t = leftTables.iterator().next();
-			Table ut = t.unflip();
-			NPC next = npc.unflip(d);
-			eb.move(t, ut);
-			eb.move(npc, next);
-			eventbus.fire(new EntityChangeEvent(npc, next));
-			eventbus.fire(new TableUnflipEvent(t, ut));
-			npc = next;
-			return true;
+		for(Table t : ntables){
+			logger.info(String.format("Table to unflip: %s", t.toString()));
+			if(t.isFlipped()){
+				tables.remove(t);
+				Table ut = t.unflip();
+				NPC next = npc.unflip(d);
+				eb.move(t, ut);
+				eb.move(npc, next);
+				eventbus.fire(new TableUnflipEvent(t, ut));
+				eventbus.fire(new EntityChangeEvent(npc, next));
+				npc = next;
+				return true;
+			}
 		}
 		
 		return false;
@@ -231,6 +245,10 @@ public class NPCAgent {
 			n.path = new LinkedList<>();
 			return n;
 		}
+	}
+
+	public void addTable(Table table) {
+		tables.add(table);
 	}
 
 }

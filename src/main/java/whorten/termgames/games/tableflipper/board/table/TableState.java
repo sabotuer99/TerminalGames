@@ -120,5 +120,14 @@ public class TableState extends AbstractEntityState<TableState>{
 
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("TableState: baseString:[%s] baseCoord:[%s] baseGlyph:[%s] isFlipped:[%b]",
+				getBaseString(),
+				getBaseCoord(),
+				getBaseGlyph(),
+				isFlipped);
+	}
 
 }
