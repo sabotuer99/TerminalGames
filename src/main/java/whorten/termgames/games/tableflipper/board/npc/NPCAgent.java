@@ -19,6 +19,7 @@ import whorten.termgames.events.EventBus;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.board.table.Table;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
+import whorten.termgames.games.tableflipper.events.NPCMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableUnflipEvent;
 import whorten.termgames.geometry.Coord;
 import whorten.termgames.geometry.Direction;
@@ -31,7 +32,7 @@ public class NPCAgent {
 
 	private NPCAgent(){}
 	private final static Logger logger = LogManager.getLogger(NPCAgent.class);
-	private EntityBoard eb;
+	private EntityBoard entityBoard;
 	private NPC npc;
 	private volatile long timeLastTick;
 	private int speed;
@@ -41,7 +42,7 @@ public class NPCAgent {
 	private GridBuilder gb;
 	private EventBus eventbus;
 	private LinkedList<Table> tables;
-	private TableFlipperBoard tableFlipperBoard;
+	private TableFlipperBoard tfBoard;
 	private int standStillCounter;
     
 	// on each call to tick, check if the time elapsed since the last
@@ -113,7 +114,7 @@ public class NPCAgent {
 	private void setRandomDestination() {
 		// if not tables need unflipped, just wander around
 		logger.info("Generating a random destination.");
-		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
+		List<Coord> coords = new ArrayList<>(entityBoard.getLegalPositions(npc));
 		if(coords != null && coords.size() > 0){
 			logger.info("Picking randomly from coords");
 			Collections.shuffle(coords);
@@ -130,9 +131,9 @@ public class NPCAgent {
 
 	private boolean moveToLeft(Table table) {
 		logger.info("Checking if left side of table is valid destination...");
-		Coord leftCoord = eb.leftOf(table, npc);
+		Coord leftCoord = entityBoard.leftOf(table, npc);
 		NPC left = npc.moveTo(leftCoord);
-		if(eb.canMove(npc, left)){
+		if(entityBoard.canMove(npc, left)){
 			logger.info("Setting left side (%s) as destination", leftCoord);
 			destination = leftCoord;
 			return true;
@@ -143,9 +144,9 @@ public class NPCAgent {
 	
 	private boolean moveToRight(Table table) {		
 		logger.info("Checking if right side of table is valid destination...");
-		Coord rightCoord = eb.rightOf(table, npc);
+		Coord rightCoord = entityBoard.rightOf(table, npc);
 		NPC right = npc.moveTo(rightCoord);
-		if(eb.canMove(npc, right)){
+		if(entityBoard.canMove(npc, right)){
 			logger.info("Setting right side (%s) as destination", rightCoord);
 			destination = rightCoord;
 			return true;
@@ -159,10 +160,11 @@ public class NPCAgent {
 		NPC next = npc.move(direction, 1);
 		logger.info(String.format("NPC trying to move %s to %s from %s", 
 				direction, next.getBaseCoord(), npc.getBaseCoord()));
-		if(eb.canMove(npc, next)){
+		if(entityBoard.canMove(npc, next)){
 			logger.info(String.format("NPC moving to %s...", next.getBaseCoord()));
-			eb.move(npc, next);
+			entityBoard.move(npc, next);
 			eventbus.fire(new EntityChangeEvent(npc, next));
+			eventbus.fire(new NPCMoveEvent());
 			npc = next;
 		} else {
 			logger.info(String.format("Could not move to %s, calculating new path...", next.getBaseCoord()));
@@ -176,7 +178,7 @@ public class NPCAgent {
 		}
 		
 		logger.info(String.format("Calculating grid of legal positions"));
-		boolean[][] legals = eb.getLegalPositionsGrid(npc);
+		boolean[][] legals = entityBoard.getLegalPositionsGrid(npc);
 		logger.info(String.format("Calculating graph across legal positions"));
 		Map<Coord, GridNode> graph = gb.withGrid(legals).build();
 		
@@ -193,10 +195,10 @@ public class NPCAgent {
 	}
 	
 	private void unflip() {
-		Set<Entity> left = eb.getLeftNeighbors(npc);
+		Set<Entity> left = entityBoard.getLeftNeighbors(npc);
 		logger.info(String.format("Unflip left neighbor count: %d", left.size()));
 		if(!unflipTable(left, Direction.LEFT)){
-			Set<Entity> right = eb.getRightNeighbors(npc);
+			Set<Entity> right = entityBoard.getRightNeighbors(npc);
 			logger.info(String.format("Unflip right neighbor count: %d", left.size()));
 			unflipTable(right, Direction.RIGHT);
 		}
@@ -221,10 +223,10 @@ public class NPCAgent {
 				tables.remove(t);
 				Table ut = t.unflip();
 				NPC next = npc.unflip(d);
-				eb.move(npc, next);
+				tfBoard.unflipTable(t, ut);
+				entityBoard.move(npc, next);
 				eventbus.fire(new TableUnflipEvent(t, ut));
 				eventbus.fire(new EntityChangeEvent(npc, next));
-				tableFlipperBoard.unflipTable(t, ut);
 				npc = next;
 				return true;
 			}
@@ -259,7 +261,7 @@ public class NPCAgent {
 		
 		public NPCAgent build(){
 			NPCAgent n = new NPCAgent();
-			n.eb = eb;
+			n.entityBoard = eb;
 			n.npc = npc;
 			n.gs = gs;
 			n.speed = speed;
@@ -267,7 +269,7 @@ public class NPCAgent {
 			n.tables = tables;
 			n.gb = new GridBuilder(eb.getHeight(), eb.getWidth());
 			n.path = new LinkedList<>();
-			n.tableFlipperBoard = tableFlipperBoard;
+			n.tfBoard = tableFlipperBoard;
 			return n;
 		}
 

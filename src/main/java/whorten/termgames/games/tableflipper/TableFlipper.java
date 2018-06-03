@@ -10,6 +10,7 @@ import whorten.termgames.games.Game;
 import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.EntitySpawnEvent;
+import whorten.termgames.games.tableflipper.events.NPCMoveEvent;
 import whorten.termgames.games.tableflipper.events.PlayerMoveEvent;
 import whorten.termgames.games.tableflipper.events.TableFlipEvent;
 import whorten.termgames.games.tableflipper.events.TableUnflipEvent;
@@ -25,7 +26,9 @@ public class TableFlipper extends Game {
 	private static final Logger logger = LogManager.getLogger(TableFlipper.class);
 	private static final String MUSIC_FILE = "midi/Table_Flipper_Theme.mid";
 	private static final String FOOTSTEP_SOUND = "sounds/footstep.wav";
+	private static final String SLINK_SOUND = "sounds/slither2.wav";
 	private static final String AH_SOUND = "sounds/girl-ah.wav";
+	private static final String HMPH_SOUND = "sounds/hmph.wav";
 	private TableFlipperBoard board;
 	private TableFlipperRenderer tfr;
 	private MusicControl musicControl;
@@ -68,6 +71,7 @@ public class TableFlipper extends Game {
 		addListener(TableFlipEvent.class, this::handleTableFlipEvent);
 		addListener(TableUnflipEvent.class, this::handleTableUnflipEvent);
 		addListener(PlayerMoveEvent.class, this::handlePlayerMoveEvent);
+		addListener(NPCMoveEvent.class, this::handleNPCMoveEvent);
 		addListener(EntitySpawnEvent.class, this::handleEntitySpawnEvent);
 	}
 
@@ -149,12 +153,16 @@ public class TableFlipper extends Game {
 		tfr.moveEntity(tfe.getUnflipped(), tfe.getFlipped());
 	}
 	
-	private synchronized void handleTableUnflipEvent(TableUnflipEvent tuf){
-		board.unflipTable(tuf.getFlipped(), tuf.getUnflipped());
-		tfr.moveEntity(tuf.getFlipped(), tuf.getUnflipped());		
+	private synchronized void handleTableUnflipEvent(TableUnflipEvent tuf){	
+		tfr.moveEntity(tuf.getFlipped(), tuf.getUnflipped());
+		playSound(HMPH_SOUND);
 	}
 	
 	private void handlePlayerMoveEvent(PlayerMoveEvent pme){
 		playSound(FOOTSTEP_SOUND);
+	}
+	
+	private void handleNPCMoveEvent(NPCMoveEvent nme){
+		playSound(SLINK_SOUND);
 	}
 }

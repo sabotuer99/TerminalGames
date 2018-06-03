@@ -10,3 +10,4 @@ thunk.wav   : https://freesound.org/people/moca/sounds/49041/
 footstep.wav: https://freesound.org/people/OwlStorm/sounds/151237/
 guy-ah.wav  : https://freesound.org/people/ecfike/sounds/154544/
 girl-ah.wav : https://freesound.org/people/Yudena/sounds/377560/
+hmph.wav    : https://freesound.org/people/prucanada/sounds/415345/
