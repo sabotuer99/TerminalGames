@@ -12,7 +12,7 @@ public class NPCState extends AbstractEntityState<NPCState> {
 	private Glyph baseGlyph;
 
 	private NPCState(String baseString) {
-		this.baseGlyph = new Glyph.Builder(" ").withForegroundColor(125,255,255).build(); //bright pale blue
+		this.baseGlyph = new Glyph.Builder(" ").withForegroundColor(0,255,255).build(); //bright pale blue
 		this.baseString = baseString;
 		this.coords = new TreeSet<>();
 	}

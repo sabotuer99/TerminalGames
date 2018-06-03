@@ -9,7 +9,7 @@ import whorten.termgames.glyphs.Glyph;
 public class TableState extends AbstractEntityState<TableState>{
 
 	private static final Glyph baseGlyph = new Glyph.Builder(" ")
-			                               .withForegroundColor(175, 255, 175)
+			                               .withForegroundColor(0, 255, 0)
 			                               .build();
 	private static final String UPRIGHT = "┬─┬";
 	private static final String FLIPPED = "⊥⚊⊥";
