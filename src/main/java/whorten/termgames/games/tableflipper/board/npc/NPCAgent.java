@@ -65,12 +65,15 @@ public class NPCAgent {
 				if(before.equals(npc.getBaseCoord())){
 					// couldn't move, increment counter
 					standStillCounter++;
-					if(standStillCounter > 10){
-						// npc stuck, send to random location
-						setRandomDestination();
-						generateNewPath();
-					}
+				} else {
+					standStillCounter = 0;
 				}
+			}
+			
+			if(standStillCounter > 10){
+				// npc stuck, send to random location
+				setRandomDestination();
+				generateNewPath();
 			}
 
 			timeLastTick = time;
@@ -83,6 +86,7 @@ public class NPCAgent {
 		// if npc has not reached original destination, just keep it
 		if(destination != null && !npc.getLocation().equals(destination)){
 			logger.info("Still not at destination, will try again...");
+			standStillCounter++;
 			return;
 		}
 		
