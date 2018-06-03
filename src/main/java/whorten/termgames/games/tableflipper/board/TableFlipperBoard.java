@@ -157,7 +157,7 @@ public class TableFlipperBoard {
 		List<Coord> coords = new ArrayList<>(board.getLegalPositions(start));
 		Collections.shuffle(coords);
 		Coord base = coords.get(0);
-		int speed = 300 + new Random().nextInt(250);
+		int speed = 175 + new Random().nextInt(250);
 		
 		NPC npc = start.moveTo(base).stand().toBuilder().build();
 		addNpc(npc, speed);
