@@ -12,7 +12,7 @@ public class TableState extends AbstractEntityState<TableState>{
 			                               .withForegroundColor(175, 255, 175)
 			                               .build();
 	private static final String UPRIGHT = "┬─┬";
-	private static final String FLIPPED = "⊥⚊⟘";
+	private static final String FLIPPED = "⊥⚊⊥";
 	
 	private String baseString = UPRIGHT;
 	private boolean isFlipped = false;
@@ -68,7 +68,7 @@ public class TableState extends AbstractEntityState<TableState>{
 
 	public TableState flip(){
 		TableState ts = new TableState();
-		ts.coords = getCoords();
+		ts.coords = new TreeSet<>(this.coords);
 		ts.baseString = FLIPPED;
 		ts.isFlipped = true;
 		return ts;
@@ -76,7 +76,7 @@ public class TableState extends AbstractEntityState<TableState>{
 	
 	public TableState unflip(){
 		TableState ts = new TableState();
-		ts.coords = getCoords();
+		ts.coords = new TreeSet<>(this.coords);
 		ts.baseString = UPRIGHT;
 		ts.isFlipped = false;
 		return ts;

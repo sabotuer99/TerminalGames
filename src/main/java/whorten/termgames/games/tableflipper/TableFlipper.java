@@ -137,23 +137,19 @@ public class TableFlipper extends Game {
 		//erase from entity
 		//draw to entity
 		//logger.info(String.format("Changing entity from %s to %s", eme.getFrom(), eme.getTo()));
-		console.runInThreadPool(new Runnable(){
-			@Override
-			public void run() {
-				tfr.moveEntity(eme.getFrom(), eme.getTo());
-			}});	
+		tfr.moveEntity(eme.getFrom(), eme.getTo());
+	
 	}
 	
-	private void handleEntitySpawnEvent(EntitySpawnEvent esw){
+	private synchronized void handleEntitySpawnEvent(EntitySpawnEvent esw){
 		tfr.drawEntity(esw.getEntity());
 	}
 	
-	private void handleTableFlipEvent(TableFlipEvent tfe){
-		board.flipTable(tfe.getUnflipped(), tfe.getFlipped());
+	private synchronized void handleTableFlipEvent(TableFlipEvent tfe){
 		tfr.moveEntity(tfe.getUnflipped(), tfe.getFlipped());
 	}
 	
-	private void handleTableUnflipEvent(TableUnflipEvent tuf){
+	private synchronized void handleTableUnflipEvent(TableUnflipEvent tuf){
 		board.unflipTable(tuf.getFlipped(), tuf.getUnflipped());
 		tfr.moveEntity(tuf.getFlipped(), tuf.getUnflipped());		
 	}

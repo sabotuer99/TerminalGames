@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
-import whorten.termgames.events.Event;
 import whorten.termgames.events.EventBus;
 import whorten.termgames.games.tableflipper.board.npc.NPC;
 import whorten.termgames.games.tableflipper.board.npc.NPCAgent;
@@ -75,39 +74,23 @@ public class TableFlipperBoard {
 		boolean left = tableLeft();
 		boolean right = tableRight();
 		Player next = player.flip(left, right);
-		if(left){ flipLeftTable(); }
-		if(right){ flipRightTable(); }
+		if(left){ flipNeighbors(board.getLeftNeighbors(player)); }
+		if(right){ flipNeighbors(board.getRightNeighbors(player)); }
 		safeMovePlayer(next, false);
 	}
-	
-	private void flipRightTable() {
-		logger.info("Trying to flip right table");
-		Set<Entity> right = board.getRightNeighbors(player);
-		List<Event> events = new ArrayList<>();
-		for(Table table : tables){
-			if(right.contains(table) && !table.isFlipped()){
-				logger.info("Flipping right table");
-				Table flipped = table.flip();
-				events.add(new TableFlipEvent(table, flipped));
-			}
-		}
-		for(Event ece : events){
-			eventbus.fire(ece);
-		}
-	}
 
-	private void flipLeftTable() {
-		logger.info("Trying to flip left table");
-		Set<Entity> left = board.getLeftNeighbors(player);
-		List<Event> events = new ArrayList<>();
+	private void flipNeighbors(Set<Entity> neighbors) {
+		logger.info("Trying to flip table");		
+		List<TableFlipEvent> events = new ArrayList<>();
 		for(Table table : tables){
-			if(left.contains(table) && !table.isFlipped()){
-				logger.info("Flipping left table");
+			if(neighbors.contains(table) && !table.isFlipped()){
+				logger.info("Flipping table");
 				Table flipped = table.flip();
 				events.add(new TableFlipEvent(table, flipped));
 			}
 		}
-		for(Event ece : events){
+		for(TableFlipEvent ece : events){		
+			flipTable(ece.getUnflipped(), ece.getFlipped());
 			eventbus.fire(ece);
 		}
 		
@@ -162,6 +145,7 @@ public class TableFlipperBoard {
 		NPCAgent agent = new NPCAgent.Builder(board, npc)
 				.withSpeed(speed)
 				.withEventBus(eventbus)
+				.withTableFlipperBoard(this)
 				.build();
 		agent.tick(speed); //initialize
 		agents.add(agent);
@@ -246,13 +230,13 @@ public class TableFlipperBoard {
 		}
 	}
 
-	public void unflipTable(Table flipped, Table unflipped) {
+	public synchronized void unflipTable(Table flipped, Table unflipped) {
 		board.move(flipped, unflipped);
 		tables.remove(flipped);
 		tables.add(unflipped);		
 	}
 	
-	public void flipTable(Table unflipped, Table flipped){
+	private synchronized void flipTable(Table unflipped, Table flipped){
 		board.move(unflipped, flipped);
 		assignTableToAgent(flipped);
 		tables.remove(unflipped);

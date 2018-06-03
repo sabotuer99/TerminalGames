@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import whorten.termgames.entity.Entity;
 import whorten.termgames.entity.EntityBoard;
 import whorten.termgames.events.EventBus;
+import whorten.termgames.games.tableflipper.board.TableFlipperBoard;
 import whorten.termgames.games.tableflipper.board.table.Table;
 import whorten.termgames.games.tableflipper.events.EntityChangeEvent;
 import whorten.termgames.games.tableflipper.events.TableUnflipEvent;
@@ -40,6 +41,8 @@ public class NPCAgent {
 	private GridBuilder gb;
 	private EventBus eventbus;
 	private LinkedList<Table> tables;
+	private TableFlipperBoard tableFlipperBoard;
+	private int standStillCounter;
     
 	// on each call to tick, check if the time elapsed since the last
 	// tick is more than the npc's speed. If yes, try to move next direction in path
@@ -48,15 +51,25 @@ public class NPCAgent {
 	public void tick(long time){
 		if(timeLastTick + speed <= time){	
 			//logger.info(String.format("Agent taking action: %d + %d <= %d", timeLastTick, speed, time));
-			if(tables.size() > 0 && npc.getLocation().equals(destination)){
+			if(tables.size() > 0 && npc.getBaseCoord().equals(destination)){
 				unflip();
 			} 
 			
 			if(path == null || path.size() == 0){	
 				pickDestination();
 				generateNewPath();												
-			} else {					
+			} else {		
+				Coord before = npc.getBaseCoord();
 				tryToMove();
+				if(before.equals(npc.getBaseCoord())){
+					// couldn't move, increment counter
+					standStillCounter++;
+					if(standStillCounter > 10){
+						// npc stuck, send to random location
+						setRandomDestination();
+						generateNewPath();
+					}
+				}
 			}
 
 			timeLastTick = time;
@@ -74,20 +87,30 @@ public class NPCAgent {
 		
 		// otherwise, check if a table needs unflipped
 		if(tables.size() > 0){
-			logger.info("Table assigned, looking for path to unflip.");
-			// loop through tables once looking for valid destination. 
-			// If none, just fall through to random destination
-			for(int i = 0; i < tables.size(); i++){
-				Table table = tables.pop();
-				// if we can move to the right or left, we're done
-				if(moveToLeft(table)){return;}
-				if(moveToRight(table)){return;}
-				// if we got here, we couldn't use this table, put it back
-				tables.addLast(table);
+			if(tryToFindPathToTable()){
+				return;
 			}
-			logger.info("All tables blocked =(");
+		}	
+		setRandomDestination();
+	}
+
+	private boolean tryToFindPathToTable() {
+		logger.info("Table assigned, looking for path to unflip.");
+		// loop through tables once looking for valid destination. 
+		// If none, just fall through to random destination
+		for(int i = 0; i < tables.size(); i++){
+			Table table = tables.peek();
+			// if we can move to the right or left, we're done
+			if(moveToLeft(table)){return true;}
+			if(moveToRight(table)){return true;}
+			// if we got here, we couldn't use this table, put it back
+			tables.addLast(tables.pop());
 		}
-		
+		logger.info("All tables blocked =(");
+		return false;
+	}
+
+	private void setRandomDestination() {
 		// if not tables need unflipped, just wander around
 		logger.info("Generating a random destination.");
 		List<Coord> coords = new ArrayList<>(eb.getLegalPositions(npc));
@@ -198,10 +221,10 @@ public class NPCAgent {
 				tables.remove(t);
 				Table ut = t.unflip();
 				NPC next = npc.unflip(d);
-				eb.move(t, ut);
 				eb.move(npc, next);
 				eventbus.fire(new TableUnflipEvent(t, ut));
 				eventbus.fire(new EntityChangeEvent(npc, next));
+				tableFlipperBoard.unflipTable(t, ut);
 				npc = next;
 				return true;
 			}
@@ -217,6 +240,7 @@ public class NPCAgent {
 		private int speed;
 		private EventBus eventbus;
 		private LinkedList<Table> tables = new LinkedList<>();
+		private TableFlipperBoard tableFlipperBoard;
 		
 		public Builder(EntityBoard eb, NPC npc){
 			this.eb = eb;
@@ -235,15 +259,21 @@ public class NPCAgent {
 		
 		public NPCAgent build(){
 			NPCAgent n = new NPCAgent();
-			n.eb = this.eb;
-			n.npc = this.npc;
-			n.gs = this.gs;
-			n.speed = this.speed;
-			n.eventbus = this.eventbus;
-			n.tables = this.tables;
+			n.eb = eb;
+			n.npc = npc;
+			n.gs = gs;
+			n.speed = speed;
+			n.eventbus = eventbus;
+			n.tables = tables;
 			n.gb = new GridBuilder(eb.getHeight(), eb.getWidth());
 			n.path = new LinkedList<>();
+			n.tableFlipperBoard = tableFlipperBoard;
 			return n;
+		}
+
+		public Builder withTableFlipperBoard(TableFlipperBoard tableFlipperBoard) {
+			this.tableFlipperBoard = tableFlipperBoard;
+			return this;
 		}
 	}
 
