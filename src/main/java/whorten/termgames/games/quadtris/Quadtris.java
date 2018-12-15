@@ -139,7 +139,9 @@ public class Quadtris extends Game {
 		wellRenderer.clearPiece(rpe.getOldPiece());
 		wellRenderer.drawPiece(rpe.getNewPiece());
 		String sound = getSoundEffectForTransform(rpe.getTransform());
-		eventBus.fire(new PlaySoundEvent(sound));
+		if(!sound.isEmpty()){
+			eventBus.fire(new PlaySoundEvent(sound));			
+		}
 	}
 
 	private String getSoundEffectForTransform(PieceTransformType transform) {
@@ -153,6 +155,9 @@ public class Quadtris extends Game {
 			break;
 		case TRANSLATION:
 			sound = BEEP_SOUND;
+			break;
+		case TICK:
+			sound = "";
 			break;
 		default:
 			break;

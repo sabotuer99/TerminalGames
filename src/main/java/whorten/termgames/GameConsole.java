@@ -316,7 +316,7 @@ public class GameConsole {
 	private void handlePlaySoundEvent(PlaySoundEvent pse) {
 		String path = pse.getPath();
 		byte[] cached = getFileBytes(path);
-	    logger.debug(String.format("Playing sound %s with length %d", path, cached.length));
+	    logger.debug(String.format("Playing sound %s", path));
 		if(cached != null){
 			instance.soundPlayer.play(new ByteArrayInputStream(cached));
 		}
