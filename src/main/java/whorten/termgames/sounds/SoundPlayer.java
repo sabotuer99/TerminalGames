@@ -18,8 +18,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import whorten.termgames.GameConsole;
-
 public class SoundPlayer {
 	private final static Logger logger = LogManager.getLogger(SoundPlayer.class);
 	private Sequencer sequencer = null;
@@ -76,7 +74,10 @@ public class SoundPlayer {
 			DataLine.Info lineInfo = new DataLine.Info(Clip.class, format);
 			Mixer.Info selectedMixer = null;
 	
+			logger.debug(String.format("Checking %d mixers...", 
+					AudioSystem.getMixerInfo().length));
 			for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+				logger.debug("Checking mixer: " + mixerInfo.getDescription());
 				Mixer mixer = AudioSystem.getMixer(mixerInfo);
 				if (mixer.isLineSupported(lineInfo)) {
 					selectedMixer = mixerInfo;

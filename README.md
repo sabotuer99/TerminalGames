@@ -10,3 +10,7 @@ cd TerminalGames
 mvn package
 
 ./run_app.sh
+
+## Known Issues
+
+Ubuntu uses PulseAudio by default, which is not compatible with the Oracle JRE. Use OpenJdk and the IcedTea plugin.
