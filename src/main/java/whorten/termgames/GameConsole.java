@@ -53,6 +53,7 @@ import whorten.termgames.utils.Keys;
 import whorten.termgames.utils.StringUtils;
 
 public class GameConsole {
+	private final static Logger logger = LogManager.getLogger(GameConsole.class);
 	private static final String BOOP_SOUND = "sounds/boop.wav";
 	private static final String SELECT_SOUND = "sounds/three_boop.wav";
 	private static final GameConsole instance = new GameConsole();
@@ -70,7 +71,6 @@ public class GameConsole {
 	private volatile boolean gameIsRunning;
 	private Game currentGame = null;
 	private int gameIndex = 0;
-	private final static Logger logger = LogManager.getLogger(GameConsole.class);
 	private static final String MAIN_MENU_BACKGROUND_FILE = 
 			"gspecs/mainmenu_background.gstxt";
 	private EventListener<PlaySoundEvent> pseEventListener = null;	
@@ -316,6 +316,7 @@ public class GameConsole {
 	private void handlePlaySoundEvent(PlaySoundEvent pse) {
 		String path = pse.getPath();
 		byte[] cached = getFileBytes(path);
+	    logger.debug(String.format("Playing sound %s with length %d", path, cached.length));
 		if(cached != null){
 			instance.soundPlayer.play(new ByteArrayInputStream(cached));
 		}
@@ -374,7 +375,7 @@ public class GameConsole {
 		try {
 			sequencer = MidiSystem.getSequencer();
 		} catch (Exception ex) {
-			// gulp
+			logger.warn(ex.getMessage());
 		}
 
 		return new SoundPlayer.Builder().withSequencer(sequencer).build();
