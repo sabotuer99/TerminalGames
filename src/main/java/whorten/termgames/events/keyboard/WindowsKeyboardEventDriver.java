@@ -65,6 +65,7 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 
 	@Override
 	public void listen() throws IOException {
+		initWindows();
 		isListening = true;
 		String last = null;
 		try {
