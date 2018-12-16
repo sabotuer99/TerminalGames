@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,9 +87,10 @@ public class GameConsole {
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		logger.info("TEST");
-		setGlobalUncaughtExceptionHandler();		
-		instance.initEventSystem();
+		setGlobalUncaughtExceptionHandler();	
+		List<String> argList = Arrays.asList(args);
+		logger.info("Running with args: ", Arrays.toString(args));
+		instance.initEventSystem(argList.contains("--windows"));
 		
 		instance.runInThreadPool(() -> {
 			try { instance.ked.listen();} 	
@@ -226,9 +228,14 @@ public class GameConsole {
 		renderer.drawGlyphStringCollection(loadFromFile(MAIN_MENU_BACKGROUND_FILE));
 	}
 
-	private void initEventSystem() {
-		ked = new KeyboardEventDriver.Builder().withInputStream(System.in)
-				.withListener((KeyEvent ke) -> handleKeyEvent(ke)).build();
+	private void initEventSystem(boolean isWindows) {
+		if (isWindows){
+			System.out.println("No Windows Support yet, sorry =(");
+			throw new RuntimeException();
+		} else {
+			ked = new KeyboardEventDriver.Builder().withInputStream(System.in)
+					.withListener((KeyEvent ke) -> handleKeyEvent(ke)).build();
+		}
 		
 		pseEventListener = (PlaySoundEvent pse) -> {handlePlaySoundEvent(pse);};		
 		midiStartEventListener = (MidiStartEvent mse) -> {handleMidiStartEvent(mse);};		
