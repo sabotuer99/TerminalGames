@@ -20,7 +20,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-public class WindowsKeyboardEventDriver implements EventDriver<KeyboardEventListener> {
+public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 
 	private final static Logger logger = LogManager.getLogger(WindowsKeyboardEventDriver.class);
 	private List<String> stops;
@@ -58,10 +58,12 @@ public class WindowsKeyboardEventDriver implements EventDriver<KeyboardEventList
 		listeners.remove(listener);
 	}
 
+	@Override
 	public boolean isListening() {
 		return isListening;
 	}
 
+	@Override
 	public void listen() throws IOException {
 		isListening = true;
 		String last = null;

@@ -20,7 +20,7 @@ public class KeyboardEventDriverTests {
 	public void firingEvents_A_onInputStream_FiresKeyDownForA() throws IOException{
 		//Arrange
 		List<KeyEvent> fired = new ArrayList<>();
-		KeyboardEventDriver sut = new KeyboardEventDriver.Builder()
+		LinuxKeyboardEventDriver sut = new LinuxKeyboardEventDriver.Builder()
 						                .withInputStream(getInput("AX"))
 						                .withStopCharacter('X')
 						                .withListener((KeyEvent ke) -> { fired.add(ke); })
@@ -40,7 +40,7 @@ public class KeyboardEventDriverTests {
 	public void firingEvents_a_onInputStream_FiresKeyDownForA() throws IOException{
 		//Arrange
 		List<KeyEvent> fired = new ArrayList<>();
-		KeyboardEventDriver sut = new KeyboardEventDriver.Builder()
+		LinuxKeyboardEventDriver sut = new LinuxKeyboardEventDriver.Builder()
 						                .withInputStream(getInput("aX"))
 						                .withStopCharacter('X')
 						                .withListener((KeyEvent ke) -> { fired.add(ke); })
@@ -60,7 +60,7 @@ public class KeyboardEventDriverTests {
 	public void firingEvents_HashSymbol_onInputStream_FiresKeyDownSpecialChar() throws IOException{
 		//Arrange
 		List<KeyEvent> fired = new ArrayList<>();
-		KeyboardEventDriver sut = new KeyboardEventDriver.Builder()
+		LinuxKeyboardEventDriver sut = new LinuxKeyboardEventDriver.Builder()
 						                .withInputStream(getInput("#X"))
 						                .withStopCharacter('X')
 						                .withListener((KeyEvent ke) -> { fired.add(ke); })
@@ -80,7 +80,7 @@ public class KeyboardEventDriverTests {
 	public void firingEvents_UpArrow_onInputStream_FiresKeyDownEscapeSequence() throws IOException{
 		//Arrange
 		List<KeyEvent> fired = new ArrayList<>();
-		KeyboardEventDriver sut = new KeyboardEventDriver.Builder()
+		LinuxKeyboardEventDriver sut = new LinuxKeyboardEventDriver.Builder()
 						                .withInputStream(getInput(Keys.UP_ARROW + "X"))
 						                .withStopCharacter('X')
 						                .withListener((KeyEvent ke) -> { fired.add(ke); })
@@ -100,7 +100,7 @@ public class KeyboardEventDriverTests {
 	public void firingEvents_KeyDownWithShortDelay_OneKeyUpEvent() throws IOException{
 		//Arrange
 		List<KeyEvent> fired = new ArrayList<>();
-		KeyboardEventDriver sut = new KeyboardEventDriver.Builder()
+		LinuxKeyboardEventDriver sut = new LinuxKeyboardEventDriver.Builder()
 						                .withInputStream(getDelayInput("ABBBBBBBBBBBBBBBBBBBBBX", 10))
 						                .withRepeatThreshold(100)
 						                .withStopCharacter('X')

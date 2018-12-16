@@ -27,12 +27,16 @@ import whorten.termgames.animation.events.StartAnimationEvent;
 import whorten.termgames.animation.events.StopAllAnimationEvent;
 import whorten.termgames.animation.events.StopAnimationEvent;
 import whorten.termgames.events.EventBus;
+import whorten.termgames.events.EventDriver;
 import whorten.termgames.events.EventListener;
 import whorten.termgames.events.keyboard.KeyDownEvent;
 import whorten.termgames.events.keyboard.KeyEvent;
 import whorten.termgames.events.keyboard.KeyEventType;
 import whorten.termgames.events.keyboard.KeyUpEvent;
 import whorten.termgames.events.keyboard.KeyboardEventDriver;
+import whorten.termgames.events.keyboard.LinuxKeyboardEventDriver;
+import whorten.termgames.events.keyboard.KeyboardEventListener;
+import whorten.termgames.events.keyboard.WindowsKeyboardEventDriver;
 import whorten.termgames.games.Game;
 import whorten.termgames.glyphs.BgColor;
 import whorten.termgames.glyphs.FgColor;
@@ -230,10 +234,10 @@ public class GameConsole {
 
 	private void initEventSystem(boolean isWindows) {
 		if (isWindows){
-			System.out.println("No Windows Support yet, sorry =(");
-			throw new RuntimeException();
+			ked = new WindowsKeyboardEventDriver.Builder()
+					.withListener((KeyEvent ke) -> handleKeyEvent(ke)).build();
 		} else {
-			ked = new KeyboardEventDriver.Builder().withInputStream(System.in)
+			ked = new LinuxKeyboardEventDriver.Builder().withInputStream(System.in)
 					.withListener((KeyEvent ke) -> handleKeyEvent(ke)).build();
 		}
 		
