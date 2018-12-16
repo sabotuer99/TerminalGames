@@ -199,42 +199,6 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 	// The Windows version uses _kbhit() and _getwch() from msvcrt.dll.
 
 
-	private static int readWindows(boolean wait) throws IOException {
-		initWindows();
-		if (!stdinIsConsole) {
-			int c = msvcrt.getwchar();
-			if (c == 0xFFFF) {
-				c = -1;
-			}
-			return c;
-		}
-		consoleModeAltered = true;
-		setConsoleMode(consoleHandle, originalConsoleMode & ~Kernel32Defs.ENABLE_PROCESSED_INPUT);
-		// ENABLE_PROCESSED_INPUT must remain off to prevent Ctrl-C from being
-		// processed by the system
-		// while the program is not within getwch().
-		if (!wait && msvcrt._kbhit() == 0) {
-			return -2;
-		} // no key available
-		return getwch();
-	}
-
-	private static int getwch() {
-		int c = msvcrt._getwch();
-		if (c == 0 || c == 0xE0) { // Function key or arrow key
-			c = msvcrt._getwch();
-			if (c >= 0 && c <= 0x18FF) {
-				return 0xE000 + c; // construct key code in private Unicode
-									// range
-			}
-			return invalidKey;
-		}
-		if (c < 0 || c > 0xFFFF) {
-			return invalidKey;
-		}
-		return c; // normal key
-	}
-
 	private static synchronized void initWindows() throws IOException {
 		if (initDone) {
 			return;
@@ -279,14 +243,6 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 		}
 	}
 
-	private static void resetConsoleModeWindows() throws IOException {
-		if (!initDone || !stdinIsConsole || !consoleModeAltered) {
-			return;
-		}
-		setConsoleMode(consoleHandle, originalConsoleMode);
-		consoleModeAltered = false;
-	}
-
 	private static interface Msvcrt extends Library {
 		int _kbhit();
 		int _getwch();
@@ -296,7 +252,6 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 	private static class Kernel32Defs {
 		static final int STD_INPUT_HANDLE = -10;
 		static final long INVALID_HANDLE_VALUE = (Native.POINTER_SIZE == 8) ? -1 : 0xFFFFFFFFL;
-		static final int ENABLE_PROCESSED_INPUT = 0x0001;
 	}
 
 	private static interface Kernel32 extends Library {
@@ -308,16 +263,11 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 	private static void registerShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
-				shutdownHook();
+				try {
+					setConsoleMode(consoleHandle, originalConsoleMode);
+				} catch (IOException e) {}
 			}
 		});
-	}
-
-	private static void shutdownHook() {
-		try {
-			resetConsoleModeWindows();
-		} catch (Exception e) {
-		}
 	}
 
 }
