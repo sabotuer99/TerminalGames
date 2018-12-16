@@ -81,20 +81,16 @@ public class WindowsKeyboardEventDriver implements KeyboardEventDriver {
 						// escape character requires special handling
 						c = msvcrt._getwch();
 						switch (c) {
-						case 'B':
-						case Keys.DOWN_ARROW_BYTE:
+						case 'P':
 							last = Keys.DOWN_ARROW;
 							break;
-						case 'A':
-						case Keys.UP_ARROW_BYTE:
+						case 'H':
 							last = Keys.UP_ARROW;
 							break;
-						case 'C':
-						case Keys.RIGHT_ARROW_BYTE:
+						case 'M':
 							last = Keys.RIGHT_ARROW;
 							break;
-						case 'D':
-						case Keys.LEFT_ARROW_BYTE:
+						case 'K':
 							last = Keys.LEFT_ARROW;
 							break;
 						case 13:
